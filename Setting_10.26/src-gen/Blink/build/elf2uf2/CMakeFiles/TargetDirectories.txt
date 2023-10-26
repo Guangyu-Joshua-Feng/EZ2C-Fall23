@@ -1,5 +1,0 @@
-/home/foobar/lf-3pi-Jiahui-Cheng/src-gen/Blink/build/elf2uf2/CMakeFiles/elf2uf2.dir
-/home/foobar/lf-3pi-Jiahui-Cheng/src-gen/Blink/build/elf2uf2/CMakeFiles/edit_cache.dir
-/home/foobar/lf-3pi-Jiahui-Cheng/src-gen/Blink/build/elf2uf2/CMakeFiles/rebuild_cache.dir
-/home/foobar/lf-3pi-Jiahui-Cheng/src-gen/Blink/build/elf2uf2/boot_uf2_headers/CMakeFiles/edit_cache.dir
-/home/foobar/lf-3pi-Jiahui-Cheng/src-gen/Blink/build/elf2uf2/boot_uf2_headers/CMakeFiles/rebuild_cache.dir
