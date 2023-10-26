@@ -1,0 +1,45 @@
+target C {
+  platform: {
+    name: "rp2040",
+    board: "pololu_3pi_2040_robot"
+  },
+  threading: false
+}
+
+preamble {=
+  #include <stdio.h>
+  #include <pico/stdlib.h>
+  #include <hardware/gpio.h>
+  #include <hardware/i2c.h>
+
+  #define ADDR 0x55
+=}
+
+main reactor {
+  timer t(0, 250 ms)
+  state led_on: bool = false
+
+  reaction(startup) {=
+    // LED Initialization
+    gpio_init(PICO_DEFAULT_LED_PIN);
+    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
+
+    // I2C initialization
+    i2c_init(i2c_default, 400 * 1000);
+    i2c_set_slave_mode(i2c_default, true, ADDR);
+
+    gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+    gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+  =}
+
+  reaction(t) {=
+    char c;
+    i2c_read_raw_blocking(i2c_default, &c, 1);
+    if (c == 'h') {
+      self->led_on = !self->led_on;
+      gpio_put(PICO_DEFAULT_LED_PIN, !self->led_on);
+    }
+  =}
+}
