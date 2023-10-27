@@ -7,7 +7,6 @@ target C {
   cmake-include: ["i2cslave.txt"]
 }
 
-import Display from "lib/Display.lf"
 
 preamble {=
   #include <stdio.h>
@@ -16,6 +15,7 @@ preamble {=
   #include <pico/binary_info.h>
   #include <hardware/i2c.h>
   #include <pico/i2c_slave.h>
+  #include <string.h>
 
   #define ADDR 0x55
   #define PICO_DEFAULT_I2C_SDA_PIN 4
@@ -27,7 +27,6 @@ preamble {=
 main reactor {
 
   preamble {=
-  static bool receive;
 
   static struct
 {
@@ -48,17 +47,14 @@ main reactor {
             context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
             context.mem_address++;
         }
-        receive = true;
         break;
     case I2C_SLAVE_REQUEST: // master is requesting data
         // load from memory
         i2c_write_byte_raw(i2c, context.mem[context.mem_address]);
         context.mem_address++;
-        receive = true;
         break;
     case I2C_SLAVE_FINISH: // master has signalled Stop / Restart
         context.mem_address_written = false;
-        receive = true;
         break;
     default:
         break;
@@ -93,9 +89,7 @@ main reactor {
   
   =}
 
-  display = new Display()
-
-  timer t(0, 200 ms)
+  timer t(0, 500 ms)
   state led_on: bool = false
 
   reaction(startup) {=
@@ -106,19 +100,28 @@ main reactor {
     // I2C initialization
     setup_master();
     setup_slave();
-
   =}
 
 
   reaction(t) {=
-    char c = 'a';
-    int sent;
-    sent = i2c_write_blocking(i2c0, ADDR, &c, 2, false);
-    printf("%d",sent);
-    if (receive){
-      self->led_on = !self->led_on;
-      gpio_put(PICO_DEFAULT_LED_PIN, !self->led_on);
+    for (uint8_t mem_address=0;;mem_address = (mem_address+32)%256){
+
+    char msg[32] = "Master Sent!";
+    uint8_t buf[32];
+    uint8_t receive[32];
+    buf[0] = mem_address;
+    memcpy(buf+1,msg,strlen(msg));
+    i2c_write_blocking(i2c0, ADDR, buf, 1+strlen(msg), false);
+
+    i2c_write_blocking(i2c0, ADDR, buf, 1, true);
+    i2c_read_blocking(i2c0, ADDR, receive, strlen(msg), false);
+    printf("%s\n",receive);
     }
+
+    // if (true){
+    //   self->led_on = !self->led_on;
+    //   gpio_put(PICO_DEFAULT_LED_PIN, !self->led_on);
+    // }
   =}
 
 }

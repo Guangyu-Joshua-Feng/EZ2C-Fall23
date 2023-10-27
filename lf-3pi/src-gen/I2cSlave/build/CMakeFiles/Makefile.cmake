@@ -21,8 +21,6 @@ set(CMAKE_MAKEFILE_DEPENDS
   "../core/utils/hashset/CMakeLists.txt"
   "../i2cslave.txt"
   "../pico_sdk_import.cmake"
-  "../robot-lib.txt"
-  "../robot-lib/CMakeLists.txt"
   "/home/foobar/pico-sdk/CMakeLists.txt"
   "/home/foobar/pico-sdk/cmake/Platform/PICO.cmake"
   "/home/foobar/pico-sdk/cmake/pico_pre_load_platform.cmake"
@@ -321,7 +319,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
   "pico-sdk/src/rp2040/hardware_structs/CMakeFiles/CMakeDirectoryInformation.cmake"
   "pico-sdk/docs/CMakeFiles/CMakeDirectoryInformation.cmake"
   "core/CMakeFiles/CMakeDirectoryInformation.cmake"
-  "robot/CMakeFiles/CMakeDirectoryInformation.cmake"
   )
 
 # Dependency information for all targets:
@@ -334,7 +331,4 @@ set(CMAKE_DEPEND_INFO_FILES
   "pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/PioasmBuild.dir/DependInfo.cmake"
   "pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/cyw43_driver_picow_cyw43_bus_pio_spi_pio_h.dir/DependInfo.cmake"
   "core/CMakeFiles/core.dir/DependInfo.cmake"
-  "robot/CMakeFiles/robot.dir/DependInfo.cmake"
-  "robot/CMakeFiles/robot_qtr_sensor_counter_pio_h.dir/DependInfo.cmake"
-  "robot/CMakeFiles/robot_quadrature_encoder_pio_h.dir/DependInfo.cmake"
   )

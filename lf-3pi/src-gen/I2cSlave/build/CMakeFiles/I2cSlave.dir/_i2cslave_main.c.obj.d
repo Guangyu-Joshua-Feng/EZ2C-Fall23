@@ -76,7 +76,8 @@ CMakeFiles/I2cSlave.dir/_i2cslave_main.c.obj: \
  /home/foobar/pico-sdk/src/rp2040/hardware_structs/include/hardware/structs/i2c.h \
  /home/foobar/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/i2c.h \
  /home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/include/pico/i2c_slave.h \
- /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/robot-lib/src/display.h \
+ /usr/include/newlib/string.h /usr/include/newlib/sys/_locale.h \
+ /usr/include/newlib/strings.h /usr/include/newlib/sys/string.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/../include/api/api.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/../include/core/reactor.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/../include/core/lf_types.h \
@@ -88,6 +89,5 @@ CMakeFiles/I2cSlave.dir/_i2cslave_main.c.obj: \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/core/utils/util.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_i2cslave_main.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/core/reactor.h \
- /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_display.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/api/set.h \
  /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/include/api/set_undef.h

@@ -23,7 +23,3 @@ a9b669c66d211807e0a5233f6bf257cc pico-sdk/src/rp2_common/pico_cyw43_driver/pioas
 9ed5c574c10309b305549d759ba4369d pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-mkdir
 e0343292ecc8f7cba454bb023a22b6f7 pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-patch
 0ca6d989ac39670c42b7395aa2a7f8f3 pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-update
-4187155061ab35b95de574498a585b84 robot/CMakeFiles/robot_qtr_sensor_counter_pio_h
-4187155061ab35b95de574498a585b84 robot/CMakeFiles/robot_quadrature_encoder_pio_h
-ec2b7716671fc2591399c90ad5c38007 robot/qtr_sensor_counter.pio.h
-fb546d7f14390399c7e10f60d4d1eef6 robot/quadrature_encoder.pio.h

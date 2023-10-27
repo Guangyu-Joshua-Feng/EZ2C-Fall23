@@ -498,12 +498,3 @@
 /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/core/CMakeFiles/install.dir
 /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/core/CMakeFiles/install/local.dir
 /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/core/CMakeFiles/install/strip.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/robot.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/robot_qtr_sensor_counter_pio_h.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/robot_quadrature_encoder_pio_h.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/edit_cache.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/rebuild_cache.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/list_install_components.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/install.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/install/local.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/install/strip.dir

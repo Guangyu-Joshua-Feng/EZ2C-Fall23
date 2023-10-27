@@ -28,7 +28,7 @@ set(CMAKE_TARGET_DEFINITIONS_ASM
   "CFG_TUSB_OS=OPT_OS_PICO"
   "LF_FILE_SEPARATOR=\"/\""
   "LF_PACKAGE_DIRECTORY=\"/home/foobar/EZ2C-Fall23/lf-3pi\""
-  "LF_REACTION_GRAPH_BREADTH=2"
+  "LF_REACTION_GRAPH_BREADTH=1"
   "LF_SOURCE_DIRECTORY=\"/home/foobar/EZ2C-Fall23/lf-3pi/src\""
   "LF_UNTHREADED=1"
   "LIB_PICO_BIT_OPS=1"
@@ -144,18 +144,11 @@ set(CMAKE_ASM_TARGET_INCLUDE_PATH
   "/home/foobar/pico-sdk/src/rp2_common/pico_multicore/include"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/include"
   "/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/include"
-  "robot"
-  "../robot-lib/src"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_adc/include"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_pio/include"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_pwm/include"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_spi/include"
   )
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/I2cSlave.c" "CMakeFiles/I2cSlave.dir/I2cSlave.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/I2cSlave.c.obj.d"
-  "/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_display.c" "CMakeFiles/I2cSlave.dir/_display.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/_display.c.obj.d"
   "/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_i2cslave_main.c" "CMakeFiles/I2cSlave.dir/_i2cslave_main.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/_i2cslave_main.c.obj.d"
   "/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj.d"
   "/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj.d"
@@ -184,16 +177,13 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/foobar/pico-sdk/src/common/pico_util/datetime.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj.d"
   "/home/foobar/pico-sdk/src/common/pico_util/pheap.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj.d"
   "/home/foobar/pico-sdk/src/common/pico_util/queue.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj.d"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj.d"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj.d"
-  "/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj.d"
   "/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj" "gcc" "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj.d"
@@ -227,7 +217,6 @@ set(CMAKE_DEPENDS_DEPENDENCY_FILES
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
   "/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/core/CMakeFiles/core.dir/DependInfo.cmake"
-  "/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/robot/CMakeFiles/robot.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

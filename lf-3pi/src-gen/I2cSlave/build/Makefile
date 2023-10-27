@@ -265,45 +265,6 @@ core/fast:
 	$(MAKE) $(MAKESILENT) -f core/CMakeFiles/core.dir/build.make core/CMakeFiles/core.dir/build
 .PHONY : core/fast
 
-#=============================================================================
-# Target rules for targets named robot
-
-# Build rule for target.
-robot: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 robot
-.PHONY : robot
-
-# fast build rule for target.
-robot/fast:
-	$(MAKE) $(MAKESILENT) -f robot/CMakeFiles/robot.dir/build.make robot/CMakeFiles/robot.dir/build
-.PHONY : robot/fast
-
-#=============================================================================
-# Target rules for targets named robot_qtr_sensor_counter_pio_h
-
-# Build rule for target.
-robot_qtr_sensor_counter_pio_h: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 robot_qtr_sensor_counter_pio_h
-.PHONY : robot_qtr_sensor_counter_pio_h
-
-# fast build rule for target.
-robot_qtr_sensor_counter_pio_h/fast:
-	$(MAKE) $(MAKESILENT) -f robot/CMakeFiles/robot_qtr_sensor_counter_pio_h.dir/build.make robot/CMakeFiles/robot_qtr_sensor_counter_pio_h.dir/build
-.PHONY : robot_qtr_sensor_counter_pio_h/fast
-
-#=============================================================================
-# Target rules for targets named robot_quadrature_encoder_pio_h
-
-# Build rule for target.
-robot_quadrature_encoder_pio_h: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 robot_quadrature_encoder_pio_h
-.PHONY : robot_quadrature_encoder_pio_h
-
-# fast build rule for target.
-robot_quadrature_encoder_pio_h/fast:
-	$(MAKE) $(MAKESILENT) -f robot/CMakeFiles/robot_quadrature_encoder_pio_h.dir/build.make robot/CMakeFiles/robot_quadrature_encoder_pio_h.dir/build
-.PHONY : robot_quadrature_encoder_pio_h/fast
-
 I2cSlave.obj: I2cSlave.c.obj
 .PHONY : I2cSlave.obj
 
@@ -327,30 +288,6 @@ I2cSlave.s: I2cSlave.c.s
 I2cSlave.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/I2cSlave.c.s
 .PHONY : I2cSlave.c.s
-
-_display.obj: _display.c.obj
-.PHONY : _display.obj
-
-# target to build an object file
-_display.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/_display.c.obj
-.PHONY : _display.c.obj
-
-_display.i: _display.c.i
-.PHONY : _display.i
-
-# target to preprocess a source file
-_display.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/_display.c.i
-.PHONY : _display.c.i
-
-_display.s: _display.c.s
-.PHONY : _display.s
-
-# target to generate assembly for a file
-_display.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/_display.c.s
-.PHONY : _display.c.s
 
 _i2cslave_main.obj: _i2cslave_main.c.obj
 .PHONY : _i2cslave_main.obj
@@ -1024,30 +961,6 @@ home/foobar/pico-sdk/src/common/pico_util/queue.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.s
 .PHONY : home/foobar/pico-sdk/src/common/pico_util/queue.c.s
 
-home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.obj: home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.obj
-
-# target to build an object file
-home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
-
-home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.i: home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.i
-
-# target to preprocess a source file
-home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
-
-home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.s: home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.s
-
-# target to generate assembly for a file
-home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
-
 home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.obj: home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj
 .PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.obj
 
@@ -1208,30 +1121,6 @@ home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
 .PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj
 
-home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.obj: home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.obj
-
-# target to build an object file
-home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj
-
-home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.i: home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.i
-
-# target to preprocess a source file
-home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i
-
-home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.s: home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.s
-
-# target to generate assembly for a file
-home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s
-
 home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.obj: home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj
 .PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.obj
 
@@ -1255,30 +1144,6 @@ home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.s: home/foobar/pico-sdk/src
 home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 .PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
-
-home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.obj: home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.obj
-
-# target to build an object file
-home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
-
-home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.i: home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.i
-
-# target to preprocess a source file
-home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
-
-home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.s: home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.s
-
-# target to generate assembly for a file
-home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/I2cSlave.dir/build.make CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
-.PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
 
 home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.obj: home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj
 .PHONY : home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.obj
@@ -2041,18 +1906,12 @@ help:
 	@echo "... bs2_default_bin"
 	@echo "... bs2_default_padded_checksummed_asm"
 	@echo "... cyw43_driver_picow_cyw43_bus_pio_spi_pio_h"
-	@echo "... robot_qtr_sensor_counter_pio_h"
-	@echo "... robot_quadrature_encoder_pio_h"
 	@echo "... I2cSlave"
 	@echo "... bs2_default"
 	@echo "... core"
-	@echo "... robot"
 	@echo "... I2cSlave.obj"
 	@echo "... I2cSlave.i"
 	@echo "... I2cSlave.s"
-	@echo "... _display.obj"
-	@echo "... _display.i"
-	@echo "... _display.s"
 	@echo "... _i2cslave_main.obj"
 	@echo "... _i2cslave_main.i"
 	@echo "... _i2cslave_main.s"
@@ -2137,9 +1996,6 @@ help:
 	@echo "... home/foobar/pico-sdk/src/common/pico_util/queue.obj"
 	@echo "... home/foobar/pico-sdk/src/common/pico_util/queue.i"
 	@echo "... home/foobar/pico-sdk/src/common/pico_util/queue.s"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.obj"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.i"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.s"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.obj"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.i"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.s"
@@ -2160,15 +2016,9 @@ help:
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.i"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.s"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.obj"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.obj"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.i"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.s"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.obj"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.i"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.s"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.obj"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.i"
-	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.s"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.obj"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.i"
 	@echo "... home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.s"

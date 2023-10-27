@@ -51,7 +51,6 @@ add_executable(
     ${LF_MAIN_TARGET}
     lib/schedule.c
     _i2cslave_main.c
-    _display.c
     I2cSlave.c
 )
 
@@ -81,7 +80,6 @@ target_compile_definitions( ${LF_MAIN_TARGET} PUBLIC LF_UNTHREADED=1)
     )
 
 include("i2cslave.txt")
-include("robot-lib.txt")
 
 
 

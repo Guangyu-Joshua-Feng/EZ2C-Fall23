@@ -97,24 +97,10 @@ CMakeFiles/I2cSlave.dir/_i2cslave_main.c.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/I2cSlave.dir/_i2cslave_main.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_i2cslave_main.c -o CMakeFiles/I2cSlave.dir/_i2cslave_main.c.s
 
-CMakeFiles/I2cSlave.dir/_display.c.obj: CMakeFiles/I2cSlave.dir/flags.make
-CMakeFiles/I2cSlave.dir/_display.c.obj: ../_display.c
-CMakeFiles/I2cSlave.dir/_display.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/I2cSlave.dir/_display.c.obj"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/_display.c.obj -MF CMakeFiles/I2cSlave.dir/_display.c.obj.d -o CMakeFiles/I2cSlave.dir/_display.c.obj -c /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_display.c
-
-CMakeFiles/I2cSlave.dir/_display.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/I2cSlave.dir/_display.c.i"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_display.c > CMakeFiles/I2cSlave.dir/_display.c.i
-
-CMakeFiles/I2cSlave.dir/_display.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/I2cSlave.dir/_display.c.s"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/_display.c -o CMakeFiles/I2cSlave.dir/_display.c.s
-
 CMakeFiles/I2cSlave.dir/I2cSlave.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/I2cSlave.c.obj: ../I2cSlave.c
 CMakeFiles/I2cSlave.dir/I2cSlave.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/I2cSlave.dir/I2cSlave.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building C object CMakeFiles/I2cSlave.dir/I2cSlave.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/I2cSlave.c.obj -MF CMakeFiles/I2cSlave.dir/I2cSlave.c.obj.d -o CMakeFiles/I2cSlave.dir/I2cSlave.c.obj -c /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/I2cSlave.c
 
 CMakeFiles/I2cSlave.dir/I2cSlave.c.i: cmake_force
@@ -128,7 +114,7 @@ CMakeFiles/I2cSlave.dir/I2cSlave.c.s: cmake_force
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.i: cmake_force
@@ -142,7 +128,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.i: cmake_force
@@ -156,7 +142,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platform.c.i: cmake_force
@@ -170,7 +156,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_platform/platfo
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim.c.i: cmake_force
@@ -184,7 +170,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_claim/claim
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c.i: cmake_force
@@ -198,7 +184,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_sync/sync.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.i: cmake_force
@@ -211,7 +197,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq.c.s
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_handler_chain.S.i: cmake_force
@@ -225,7 +211,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_irq/irq_han
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj: /home/foobar/pico-sdk/src/common/pico_sync/sem.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.obj -c /home/foobar/pico-sdk/src/common/pico_sync/sem.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.i: cmake_force
@@ -239,7 +225,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/sem.c.s: cmake
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj: /home/foobar/pico-sdk/src/common/pico_sync/lock_core.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.obj -c /home/foobar/pico-sdk/src/common/pico_sync/lock_core.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.i: cmake_force
@@ -253,7 +239,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/lock_core.c.s:
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj: /home/foobar/pico-sdk/src/common/pico_sync/mutex.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.obj -c /home/foobar/pico-sdk/src/common/pico_sync/mutex.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.i: cmake_force
@@ -267,7 +253,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/mutex.c.s: cma
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj: /home/foobar/pico-sdk/src/common/pico_sync/critical_section.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.obj -c /home/foobar/pico-sdk/src/common/pico_sync/critical_section.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_section.c.i: cmake_force
@@ -281,7 +267,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_sync/critical_secti
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj: /home/foobar/pico-sdk/src/common/pico_time/time.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_15) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.obj -c /home/foobar/pico-sdk/src/common/pico_time/time.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.i: cmake_force
@@ -295,7 +281,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/time.c.s: cmak
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj: /home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_16) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.obj -c /home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper.c.i: cmake_force
@@ -309,7 +295,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_time/timeout_helper
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_17) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer.c.i: cmake_force
@@ -323,7 +309,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_timer/timer
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj: /home/foobar/pico-sdk/src/common/pico_util/datetime.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_18) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.obj -c /home/foobar/pico-sdk/src/common/pico_util/datetime.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.i: cmake_force
@@ -337,7 +323,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/datetime.c.s: 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj: /home/foobar/pico-sdk/src/common/pico_util/pheap.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_19) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.obj -c /home/foobar/pico-sdk/src/common/pico_util/pheap.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.i: cmake_force
@@ -351,7 +337,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/pheap.c.s: cma
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj: /home/foobar/pico-sdk/src/common/pico_util/queue.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_20) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.obj -c /home/foobar/pico-sdk/src/common/pico_util/queue.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.i: cmake_force
@@ -365,7 +351,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/common/pico_util/queue.c.s: cma
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_21) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c.i: cmake_force
@@ -379,7 +365,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_uart/uart.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_22) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/clocks.c.i: cmake_force
@@ -393,7 +379,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_clocks/cloc
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_23) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.i: cmake_force
@@ -407,7 +393,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pll/pll.c.s
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_24) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c.i: cmake_force
@@ -421,7 +407,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_vreg/vreg.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_25) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/watchdog.c.i: cmake_force
@@ -435,7 +421,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_watchdog/wa
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_26) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c.i: cmake_force
@@ -448,7 +434,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_xosc/xosc.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_27) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/divider.S.i: cmake_force
@@ -462,7 +448,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_divider/div
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_28) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime.c.i: cmake_force
@@ -476,7 +462,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_runtime/runtime
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_29) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c.i: cmake_force
@@ -489,7 +475,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_printf/printf.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_30) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops_aeabi.S.i: cmake_force
@@ -503,7 +489,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bit_ops/bit_ops
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_31) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom.c.i: cmake_force
@@ -516,7 +502,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_bootrom/bootrom
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_32) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider.S.i: cmake_force
@@ -529,7 +515,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_divider/divider
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_aeabi.S.i: cmake_force
@@ -543,7 +529,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_a
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_init_rom.c.i: cmake_force
@@ -557,7 +543,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_i
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_math.c.i: cmake_force
@@ -570,7 +556,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_m
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v1_rom_shim.S.i: cmake_force
@@ -583,7 +569,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_double/double_v
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_int64_ops_aeabi.S.i: cmake_force
@@ -596,7 +582,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_int64_ops/pico_
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_38) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aeabi.S.i: cmake_force
@@ -610,7 +596,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_aea
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_39) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_init_rom.c.i: cmake_force
@@ -624,7 +610,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_ini
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_40) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_math.c.i: cmake_force
@@ -637,7 +623,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_mat
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_41) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_rom_shim.S.i: cmake_force
@@ -651,7 +637,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_float/float_v1_
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_42) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_malloc.c.i: cmake_force
@@ -664,7 +650,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_malloc/pico_mal
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_43) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops_aeabi.S.i: cmake_force
@@ -677,7 +663,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_mem_ops/mem_ops
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj: /home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_44) "Building ASM object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj"
 	/usr/bin/arm-none-eabi-gcc $(ASM_DEFINES) $(ASM_INCLUDES) $(ASM_FLAGS) -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.obj   -c /home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/crt0.S.i: cmake_force
@@ -691,7 +677,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj: /home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building CXX object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_45) "Building CXX object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj"
 	/usr/bin/arm-none-eabi-g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/new_delete.cpp.i: cmake_force
@@ -705,7 +691,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/n
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_46) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/binary_info.c.i: cmake_force
@@ -719,7 +705,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_standard_link/b
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_47) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.i: cmake_force
@@ -733,7 +719,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio/stdio.c.s
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_48) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdio_uart.c.i: cmake_force
@@ -747,7 +733,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/stdi
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_49) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset_interface.c.i: cmake_force
@@ -761,7 +747,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/reset
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_50) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb.c.i: cmake_force
@@ -775,7 +761,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_51) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio_usb_descriptors.c.i: cmake_force
@@ -789,7 +775,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/stdio
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_52) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/unique_id.c.i: cmake_force
@@ -803,7 +789,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_unique_id/uniqu
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_53) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash.c.i: cmake_force
@@ -817,7 +803,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_flash/flash
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_54) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/dcd_rp2040.c.i: cmake_force
@@ -831,7 +817,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberryp
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_55) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberrypi/rp2040/rp2040_usb.c.i: cmake_force
@@ -845,7 +831,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/portable/raspberryp
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_56) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.i: cmake_force
@@ -859,7 +845,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd.c.s: cm
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_57) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control.c.i: cmake_force
@@ -873,7 +859,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/device/usbd_control
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_58) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_device.c.i: cmake_force
@@ -887,7 +873,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/audio/audio_d
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_59) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_device.c.i: cmake_force
@@ -901,7 +887,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/cdc/cdc_devic
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_60) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_device.c.i: cmake_force
@@ -915,7 +901,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_devic
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_61) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_device.c.i: cmake_force
@@ -929,7 +915,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/dfu/dfu_rt_de
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_62) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_device.c.i: cmake_force
@@ -943,7 +929,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/hid/hid_devic
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_63) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_device.c.i: cmake_force
@@ -957,7 +943,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/midi/midi_dev
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_64) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_device.c.i: cmake_force
@@ -971,7 +957,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/msc/msc_devic
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_65) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis_device.c.i: cmake_force
@@ -985,7 +971,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ecm_rndis
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_66) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_device.c.i: cmake_force
@@ -999,7 +985,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/net/ncm_devic
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_67) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc_device.c.i: cmake_force
@@ -1013,7 +999,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/usbtmc/usbtmc
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_68) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor_device.c.i: cmake_force
@@ -1027,7 +1013,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/vendor/vendor
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_69) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_device.c.i: cmake_force
@@ -1041,7 +1027,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/class/video/video_d
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/tusb.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_70) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/tusb.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.i: cmake_force
@@ -1055,7 +1041,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/tusb.c.s: cmake_for
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: /home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_71) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.obj -c /home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.i: cmake_force
@@ -1069,7 +1055,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/lib/tinyusb/src/common/tusb_fifo.c.
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_72) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.i: cmake_force
@@ -1083,7 +1069,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_73) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.i: cmake_force
@@ -1097,7 +1083,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multi
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_74) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.i: cmake_force
@@ -1111,7 +1097,7 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.s
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj: CMakeFiles/I2cSlave.dir/flags.make
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj: /home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_75) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj -c /home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c
 
 CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.i: cmake_force
@@ -1122,53 +1108,10 @@ CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_s
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.s"
 	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.s
 
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj: CMakeFiles/I2cSlave.dir/flags.make
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_77) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c > CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.i
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.s
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj: CMakeFiles/I2cSlave.dir/flags.make
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_78) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c > CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.i
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.s
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj: CMakeFiles/I2cSlave.dir/flags.make
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj: /home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj: CMakeFiles/I2cSlave.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_79) "Building C object CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -MD -MT CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj -MF CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj.d -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj -c /home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing C source to CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -E /home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c > CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.i
-
-CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling C source to assembly CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s"
-	/usr/bin/arm-none-eabi-gcc $(C_DEFINES) $(C_INCLUDES) $(C_FLAGS) -S /home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c -o CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.s
-
 # Object files for target I2cSlave
 I2cSlave_OBJECTS = \
 "CMakeFiles/I2cSlave.dir/lib/schedule.c.obj" \
 "CMakeFiles/I2cSlave.dir/_i2cslave_main.c.obj" \
-"CMakeFiles/I2cSlave.dir/_display.c.obj" \
 "CMakeFiles/I2cSlave.dir/I2cSlave.c.obj" \
 "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj" \
 "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj" \
@@ -1241,17 +1184,13 @@ I2cSlave_OBJECTS = \
 "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_fix/rp2040_usb_device_enumeration/rp2040_usb_device_enumeration.c.obj" \
 "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj" \
 "CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj" \
-"CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj" \
-"CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj" \
-"CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj" \
-"CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj"
+"CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj"
 
 # External object files for target I2cSlave
 I2cSlave_EXTERNAL_OBJECTS =
 
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/lib/schedule.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/_i2cslave_main.c.obj
-I2cSlave.elf: CMakeFiles/I2cSlave.dir/_display.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/I2cSlave.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_stdlib/stdlib.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_gpio/gpio.c.obj
@@ -1325,15 +1264,11 @@ I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_f
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_multicore/multicore.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_i2c/i2c.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/pico_i2c_slave/i2c_slave.c.obj
-I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_adc/adc.c.obj
-I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_pio/pio.c.obj
-I2cSlave.elf: CMakeFiles/I2cSlave.dir/home/foobar/pico-sdk/src/rp2_common/hardware_spi/spi.c.obj
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/build.make
 I2cSlave.elf: core/libcore.a
-I2cSlave.elf: robot/librobot.a
 I2cSlave.elf: pico-sdk/src/rp2_common/boot_stage2/bs2_default_padded_checksummed.S
 I2cSlave.elf: CMakeFiles/I2cSlave.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_80) "Linking CXX executable I2cSlave.elf"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_76) "Linking CXX executable I2cSlave.elf"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/I2cSlave.dir/link.txt --verbose=$(VERBOSE)
 	/usr/bin/arm-none-eabi-objcopy -Oihex /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/I2cSlave.elf I2cSlave.hex
 	/usr/bin/arm-none-eabi-objcopy -Obinary /home/foobar/EZ2C-Fall23/lf-3pi/src-gen/I2cSlave/build/I2cSlave.elf I2cSlave.bin

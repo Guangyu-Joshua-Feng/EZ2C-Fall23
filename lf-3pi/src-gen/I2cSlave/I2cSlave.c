@@ -16,7 +16,6 @@ int main(void) {
    return lf_reactor_c_main(0, NULL);
 }
 void _lf_set_default_command_line_options() {}
-#include "_display.h"
 #include "_i2cslave_main.h"
 typedef enum {
     i2cslave_main,
@@ -26,7 +25,7 @@ typedef enum {
 environment_t envs[_num_enclaves];
 // 'Create' and initialize the environments in the program
 void _lf_create_environments() {
-    environment_init(&envs[i2cslave_main],i2cslave_main,_lf_number_of_workers,1,2,0,0,0,0,0,NULL);
+    environment_init(&envs[i2cslave_main],i2cslave_main,_lf_number_of_workers,1,1,0,0,0,0,0,NULL);
 }
 // Update the pointer argument to point to the beginning of the environment array
 // and return the size of that array
@@ -51,8 +50,6 @@ void _lf_initialize_trigger_objects() {
     SUPPRESS_UNUSED_WARNING(watchdog_number);
     _i2cslave_main_main_self_t* i2cslave_main_self[1];
     SUPPRESS_UNUSED_WARNING(i2cslave_main_self);
-    _display_self_t* i2cslave_display_self[1];
-    SUPPRESS_UNUSED_WARNING(i2cslave_display_self);
     // ***** Start initializing I2cSlave of class I2cSlave
     i2cslave_main_self[0] = new__i2cslave_main();
     i2cslave_main_self[0]->base.environment = &envs[i2cslave_main];
@@ -65,33 +62,13 @@ void _lf_initialize_trigger_objects() {
     } // End scoping.
     // Initiaizing timer I2cSlave.t.
     i2cslave_main_self[0]->_lf__t.offset = 0;
-    i2cslave_main_self[0]->_lf__t.period = MSEC(200);
+    i2cslave_main_self[0]->_lf__t.period = MSEC(500);
     // Associate timer with the environment of its parent
     envs[i2cslave_main].timer_triggers[timer_triggers_count[i2cslave_main]++] = &i2cslave_main_self[0]->_lf__t;
     i2cslave_main_self[0]->_lf__t.mode = NULL;
     
     i2cslave_main_self[0]->_lf__reaction_0.deadline = NEVER;
     i2cslave_main_self[0]->_lf__reaction_1.deadline = NEVER;
-    {
-        // ***** Start initializing I2cSlave.display of class Display
-        i2cslave_display_self[0] = new__display();
-        i2cslave_display_self[0]->base.environment = &envs[i2cslave_main];
-        bank_index = 0; SUPPRESS_UNUSED_WARNING(bank_index);
-        // width of -2 indicates that it is not a multiport.
-        i2cslave_display_self[0]->_lf_line0_width = -2;
-        // width of -2 indicates that it is not a multiport.
-        i2cslave_display_self[0]->_lf_line1_width = -2;
-        // width of -2 indicates that it is not a multiport.
-        i2cslave_display_self[0]->_lf_line2_width = -2;
-        // width of -2 indicates that it is not a multiport.
-        i2cslave_display_self[0]->_lf_line3_width = -2;
-        envs[i2cslave_main].startup_reactions[startup_reaction_count[i2cslave_main]++] = &i2cslave_display_self[0]->_lf__reaction_0;
-        SUPPRESS_UNUSED_WARNING(_lf_watchdog_count);
-    
-        i2cslave_display_self[0]->_lf__reaction_0.deadline = NEVER;
-        i2cslave_display_self[0]->_lf__reaction_1.deadline = NEVER;
-        //***** End initializing I2cSlave.display
-    }
     //***** End initializing I2cSlave
     // **** Start deferred initialize for I2cSlave
     {
@@ -113,45 +90,15 @@ void _lf_initialize_trigger_objects() {
         
         // ** End initialization for reaction 1 of I2cSlave
     
-        // **** Start deferred initialize for I2cSlave.display
-        {
-        
-            // Total number of outputs (single ports and multiport channels)
-            // produced by reaction_0 of I2cSlave.display.
-            i2cslave_display_self[0]->_lf__reaction_0.num_outputs = 0;
-            {
-                int count = 0; SUPPRESS_UNUSED_WARNING(count);
-            }
-            
-            // ** End initialization for reaction 0 of I2cSlave.display
-            // Total number of outputs (single ports and multiport channels)
-            // produced by reaction_1 of I2cSlave.display.
-            i2cslave_display_self[0]->_lf__reaction_1.num_outputs = 0;
-            {
-                int count = 0; SUPPRESS_UNUSED_WARNING(count);
-            }
-            
-            // ** End initialization for reaction 1 of I2cSlave.display
-        
-        }
-        // **** End of deferred initialize for I2cSlave.display
     }
     // **** End of deferred initialize for I2cSlave
     // **** Start non-nested deferred initialize for I2cSlave
     
     
     
-    // **** Start non-nested deferred initialize for I2cSlave.display
-    
-    
-    
-    
-    // **** End of non-nested deferred initialize for I2cSlave.display
     // **** End of non-nested deferred initialize for I2cSlave
     // Connect inputs and outputs for reactor I2cSlave.
-    // Connect inputs and outputs for reactor I2cSlave.display.
-    {
-    }
+
     
     // Set reaction priorities for ReactorInstance I2cSlave
     {
@@ -163,19 +110,6 @@ void _lf_initialize_trigger_objects() {
         // index is the OR of level 1 and 
         // deadline 9223372036854775807 shifted left 16 bits.
         i2cslave_main_self[0]->_lf__reaction_1.index = 0xffffffffffff0001LL;
-    
-        // Set reaction priorities for ReactorInstance I2cSlave.display
-        {
-            i2cslave_display_self[0]->_lf__reaction_0.chain_id = 1;
-            // index is the OR of level 0 and 
-            // deadline 9223372036854775807 shifted left 16 bits.
-            i2cslave_display_self[0]->_lf__reaction_0.index = 0xffffffffffff0000LL;
-            i2cslave_display_self[0]->_lf__reaction_1.chain_id = 1;
-            // index is the OR of level 1 and 
-            // deadline 9223372036854775807 shifted left 16 bits.
-            i2cslave_display_self[0]->_lf__reaction_1.index = 0xffffffffffff0001LL;
-        }
-    
     }
     
 
