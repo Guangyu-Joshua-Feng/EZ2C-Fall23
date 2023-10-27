@@ -3,20 +3,99 @@ target C {
     name: "rp2040",
     board: "pololu_3pi_2040_robot"
   },
-  threading: false
+  threading: false,
+  cmake-include: ["i2cslave.txt"]
 }
+
+import Display from "lib/Display.lf"
 
 preamble {=
   #include <stdio.h>
   #include <pico/stdlib.h>
   #include <hardware/gpio.h>
+  #include <pico/binary_info.h>
   #include <hardware/i2c.h>
+  #include <pico/i2c_slave.h>
 
   #define ADDR 0x55
+  #define PICO_DEFAULT_I2C_SDA_PIN 4
+  #define PICO_DEFAULT_I2C_SCL_PIN 5
+  #define I2C_MASTER_SDA_PIN  6
+  #define I2C_MASTER_SCL_PIN  7
 =}
 
 main reactor {
-  timer t(0, 250 ms)
+
+  preamble {=
+  static bool receive;
+
+  static struct
+{
+    uint8_t mem[256];
+    uint8_t mem_address;
+    bool mem_address_written;
+} context;
+
+  static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
+    switch (event) {
+    case I2C_SLAVE_RECEIVE: // master has written some data
+        if (!context.mem_address_written) {
+            // writes always start with the memory address
+            context.mem_address = i2c_read_byte_raw(i2c);
+            context.mem_address_written = true;
+        } else {
+            // save into memory
+            context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
+            context.mem_address++;
+        }
+        receive = true;
+        break;
+    case I2C_SLAVE_REQUEST: // master is requesting data
+        // load from memory
+        i2c_write_byte_raw(i2c, context.mem[context.mem_address]);
+        context.mem_address++;
+        receive = true;
+        break;
+    case I2C_SLAVE_FINISH: // master has signalled Stop / Restart
+        context.mem_address_written = false;
+        receive = true;
+        break;
+    default:
+        break;
+    }
+  }
+
+  static void setup_master() {
+    
+    gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
+    gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
+    gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+    gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+
+    i2c_init(i2c0, 100 * 1000);
+    // bi_decl(bi_2pins_with_func(PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
+  }
+  static void setup_slave() {
+
+    gpio_init(I2C_MASTER_SDA_PIN);
+    gpio_init(I2C_MASTER_SCL_PIN);
+    gpio_set_function(I2C_MASTER_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(I2C_MASTER_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(I2C_MASTER_SDA_PIN);
+    gpio_pull_up(I2C_MASTER_SCL_PIN);
+      
+    i2c_init(i2c1, 100 * 1000);
+    // i2c_set_slave_mode(i2c1, true, ADDR);
+    i2c_slave_init(i2c1,ADDR,&i2c_slave_handler);  
+  }
+  
+  =}
+
+  display = new Display()
+
+  timer t(0, 200 ms)
   state led_on: bool = false
 
   reaction(startup) {=
@@ -25,21 +104,21 @@ main reactor {
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
 
     // I2C initialization
-    i2c_init(i2c_default, 400 * 1000);
-    i2c_set_slave_mode(i2c_default, true, ADDR);
+    setup_master();
+    setup_slave();
 
-    gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
-    gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
-    gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
-    gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
   =}
 
+
   reaction(t) {=
-    char c;
-    i2c_read_raw_blocking(i2c_default, &c, 1);
-    if (c == 'h') {
+    char c = 'a';
+    int sent;
+    sent = i2c_write_blocking(i2c0, ADDR, &c, 2, false);
+    printf("%d",sent);
+    if (receive){
       self->led_on = !self->led_on;
       gpio_put(PICO_DEFAULT_LED_PIN, !self->led_on);
     }
   =}
+
 }

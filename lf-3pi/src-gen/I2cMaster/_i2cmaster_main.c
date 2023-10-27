@@ -8,6 +8,11 @@ void _i2cmaster_mainreaction_function_0(void* instance_args) {
     _i2cmaster_main_main_self_t* self = (_i2cmaster_main_main_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     
     #line 28 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    gpio_init(24);
+    gpio_set_dir(24, GPIO_OUT);
+    // gpio_put(3,true);
+    gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
+    gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
     i2c_init(i2c_default, 400 * 1000);
     gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
@@ -21,9 +26,13 @@ void _i2cmaster_mainreaction_function_0(void* instance_args) {
 void _i2cmaster_mainreaction_function_1(void* instance_args) {
     _i2cmaster_main_main_self_t* self = (_i2cmaster_main_main_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     
-    #line 38 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
-    char c = 'h';
-    i2c_write_blocking(i2c_default, ADDR, &c, 1, false);
+    #line 43 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    char c = 'a';
+    int count;
+    count = i2c_write_blocking(i2c_default, ADDR, &c, 1, false);
+    self->led_on = !self->led_on;
+    gpio_put(24, !self->led_on);
+    printf("Count:%d.\n",count);
 }
 #include "include/api/set_undef.h"
 _i2cmaster_main_main_self_t* new__i2cmaster_main() {
@@ -42,19 +51,19 @@ _i2cmaster_main_main_self_t* new__i2cmaster_main() {
     self->_lf__reaction_0.name = "?";
     #line 27 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_0.mode = NULL;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.number = 1;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.function = _i2cmaster_mainreaction_function_1;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.self = self;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.deadline_violation_handler = NULL;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.STP_handler = NULL;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.name = "?";
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__reaction_1.mode = NULL;
     #line 24 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     self->_lf__t.last = NULL;

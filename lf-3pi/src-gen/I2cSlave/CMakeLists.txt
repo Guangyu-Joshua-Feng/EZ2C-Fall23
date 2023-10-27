@@ -26,6 +26,8 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+cmake_policy(SET CMP0023 OLD)  # This causes deprecation warnings
+
 set(DEFAULT_BUILD_TYPE Release)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE ${DEFAULT_BUILD_TYPE} CACHE STRING "Choose the type of build." FORCE)
@@ -36,16 +38,6 @@ set(CMAKE_INSTALL_MESSAGE NEVER)
 
 set(CMAKE_SYSTEM_NAME Rp2040)
 
-# Set default values for build parameters
-if (NOT DEFINED LF_REACTION_GRAPH_BREADTH)
-    set(LF_REACTION_GRAPH_BREADTH 1)
-endif()
-if (NOT DEFINED LF_THREADED AND NOT DEFINED LF_UNTHREADED)
-    set(LF_UNTHREADED 1)
-endif()
-if (NOT DEFINED LOG_LEVEL)
-    set(LOG_LEVEL 2)
-endif()
 pico_sdk_init()
 
 add_subdirectory(core)
@@ -59,6 +51,7 @@ add_executable(
     ${LF_MAIN_TARGET}
     lib/schedule.c
     _i2cslave_main.c
+    _display.c
     I2cSlave.c
 )
 
@@ -87,6 +80,8 @@ target_compile_definitions( ${LF_MAIN_TARGET} PUBLIC LF_UNTHREADED=1)
         RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 
+include("i2cslave.txt")
+include("robot-lib.txt")
 
 
 

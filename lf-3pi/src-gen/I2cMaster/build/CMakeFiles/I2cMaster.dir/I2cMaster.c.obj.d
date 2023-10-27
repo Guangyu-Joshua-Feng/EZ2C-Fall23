@@ -49,6 +49,7 @@ CMakeFiles/I2cMaster.dir/I2cMaster.c.obj: \
  /home/foobar/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/uart.h \
  /home/foobar/pico-sdk/src/rp2040/hardware_regs/include/hardware/regs/dreq.h \
  /home/foobar/pico-sdk/src/rp2_common/pico_stdio_uart/include/pico/stdio_uart.h \
+ /home/foobar/pico-sdk/src/rp2_common/pico_stdio_usb/include/pico/stdio_usb.h \
  /home/foobar/pico-sdk/src/common/pico_sync/include/pico/sync.h \
  /home/foobar/pico-sdk/src/common/pico_sync/include/pico/sem.h \
  /home/foobar/pico-sdk/src/common/pico_sync/include/pico/lock_core.h \

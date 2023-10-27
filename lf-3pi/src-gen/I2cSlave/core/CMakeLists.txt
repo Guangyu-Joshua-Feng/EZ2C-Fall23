@@ -74,12 +74,10 @@ if(DEFINED _LF_CLOCK_SYNC_ON)
   endif()
 endif()
 
-# Link with thread library, unless if we are targeting the Zephyr RTOS
+# Link with thread library
 if(DEFINED LF_THREADED OR DEFINED LF_TRACE)
-    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Zephyr")
-        find_package(Threads REQUIRED)
-        target_link_libraries(core PUBLIC Threads::Threads)
-    endif()
+    find_package(Threads REQUIRED)
+    target_link_libraries(core PUBLIC Threads::Threads)
 endif()
 
 # Macro for translating a command-line argument into compile definition for

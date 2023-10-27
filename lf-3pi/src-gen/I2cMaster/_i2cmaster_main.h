@@ -21,7 +21,7 @@ typedef struct {
     bool led_on;
     #line 27 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     reaction_t _lf__reaction_0;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
+    #line 42 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     reaction_t _lf__reaction_1;
     #line 24 "/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf"
     trigger_t _lf__t;

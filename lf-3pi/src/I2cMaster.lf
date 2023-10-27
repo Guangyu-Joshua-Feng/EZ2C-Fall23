@@ -25,6 +25,11 @@ main reactor {
   state led_on: bool = false
 
   reaction(startup) {=
+    gpio_init(24);
+    gpio_set_dir(24, GPIO_OUT);
+    // gpio_put(3,true);
+    gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
+    gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
     i2c_init(i2c_default, 400 * 1000);
     gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
@@ -35,7 +40,11 @@ main reactor {
   =}
 
   reaction(t) {=
-    char c = 'h';
-    i2c_write_blocking(i2c_default, ADDR, &c, 1, false);
+    char c = 'a';
+    int count;
+    count = i2c_write_blocking(i2c_default, ADDR, &c, 1, false);
+    self->led_on = !self->led_on;
+    gpio_put(24, !self->led_on);
+    printf("Count:%d.\n",count);
   =}
 }
