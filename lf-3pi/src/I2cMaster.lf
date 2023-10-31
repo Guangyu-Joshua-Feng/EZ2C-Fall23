@@ -16,7 +16,9 @@ preamble {=
   #include <pico/i2c_slave.h>
   #include <string.h>
 
-  #define ADDR 0x55
+  #define ADDR1 0x55
+  #define ADDR2 0x56
+  #define ADDR3 0x57
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
 =}
@@ -30,29 +32,43 @@ main reactor {
         gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
         gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
         gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
-        i2c_init(i2c0, 100 * 1000);
+        i2c_init(i2c0, 100);
         // bi_decl(bi_2pins_with_func(PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
       }
   =}
 
-  timer t(0, 1000 ms)
+  timer t1(0,2000 ms)
+  timer t2(1000 ms,2000 ms)
+
 
   reaction(startup) {=
     // I2C initialization
     setup_master();
   =}
 
-  reaction(t) {=
+  reaction(t1) {=
       char msg[32] = "Master Sent!";
       uint8_t buf[32];
-      uint8_t receive[32];
       buf[0] = 0;
       memcpy(buf+1,msg,strlen(msg));
-      int a = i2c_write_blocking(i2c0, ADDR, buf, 1+strlen(msg), false);
-      // printf("%d\n", a);
-      i2c_write_blocking(i2c0, ADDR, buf, 1, true);
-      i2c_read_blocking(i2c0, ADDR, receive, strlen(msg), false);
-      receive[strlen(msg)] = '\0';
-      printf("%s\n",receive);
+
+      int a = i2c_write_blocking(i2c0, ADDR1, buf, 1+strlen(msg), true);
+      printf("A: %d\n",a);
+      int b = i2c_write_blocking(i2c0, ADDR2, buf, 1+strlen(msg), false);
+      printf("B: %d\n",b);
+      int c = i2c_write_blocking(i2c0, ADDR3, buf, 1+strlen(msg), false);
+      printf("C: %d\n",c);
+
   =}
+
+// reaction(t2) {=
+//   uint8_t buf[1] = {0};
+//   uint8_t receive[32];
+//   i2c_write_blocking(i2c0, ADDR1, buf, 1, true);
+//   i2c_read_blocking(i2c0, ADDR1, receive, strlen(receive), true);
+//   receive[strlen(receive)] = '\0';
+//   printf("%s\n",receive);
+
+// =}
+
 }

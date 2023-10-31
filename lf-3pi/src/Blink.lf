@@ -16,9 +16,6 @@ preamble {=
   #include <stdio.h>
   #include <pico/stdlib.h>
   #include <hardware/gpio.h>
-
-  #define SDA 7
-  #define SCL 24
 =}
 
 main reactor {
