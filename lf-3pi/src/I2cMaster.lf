@@ -61,14 +61,13 @@ main reactor {
 
   =}
 
-// reaction(t2) {=
-//   uint8_t buf[1] = {0};
-//   uint8_t receive[32];
-//   i2c_write_blocking(i2c0, ADDR1, buf, 1, true);
-//   i2c_read_blocking(i2c0, ADDR1, receive, strlen(receive), true);
-//   receive[strlen(receive)] = '\0';
-//   printf("%s\n",receive);
-
-// =}
+reaction(t2) {=
+    uint8_t buf[1] = {0};
+    uint8_t receive[32];
+    i2c_write_blocking(i2c0, ADDR1, buf, 1, false);
+    i2c_read_blocking(i2c0, ADDR1, receive, 12, false);
+    receive[strlen(receive)] = '\0';
+    printf("%s\n",receive);
+=}
 
 }
