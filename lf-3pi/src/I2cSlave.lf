@@ -27,7 +27,8 @@ preamble {=
 
 main reactor {
   preamble {=
-    static bool led;
+    static bool led = false;
+
     static struct {
       uint8_t mem[256];
       uint8_t mem_address;
@@ -46,7 +47,7 @@ main reactor {
         case COMMAND_ASSIGN:
           // check if this command is for me
           pico_get_unique_board_id(&my_id);
-          if (memcmp(&my_id, context.mem + 1, sizeof(my_id) != 0)) {
+          if (memcmp(&my_id, context.mem + 1, sizeof(my_id)) != 0) {
             // if id doesn't match, terminate
             return;
           }
@@ -67,14 +68,13 @@ main reactor {
     }
 
     static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
+      static bool recvd = false;
       switch (event) {
       case I2C_SLAVE_RECEIVE: // master has written some data
           // save into memory
+          recvd = true;
           context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
           context.mem_address++;
-
-          led = !led;
-          gpio_put(16, !led);
           break;
 
       case I2C_SLAVE_REQUEST: // master is requesting data
@@ -85,7 +85,11 @@ main reactor {
 
       case I2C_SLAVE_FINISH: // master has signalled Stop / Restart
           context.mem_address = 0;
-          process_command();
+          led = true;
+          if (recvd) {
+            recvd = false;
+            process_command();
+          }
           break;
 
       default:
@@ -110,4 +114,14 @@ main reactor {
     gpio_init(16);
     gpio_set_dir(16, GPIO_OUT);
   =}
+
+  timer t(0,1s);
+  state LED: bool;
+  reaction (t){=
+    if(led){
+    self->LED = !self->LED;
+    gpio_put(16, !self->LED);
+    }
+  =}
+
 }

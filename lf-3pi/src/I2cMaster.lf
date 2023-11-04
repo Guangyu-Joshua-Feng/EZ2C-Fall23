@@ -54,12 +54,13 @@ main reactor {
       int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
       printf("bytes sent: %d\n", bytes_sent);
       
-      uint8_t recv[32];
+      uint8_t recv[32] = {0};
       int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
       printf("slave sent back %d bytes: %s\n", bytes_read, recv);
     }
 
     static void assign(pico_unique_board_id_t id) {
+      printf("assigning address for id %llx\n", *(uint64_t *)&id);
       uint8_t addr = next_slave_addr++;
       printf("Assigning %x as the new slave address\n", addr);
       
@@ -85,11 +86,14 @@ main reactor {
         int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
         printf("Discover unique id size returned %d\n", bytes_recvd);
         assign(id);
+        return true;
+      } else {
+        return false;
       }
     }
   =}
 
-  state initial_discover_done: bool
+  state discover_done: bool
   timer t(0, 1 s);
 
   reaction(startup) {=
@@ -114,10 +118,10 @@ reaction(t0) -> button {=
 =}
 
   reaction(button) {=
-    printf("here\n");
-    self->initial_discover_done = false;
-    while (!self->initial_discover_done) {
-      self->initial_discover_done = !discover();
+    printf("button pressed\n");
+    self->discover_done = false;
+    while (!self->discover_done) {
+      self->discover_done = !discover();
     }
 
     self-> LED = !self-> LED;
