@@ -3,7 +3,8 @@ target C {
     name: "rp2040",
     board: "pololu_3pi_2040_robot"
   },
-  threading: false
+  threading: false,
+  cmake-include: ["i2cslave.txt"]
 }
 
 preamble {=
@@ -14,7 +15,7 @@ preamble {=
   #include <pico/unique_id.h>
   #include <string.h>
 
-  #define I2C_DEFAULT_SLAVE_ADDR 0x0
+  #define I2C_DEFAULT_SLAVE_ADDR 0x55
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
 
@@ -44,17 +45,18 @@ main reactor {
       i2c_init(i2c0, 100);
     }
 
-    static bool discover() {
-      uint8_t command = COMMAND_DISCOVER;
-      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
-      printf("Discover bytes sent: %d\n", bytes_sent);
-      if (bytes_sent == 1) {
-        // at least one slave device got the command
-        pico_unique_board_id_t id;
-        int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
-        printf("Discover unique id size returned %d\n", bytes_recvd);
-        assign(id);
-      }
+    static void echo(uint8_t slave_addr) {
+      static const char *const msg = "Master Sent!";
+      uint8_t buf[32];
+      buf[0] = COMMAND_ECHO;
+      memcpy(buf, msg, strlen(msg) + 1);
+      printf("echoing slave at address %x\n", slave_addr);
+      int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
+      printf("bytes sent: %d\n", bytes_sent);
+      
+      uint8_t recv[32];
+      int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
+      printf("slave sent back %d bytes: %s\n", bytes_read, recv);
     }
 
     static void assign(pico_unique_board_id_t id) {
@@ -70,21 +72,20 @@ main reactor {
       int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, buf, sizeof(buf), false);
       printf("Assignment command bytes sent: %d\n", bytes_sent);
 
-      ping(addr);
+      echo(addr);
     }
 
-    static void ping(uint8_t slave_addr) {
-      static const char *const msg = "Master Sent!";
-      uint8_t buf[32];
-      buf[0] = COMMAND_ECHO;
-      memcpy(buf, msg, strlen(msg) + 1);
-      printf("pinging slave at address %x\n", slave_addr);
-      int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
-      printf("bytes sent: %d\n", bytes_sent);
-      
-      uint8_t recv[32];
-      int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
-      printf("slave sent back %d bytes: %s\n", bytes_read, recv);
+    static bool discover() {
+      uint8_t command = COMMAND_DISCOVER;
+      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
+      printf("Discover bytes sent: %d\n", bytes_sent);
+      if (bytes_sent == 1) {
+        // at least one slave device got the command
+        pico_unique_board_id_t id;
+        int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
+        printf("Discover unique id size returned %d\n", bytes_recvd);
+        assign(id);
+      }
     }
   =}
 
@@ -94,16 +95,32 @@ main reactor {
   reaction(startup) {=
     setup_master();
     next_slave_addr = I2C_DEFAULT_SLAVE_ADDR + 1;
-    self->initial_discover_done = false;
-    while (!self->initial_discover_done) {
-      self->initial_discover_done = !discover();
-    }
+
+    gpio_init(0);
+    gpio_set_dir(0, GPIO_IN);
+    gpio_init(16);
+    gpio_set_dir(16, GPIO_OUT);
   =}
 
-  reaction(t) {=
+timer t0(0, 10 ms)
+logical action button;
+state LED: bool;
+
+reaction(t0) -> button {=
+  // Scan button press
+  if (gpio_get(0)) {
+    lf_schedule(button,0);
+  }
+=}
+
+  reaction(button) {=
+    printf("here\n");
     self->initial_discover_done = false;
     while (!self->initial_discover_done) {
       self->initial_discover_done = !discover();
     }
+
+    self-> LED = !self-> LED;
+    gpio_put(16, !self-> LED);
   =}
 }

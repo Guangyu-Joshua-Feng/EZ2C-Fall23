@@ -16,7 +16,7 @@ preamble {=
   #include <pico/i2c_slave.h>
   #include <string.h>
 
-  #define I2C_DEFAULT_SLAVE_ADDR 0x0
+  #define I2C_DEFAULT_SLAVE_ADDR 0x55
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
 
@@ -32,6 +32,39 @@ main reactor {
       uint8_t mem[256];
       uint8_t mem_address;
     } context;
+
+    static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
+
+    static void process_command() {
+      pico_unique_board_id_t my_id;
+      switch (context.mem[0]) {
+        case COMMAND_DISCOVER:
+          // get id ready for master to read
+          pico_get_unique_board_id(context.mem);
+          break;
+
+        case COMMAND_ASSIGN:
+          // check if this command is for me
+          pico_get_unique_board_id(&my_id);
+          if (memcmp(&my_id, context.mem + 1, sizeof(my_id) != 0)) {
+            // if id doesn't match, terminate
+            return;
+          }
+
+          // reassign my address
+          uint8_t addr = context.mem[1 + sizeof(my_id)];
+          i2c_slave_init(i2c0, addr, &i2c_slave_handler);
+          break;
+
+        case COMMAND_ECHO:
+          // move data to the beginning of mem for master to read
+          memmove(context.mem, context.mem + 1, strlen(context.mem + 1));
+          break;
+
+        default:
+          break;
+      }
+    }
 
     static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
       switch (event) {
@@ -56,37 +89,6 @@ main reactor {
           break;
 
       default:
-          break;
-      }
-    }
-
-    static void process_command() {
-      switch (context.mem[0]) {
-        case COMMAND_DISCOVER:
-          // get id ready for master to read
-          pico_get_unique_board_id(context.mem);
-          break;
-
-        case COMMAND_ASSIGN:
-          // check if this command is for me
-          pico_unique_board_id_t my_id;
-          pico_get_unique_board_id(&my_id);
-          if (memcmp(&my_id, context.mem + 1, sizeof(my_id) != 0)) {
-            // if id doesn't match, terminate
-            return;
-          }
-
-          // reassign my address
-          uint8_t addr = context.mem[1 + sizeof(my_id)];
-          i2c_slave_init(i2c0, addr, &i2c_slave_handler);
-          break;
-
-        case COMMAND_ECHO:
-          // move data to the beginning of mem for master to read
-          memmove(context.mem, context.mem + 1, strlen(context.mem + 1));
-          break;
-
-        default:
           break;
       }
     }
