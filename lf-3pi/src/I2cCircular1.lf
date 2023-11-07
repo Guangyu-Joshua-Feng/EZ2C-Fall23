@@ -19,7 +19,6 @@ preamble {=
   #define ADDR1 0x55
   #define ADDR2 0x56
   #define ADDR3 0x57
-  #define ADDR4 0x58
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
 =}
@@ -46,9 +45,6 @@ main reactor {
               // save into memory
               context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
               context.mem_address++;
-
-              led = !led;
-              gpio_put(16, !led);
           }
           break;
       case I2C_SLAVE_REQUEST: // master is requesting data
@@ -91,57 +87,49 @@ main reactor {
     }
   =}
 
-  timer t0(0, 10 ms)
+  timer t0(0, 1000 ms)
 
-  state master : bool = false;
-  logical action send;
-  logical action feedback;
+  // state master : bool = false;
+  // logical action send;
+  // logical action feedback;
 
   reaction(startup) {=
     // I2C initialization
     init();
-    run_as_slave();
-    GPIO_set();
   =}
 
-  reaction(t0)-> send {=
-    // Scan button press
-    if (!self->master && gpio_get(15)) {
-      self->master = true;
-      run_as_master();
-      lf_schedule(send,0);
-    }
-  =}
+  // reaction(t0)-> send {=
+  //   // Scan button press
+  //   if (!self->master && gpio_get(15)) {
+  //     self->master = true;
+  //     run_as_master();
+  //     lf_schedule(send,0);
+  //   }
+  // =}
 
-    reaction(t0)-> feedback {=
-      // Scan button press
-      if (flag) {
-        lf_schedule(feedback,MSEC(1000));
-        flag = false;
-      }
-    =}
+  //   reaction(t0)-> feedback {=
+  //     // Scan button press
+  //     if (flag) {
+  //       lf_schedule(feedback,MSEC(1000));
+  //       flag = false;
+  //     }
+  //   =}
 
-  reaction(send) {=
+  reaction(t0) {=
     static const char *const msg = "ADDR1 SENT, ADDR2 RECEIVE";
-    if (self->master) {
+    // if (self->master) {
       uint8_t buf[32];
       buf[0] = 0;
       memcpy(buf + 1, msg, strlen(msg));
-      int written = i2c_write_blocking(i2c0, ADDR2, buf, 1+strlen(msg), false);
-      printf("bytes written: %d\n", written);
-      self->master = false;
-      run_as_slave();
-    }
+      int written1 = i2c_write_blocking(i2c0, ADDR1, buf, 1+strlen(msg), false);
+      printf("bytes written: %d\n", written1);
+      int written2 = i2c_write_blocking(i2c0, ADDR2, buf, 1+strlen(msg), false);
+      printf("bytes written: %d\n", written2);
+      int written3 = i2c_write_blocking(i2c0, ADDR3, buf, 1+strlen(msg), false);
+      printf("bytes written: %d\n", written3);
+      // self->master = false;
+    // }
   =}
 
-  // reaction(feedback) {=
-  //   run_as_master();
-  //   uint8_t buf[1] = {0};
-  //   uint8_t receive[32];
-  //   i2c_write_blocking(i2c0, ADDR1, buf, 1, false);
-  //   i2c_read_blocking(i2c0, ADDR1, receive, 25, false);
-  //   receive[strlen(receive)] = '\0';
-  //   printf("%s\n",receive);
-  //   run_as_slave();
-  // =}
+
 }
