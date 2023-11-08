@@ -123,8 +123,5 @@ reaction(t0) -> button {=
     while (!self->discover_done) {
       self->discover_done = !discover();
     }
-
-    self-> LED = !self-> LED;
-    gpio_put(16, !self-> LED);
   =}
 }
