@@ -1,0 +1,237 @@
+target C {
+  platform: {
+    name: "rp2040",
+    board: "pololu_3pi_2040_robot"
+  },
+  threading: false,
+  cmake-include: ["i2cslave.txt"]
+}
+
+preamble {=
+  #include <stdio.h>
+  #include <pico/stdlib.h>
+  #include <hardware/gpio.h>
+  #include <hardware/i2c.h>
+  #include <pico/unique_id.h>
+  #include <string.h>
+
+  #define I2C_DEFAULT_SLAVE_ADDR 0x55
+  #define I2C_FIRST_SLAVE_ADDR 0x56
+  #define PICO_DEFAULT_I2C_SDA_PIN 4
+  #define PICO_DEFAULT_I2C_SCL_PIN 5
+
+  #define COMMAND_DISCOVER 0
+  #define COMMAND_ASSIGN 1
+  #define COMMAND_ECHO 2
+=}
+
+/**
+ * master: 1. boardcast discover command 2. read response, which should contain the unique
+ * identifier of a device whose address is yet to be assigned, or fail if no device is waiting to be
+ * discovered 3. if at least one response is read, go to 4; otherwise, go to X 4. get the next
+ * unused slave address, increment counter 5. send address reassignment command + unique identifier
+ * + new address for the slave; only the slave with the right unique identifier should change their
+ * address accordingly 6. go to 1 X. done
+ */
+main reactor {
+  preamble {=
+
+    //Definition of linked list node
+    typedef struct node_t{
+      uint8_t I2c_addr;
+      pico_unique_board_id_t unique_ID;
+      struct node_t* next;
+    }node_t;
+
+    // Linked list for I2c address
+    static node_t* I2c_list = NULL;
+
+    // Linked list operation function
+
+    // Iterate over the linked list, find the first free space and insert node to linked list
+    // void list_insert (pico_unique_board_id_t id){
+    //     node_t* current = I2c_list;
+    //     while (current->next != NULL && current->next->I2c_addr!= 0){
+    //       current = current->next;
+    //     }
+    //     if (current->next == NULL){
+    //       current->next = (node_t*)malloc(sizeof(node_t));
+    //     }
+    //     current->next->I2c_addr = current -> I2c_addr++;
+    //     current->next->unique_ID = id;
+    //   }
+    
+      static uint8_t list_insert (pico_unique_board_id_t id){
+          if(I2c_list != NULL && I2c_list->I2c_addr == I2C_FIRST_SLAVE_ADDR){
+            node_t* prev_node = I2c_list;
+            node_t* curr_node = I2c_list->next;
+            while(curr_node != NULL && prev_node->I2c_addr+1 == curr_node->I2c_addr){
+              prev_node = curr_node;
+              curr_node = curr_node->next;
+            }
+            if(curr_node == NULL){
+              curr_node->next = (node_t*)malloc(sizeof(node_t));
+              curr_node->next-> I2c_addr = curr_node->I2c_addr+1;
+              curr_node->next-> unique_ID = id;
+              curr_node->next->next = NULL;
+              return curr_node->next-> I2c_addr;
+            }
+            if(curr_node != NULL){
+              node_t* new = (node_t*)malloc(sizeof(node_t));
+              prev_node->next = new;
+              new-> I2c_addr = prev_node->I2c_addr+1;
+              new-> unique_ID = id;
+              new->next = curr_node;
+              return new-> I2c_addr;
+            }
+          }
+          else if(I2c_list != NULL && I2c_list->I2c_addr == I2C_FIRST_SLAVE_ADDR){
+            node_t* new = (node_t*)malloc(sizeof(node_t));
+            new -> I2c_addr = I2C_FIRST_SLAVE_ADDR;
+            new -> unique_ID = id;
+            new -> next = I2c_list;
+            I2c_list = new;
+            return I2C_FIRST_SLAVE_ADDR;
+          }
+          else {
+            I2c_list = (node_t*)malloc(sizeof(node_t));
+            I2c_list -> I2c_addr = I2C_FIRST_SLAVE_ADDR;
+            I2c_list -> unique_ID = id;
+            I2c_list -> next = NULL;
+            return I2C_FIRST_SLAVE_ADDR;
+          }
+      }
+
+    // remove the node from linked list
+     static void list_remove (node_t* node){
+        if(I2c_list != NULL){
+            if (I2c_list == node) {
+              I2c_list = I2c_list -> next;
+            }
+            else {
+              node_t* prev_node = I2c_list;
+              node_t* curr_node = I2c_list->next;
+              while(curr_node != NULL && curr_node != node){
+                prev_node = curr_node;
+                curr_node = curr_node->next;
+              }
+              if(curr_node != NULL){
+                prev_node->next = curr_node->next;
+              }
+            }
+        }
+      }
+
+      // Write message to current slaves at same time detect which one has left
+      static void write_while_detect (){
+        node_t* current = I2c_list;
+        static const char *const msg = "Master Sent!";
+        uint8_t buf[32];
+        buf[0] = 0;
+        memcpy(buf + 1, msg, strlen(msg));
+
+        while (current != NULL){
+          int write = i2c_write_blocking(i2c0,current-> I2c_addr, buf, 1+strlen(msg), false);
+          printf("Have written %d bytes to address %x.\n", write, current-> I2c_addr);
+          current = current->next;
+        }
+      }
+
+    static void setup_master() {
+      gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
+      gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
+      gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+      gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+      gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+      gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+      i2c_init(i2c0, 100);
+    }
+
+    static void echo(uint8_t slave_addr) {
+      static const char *const msg = "Master Sent!";
+      uint8_t buf[32];
+      buf[0] = COMMAND_ECHO;
+      memcpy(buf, msg, strlen(msg) + 1);
+      printf("echoing slave at address %x\n", slave_addr);
+      int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
+      printf("bytes sent: %d\n", bytes_sent);
+      
+      uint8_t recv[32] = {0};
+      int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
+      printf("slave sent back %d bytes: %s\n", bytes_read, recv);
+    }
+
+    static void assign(pico_unique_board_id_t id) {
+      printf("assigning address for id %llx\n", *(uint64_t *)&id);
+      // uint8_t addr = list_insert(id);
+      uint8_t addr = 0X56;
+      printf("Assigning %x as the new slave address\n", addr);
+      
+      // Format: [address reassignment command | unique identifier | new address]
+      uint8_t buf[2 + sizeof(pico_unique_board_id_t)];
+      buf[0] = COMMAND_ASSIGN;
+      memcpy(buf + 1, &id, sizeof(id));
+      buf[1 + sizeof(pico_unique_board_id_t)] = addr;
+
+      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, buf, sizeof(buf), false);
+      printf("Assignment command bytes sent: %d\n", bytes_sent);
+
+      echo(addr);
+    }
+
+    static bool discover() {
+      uint8_t command = COMMAND_DISCOVER;
+      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
+      printf("Discover bytes sent: %d\n", bytes_sent);
+      if (bytes_sent == 1) {
+        // at least one slave device got the command
+        pico_unique_board_id_t id;
+        int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
+        printf("Discover unique id size returned %d\n", bytes_recvd);
+        assign(id);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  =}
+
+  state discover_done: bool
+  timer t0(0, 10 ms);
+  timer t(0, 1 s);
+
+  reaction(startup) {=
+    setup_master();
+    gpio_init(0);
+    gpio_set_dir(0, GPIO_IN);
+  =}
+
+  // reaction(t0){=
+  //   self->discover_done = false;
+  //     while (!self->discover_done) {
+  //       self->discover_done = !discover();}
+  // =}
+  logical action button;
+  
+  reaction(t0) -> button {=
+    // Scan button press
+    if (gpio_get(0)) {
+      lf_schedule(button,0);
+    }
+  =}
+  
+    reaction(button) {=
+      printf("button pressed\n");
+      self->discover_done = false;
+      while (!self->discover_done) {
+        self->discover_done = !discover();
+      }
+    =}
+
+
+
+  // reaction(t){=
+  //   write_while_detect();
+  // =}
+
+}

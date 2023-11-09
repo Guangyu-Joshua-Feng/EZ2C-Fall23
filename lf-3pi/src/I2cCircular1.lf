@@ -118,8 +118,7 @@ main reactor {
   //   =}
 
   reaction(t0) {=
-    static const char *const msg = "ADDR1 SENT, ADDR2 RECEIVE";
-    // if (self->master) {
+     static const char *const msg = "ADDR1 SENT, ADDR2 RECEIVE";
       uint8_t buf[32];
       buf[0] = 0;
       memcpy(buf + 1, msg, strlen(msg));
