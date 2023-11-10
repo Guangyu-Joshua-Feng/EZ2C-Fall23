@@ -23,7 +23,7 @@ for i in range(10):
     a = 1
     yy = lfilter(b, a, df.iloc[:, 1])
     ax = plt.gca()
-    plt.plot(df.iloc[:, 0], yy, linewidth=2, linestyle="-", c="b")  # smooth by filter
+    #plt.plot(df.iloc[:, 0], yy, linewidth=2, linestyle="-", c="b")  # smooth by filter
     
     #plt.plot(df.iloc[:, 0], df.iloc[:, 1], linewidth=2, linestyle="-", c="b")
 
@@ -41,16 +41,7 @@ for i in range(10):
             is_zero = True
     
 
-    ax.axvline(stop, zorder=0)
-    ax.axhline(HIGH_VOLT, zorder=0)
-    text(stop, 1, str(stop), rotation=90, verticalalignment='center')
-    ax.axvline(start, zorder=0)
-    ax.axhline(LOW_VOLT, zorder=0)
-    text(start, 1, str(start), rotation=90, verticalalignment='center')
     saturate_time = stop - start
-    #plt.savefig(f[:-4] + '-' + str(saturate_time) + '.png')
-    #plt.show()
-
     data.append(saturate_time)
 
 data = np.array(data)
@@ -61,6 +52,25 @@ var = np.var(data)
 
 print(mean)
 print(var)
-    #df.plot()
 
-    #plt.show()
+ax = plt.gca()
+ax.axhline(mean, zorder=0)
+plt.plot(range(10), data, linewidth=2, linestyle="-", c="b") 
+
+plt.show()
+
+data_minus_mean = []
+
+for i in range(len(data)):
+    data_minus_mean.append(data[i] - mean)
+
+data_minus_mean = np.array(data_minus_mean)
+
+plt.plot(range(10), data_minus_mean, linewidth=2, linestyle="-", c="b") 
+plt.show()
+
+mean2 = np.mean(data_minus_mean)
+var2 = np.var(data_minus_mean)
+
+print(mean2)
+print(var2)
