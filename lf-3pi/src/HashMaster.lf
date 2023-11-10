@@ -106,7 +106,9 @@ main reactor {
      static void list_remove (node_t* node){
         if(I2c_list != NULL){
             if (I2c_list == node) {
-              I2c_list = I2c_list -> next;
+              node_t* current = I2c_list;
+              I2c_list = current -> next;
+              free(current);
             }
             else {
               node_t* prev_node = I2c_list;
@@ -117,6 +119,7 @@ main reactor {
               }
               if(curr_node != NULL){
                 prev_node->next = curr_node->next;
+                free(curr_node);
               }
             }
         }
@@ -164,7 +167,7 @@ main reactor {
     static void assign(pico_unique_board_id_t id) {
       printf("assigning address for id %llx\n", *(uint64_t *)&id);
       // uint8_t addr = list_insert(id);
-      uint8_t addr = 0X56;
+      uint8_t addr = list_insert(id);
       printf("Assigning %x as the new slave address\n", addr);
       
       // Format: [address reassignment command | unique identifier | new address]
@@ -188,7 +191,8 @@ main reactor {
         pico_unique_board_id_t id;
         int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
         printf("Discover unique id size returned %d\n", bytes_recvd);
-        assign(id);
+        printf("id %llx\n", *(uint64_t *)&id);
+        // assign(id);
         return true;
       } else {
         return false;

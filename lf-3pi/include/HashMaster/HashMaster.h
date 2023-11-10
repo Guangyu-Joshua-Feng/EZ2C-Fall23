@@ -1,8 +1,8 @@
-#ifndef _i2cmaster_main_H
-#define _i2cmaster_main_H
-#ifndef TOP_LEVEL_PREAMBLE_1923241952_H
-#define TOP_LEVEL_PREAMBLE_1923241952_H
-/*Correspondence: Range: [(10, 2), (23, 22)) -> Range: [(0, 0), (13, 22)) (verbatim=true; src=/home/foobar/EZ2C-Fall23/lf-3pi/src/I2cMaster.lf)*/#include <stdio.h>
+#ifndef _hashmaster_main_H
+#define _hashmaster_main_H
+#ifndef TOP_LEVEL_PREAMBLE_1537854834_H
+#define TOP_LEVEL_PREAMBLE_1537854834_H
+/*Correspondence: Range: [(10, 2), (24, 22)) -> Range: [(0, 0), (14, 22)) (verbatim=true; src=/home/foobar/EZ2C-Fall23/lf-3pi/src/HashMaster.lf)*/#include <stdio.h>
 #include <pico/stdlib.h>
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
@@ -10,6 +10,7 @@
 #include <string.h>
 
 #define I2C_DEFAULT_SLAVE_ADDR 0x55
+#define I2C_FIRST_SLAVE_ADDR 0x56
 #define PICO_DEFAULT_I2C_SDA_PIN 4
 #define PICO_DEFAULT_I2C_SCL_PIN 5
 
@@ -25,12 +26,11 @@ extern "C" {
 #ifdef __cplusplus
 }
 #endif
-typedef struct i2cmaster_self_t{
+typedef struct hashmaster_self_t{
     self_base_t base; // This field is only to be used by the runtime, not the user.
     bool discover_done;
-    bool LED;
     int end[0]; // placeholder; MSVC does not compile empty structs
-} i2cmaster_self_t;
+} hashmaster_self_t;
 typedef struct {
     token_type_t type;
     lf_token_t* token;
@@ -46,5 +46,5 @@ typedef struct {
     #endif
     interval_t physical_time_of_arrival;
     #endif
-} i2cmaster_button_t;
+} hashmaster_button_t;
 #endif
