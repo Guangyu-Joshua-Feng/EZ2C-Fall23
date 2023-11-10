@@ -47,22 +47,12 @@ main reactor {
     static node_t* I2c_list = NULL;
 
     // Linked list operation function
-
-    // Iterate over the linked list, find the first free space and insert node to linked list
-    // void list_insert (pico_unique_board_id_t id){
-    //     node_t* current = I2c_list;
-    //     while (current->next != NULL && current->next->I2c_addr!= 0){
-    //       current = current->next;
-    //     }
-    //     if (current->next == NULL){
-    //       current->next = (node_t*)malloc(sizeof(node_t));
-    //     }
-    //     current->next->I2c_addr = current -> I2c_addr++;
-    //     current->next->unique_ID = id;
-    //   }
     
       static uint8_t list_insert (pico_unique_board_id_t id){
-          if(I2c_list != NULL && I2c_list->I2c_addr == I2C_FIRST_SLAVE_ADDR){
+          if(I2c_list != NULL){
+            
+            //  && I2c_list->I2c_addr == I2C_FIRST_SLAVE_ADDR
+            
             node_t* prev_node = I2c_list;
             node_t* curr_node = I2c_list->next;
             while(curr_node != NULL && prev_node->I2c_addr+1 == curr_node->I2c_addr){
@@ -70,13 +60,13 @@ main reactor {
               curr_node = curr_node->next;
             }
             if(curr_node == NULL){
-              curr_node->next = (node_t*)malloc(sizeof(node_t));
-              curr_node->next-> I2c_addr = curr_node->I2c_addr+1;
-              curr_node->next-> unique_ID = id;
-              curr_node->next->next = NULL;
-              return curr_node->next-> I2c_addr;
+              curr_node = (node_t*)malloc(sizeof(node_t));
+              curr_node-> I2c_addr = curr_node->I2c_addr+1;
+              curr_node-> unique_ID = id;
+              curr_node->next = NULL;
+              return curr_node-> I2c_addr;
             }
-            if(curr_node != NULL){
+            else{
               node_t* new = (node_t*)malloc(sizeof(node_t));
               prev_node->next = new;
               new-> I2c_addr = prev_node->I2c_addr+1;
@@ -84,8 +74,16 @@ main reactor {
               new->next = curr_node;
               return new-> I2c_addr;
             }
+
+              // node_t* new = (node_t*)malloc(sizeof(node_t));
+              // new-> I2c_addr = I2C_FIRST_SLAVE_ADDR+1;
+              // new-> unique_ID = id;
+              // new->next = NULL;
+              // I2c_list-> next = new;
+              // return new-> I2c_addr;
+
           }
-          else if(I2c_list != NULL && I2c_list->I2c_addr == I2C_FIRST_SLAVE_ADDR){
+          else if(I2c_list != NULL && I2c_list->I2c_addr != I2C_FIRST_SLAVE_ADDR){
             node_t* new = (node_t*)malloc(sizeof(node_t));
             new -> I2c_addr = I2C_FIRST_SLAVE_ADDR;
             new -> unique_ID = id;
@@ -108,7 +106,7 @@ main reactor {
             if (I2c_list == node) {
               node_t* current = I2c_list;
               I2c_list = current -> next;
-              free(current);
+              // free(current);
             }
             else {
               node_t* prev_node = I2c_list;
@@ -119,7 +117,7 @@ main reactor {
               }
               if(curr_node != NULL){
                 prev_node->next = curr_node->next;
-                free(curr_node);
+                // free(curr_node);
               }
             }
         }
@@ -192,7 +190,7 @@ main reactor {
         int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
         printf("Discover unique id size returned %d\n", bytes_recvd);
         printf("id %llx\n", *(uint64_t *)&id);
-        // assign(id);
+        assign(id);
         return true;
       } else {
         return false;
@@ -232,10 +230,8 @@ main reactor {
       }
     =}
 
-
-
-  // reaction(t){=
-  //   write_while_detect();
-  // =}
+  reaction(t){=
+    write_while_detect();
+  =}
 
 }
