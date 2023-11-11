@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["i2cslave.txt"]
+  cmake-include: ["../cmake_include/i2cslave.txt"]
 }
 
 preamble {=
@@ -19,12 +19,12 @@ preamble {=
   #define ADDR 0x55
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
-  #define I2C_MASTER_SDA_PIN  6
-  #define I2C_MASTER_SCL_PIN  7
 =}
 
 main reactor {
   preamble {=
+
+      static bool led;
       static struct
     {
         uint8_t mem[256];
@@ -43,6 +43,9 @@ main reactor {
                 // save into memory
                 context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
                 context.mem_address++;
+
+                led = !led;
+                gpio_put(16, !led);
             }
             break;
         case I2C_SLAVE_REQUEST: // master is requesting data
@@ -58,63 +61,34 @@ main reactor {
         }
       }
 
-      static void setup_master() {
-
+      static void setup_slave() {
         gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
         gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
         gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
         gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
-        gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
-        gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
-
-        i2c_init(i2c0, 100 * 1000);
-        // bi_decl(bi_2pins_with_func(PICO_DEFAULT_I2C_SDA_PIN, PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C));
-      }
-      static void setup_slave() {
-
-        gpio_init(I2C_MASTER_SDA_PIN);
-        gpio_init(I2C_MASTER_SCL_PIN);
-        gpio_set_function(I2C_MASTER_SDA_PIN, GPIO_FUNC_I2C);
-        gpio_set_function(I2C_MASTER_SCL_PIN, GPIO_FUNC_I2C);
-        gpio_pull_up(I2C_MASTER_SDA_PIN);
-        gpio_pull_up(I2C_MASTER_SCL_PIN);
-
-        i2c_init(i2c1, 100 * 1000);
-        // i2c_set_slave_mode(i2c1, true, ADDR);
-        i2c_slave_init(i2c1,ADDR,&i2c_slave_handler);
+        // gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+        // gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+        gpio_disable_pulls(PICO_DEFAULT_I2C_SDA_PIN);
+        gpio_disable_pulls(PICO_DEFAULT_I2C_SCL_PIN);
+        i2c_init(i2c0, 100);
+        // i2c_set_slave_mode(i2c0, true, ADDR);
+        i2c_slave_init(i2c0,ADDR,&i2c_slave_handler);
       }
   =}
 
-  timer t(0, 500 ms)
-  state led_on: bool = false
-
+  timer t(0, 1000 ms)
+  state LED : bool;
   reaction(startup) {=
-    // LED Initialization
-    gpio_init(PICO_DEFAULT_LED_PIN);
-    gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
-
     // I2C initialization
-    setup_master();
     setup_slave();
+    gpio_init(16);
+    gpio_set_dir(16, GPIO_OUT);
+    gpio_init(0);
+    gpio_set_dir(0, GPIO_OUT);
   =}
 
   reaction(t) {=
-    for (uint8_t i=0;;i = (i+32)%256){
-      char msg[32] = "Master Sent!";
-      uint8_t buf[32];
-      uint8_t receive[32];
-      buf[0] = i;
-      memcpy(buf+1,msg,strlen(msg));
-      int a = i2c_write_blocking(i2c0, ADDR, buf, 1+strlen(msg), false);
-      i2c_write_blocking(i2c0, ADDR, buf, 1, true);
-      i2c_read_blocking(i2c0, ADDR, receive, strlen(msg), false);
-      receive[strlen(msg)] = '\0';
-      printf("%s\n",receive);
-    }
-
-    // if (true){
-    //   self->led_on = !self->led_on;
-    //   gpio_put(PICO_DEFAULT_LED_PIN, !self->led_on);
-    // }
+    self->LED = !self->LED;
+    gpio_put(0, !self->LED);
   =}
 }

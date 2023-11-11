@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["i2cslave.txt"]
+  cmake-include: ["../cmake_include/i2cslave.txt"]
 }
 
 preamble {=
@@ -76,7 +76,7 @@ main reactor {
     }
 
     static void run_as_slave() {
-      i2c_slave_init(i2c0, ADDR2, &i2c_slave_handler);
+      i2c_slave_init(i2c0, ADDR3, &i2c_slave_handler);
     }
 
     static void run_as_master() {
@@ -104,7 +104,7 @@ main reactor {
     GPIO_set();
   =}
 
-  reaction(t0)-> send {=
+  reaction(t0) -> send {=
     // Scan button press
     if (!self->master && gpio_get(15)) {
       self->master = true;
@@ -112,22 +112,22 @@ main reactor {
       lf_schedule(send,0);
     }
   =}
-  
-  reaction(t0)-> feedback {=
-    // Scan button press
-    if (flag) {
-      lf_schedule(feedback,MSEC(1000));
-      flag = false;
-    }
-  =}
+
+reaction(t0)-> feedback {=
+  // Scan button press
+  if (flag) {
+    lf_schedule(feedback,MSEC(1000));
+    flag = false;
+  }
+=}
 
   reaction(send) {=
-    static const char *const msg = "ADDR2 SENT, ADDR3 RECEIVE";
+    static const char *const msg = "ADDR3 SENT, ADDR4 RECEIVE";
     if (self->master) {
       uint8_t buf[32];
       buf[0] = 0;
       memcpy(buf + 1, msg, strlen(msg));
-      int written = i2c_write_blocking(i2c0, ADDR3, buf, 1+strlen(msg), false);
+      int written = i2c_write_blocking(i2c0, ADDR4, buf, 1+strlen(msg), false);
       printf("bytes written: %d\n", written);
       self->master = false;
       run_as_slave();
@@ -138,10 +138,10 @@ main reactor {
 //   run_as_master();
 //   uint8_t buf[1] = {0};
 //   uint8_t receive[32];
-//   i2c_write_blocking(i2c0, ADDR2, buf, 1, false);
-//   i2c_read_blocking(i2c0, ADDR2, receive, 25, false);
+//   i2c_write_blocking(i2c0, ADDR3, buf, 1, false);
+//   i2c_read_blocking(i2c0, ADDR3, receive, 25, false);
 //   receive[strlen(receive)] = '\0';
 //   printf("%s\n",receive);
 //   run_as_slave();
-//   =}
+// =}
 }

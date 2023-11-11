@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["i2cslave.txt"]
+  cmake-include: ["../cmake_include/i2cslave.txt"]
 }
 
 preamble {=
@@ -53,7 +53,7 @@ main reactor {
       printf("echoing slave at address %x\n", slave_addr);
       int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
       printf("bytes sent: %d\n", bytes_sent);
-      
+
       uint8_t recv[32] = {0};
       int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
       printf("slave sent back %d bytes: %s\n", bytes_read, recv);
@@ -63,7 +63,7 @@ main reactor {
       printf("assigning address for id %llx\n", *(uint64_t *)&id);
       uint8_t addr = next_slave_addr++;
       printf("Assigning %x as the new slave address\n", addr);
-      
+
       // Format: [address reassignment command | unique identifier | new address]
       uint8_t buf[2 + sizeof(pico_unique_board_id_t)];
       buf[0] = COMMAND_ASSIGN;
@@ -94,7 +94,10 @@ main reactor {
   =}
 
   state discover_done: bool
-  timer t(0, 1 s);
+  timer t(0, 1 s)
+  timer t0(0, 10 ms)
+  logical action button
+  state LED: bool
 
   reaction(startup) {=
     setup_master();
@@ -106,16 +109,12 @@ main reactor {
     gpio_set_dir(16, GPIO_OUT);
   =}
 
-timer t0(0, 10 ms)
-logical action button;
-state LED: bool;
-
-reaction(t0) -> button {=
-  // Scan button press
-  if (gpio_get(0)) {
-    lf_schedule(button,0);
-  }
-=}
+  reaction(t0) -> button {=
+    // Scan button press
+    if (gpio_get(0)) {
+      lf_schedule(button,0);
+    }
+  =}
 
   reaction(button) {=
     printf("button pressed\n");

@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["i2cslave.txt"]
+  cmake-include: ["../cmake_include/i2cslave.txt"]
 }
 
 preamble {=

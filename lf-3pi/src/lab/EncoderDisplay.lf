@@ -12,8 +12,8 @@ target C {
   threading: false,
 }
 
-import Display from "lib/Display.lf"
-import Encoders from "lib/Encoders.lf"
+import Display from "../lib/Display.lf"
+import Encoders from "../lib/Encoders.lf"
 
 main reactor {
   display = new Display()

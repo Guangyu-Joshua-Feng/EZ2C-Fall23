@@ -1,9 +1,9 @@
 /**
  * Display measurements from the gyroscope on the
- * <a href="https://www.pololu.com/docs/0J86">Pololu 3pi+ 2040 robot</a>
- * with integration so the result is in degrees since reset.
+ * <a href="https://www.pololu.com/docs/0J86">Pololu 3pi+ 2040 robot</a>.
  * The gyroscope is provided by an
  * <a href="https://www.pololu.com/file/0J1899/lsm6dso.pdf">ST LMS6DSO inertial measurement unit</a>.
+ * The display shows angular velocity in degrees per second.
  * @author Abhi Gundrala
  * @author Edward A. Lee
  */
@@ -15,12 +15,12 @@ target C {
   threading: false,
 }
 
-import Display from "lib/Display.lf"
-import GyroAngle from "lib/IMU.lf"
+import Display from "../lib/Display.lf"
+import Gyro from "../lib/IMU.lf"
 
 main reactor {
   display = new Display()
-  gyro = new GyroAngle()
+  gyro = new Gyro()
 
   timer t(0, 100ms)
 
@@ -29,7 +29,7 @@ main reactor {
   =}
 
   reaction(startup) -> display.line0 {=
-    lf_set(display.line0, "GYRO ANGLE:");
+    lf_set(display.line0, "GYRO:");
   =}
 
   reaction(gyro.x) -> display.line1 {=

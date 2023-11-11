@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["i2cslave.txt"]
+  cmake-include: ["../cmake_include/i2cslave.txt"]
 }
 
 preamble {=
@@ -16,10 +16,6 @@ preamble {=
   #include <pico/i2c_slave.h>
   #include <string.h>
 
-  #define ADDR1 0x55
-  #define ADDR2 0x56
-  #define ADDR3 0x57
-  #define ADDR4 0x58
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
 =}
@@ -46,9 +42,6 @@ main reactor {
               // save into memory
               context.mem[context.mem_address] = i2c_read_byte_raw(i2c);
               context.mem_address++;
-
-              led = !led;
-              gpio_put(16, !led);
           }
           break;
       case I2C_SLAVE_REQUEST: // master is requesting data

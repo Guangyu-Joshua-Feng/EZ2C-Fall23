@@ -13,8 +13,8 @@ target C {
   threading: false,
 }
 
-import Bump from "lib/Bump.lf"
-import Display from "lib/Display.lf"
+import Bump from "../lib/Bump.lf"
+import Display from "../lib/Display.lf"
 
 main reactor {
     bump = new Bump();

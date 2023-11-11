@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["i2cslave.txt"]
+  cmake-include: ["../cmake_include/i2cslave.txt"]
 }
 
 preamble {=
@@ -16,14 +16,13 @@ preamble {=
   #include <pico/i2c_slave.h>
   #include <string.h>
 
-  #define ADDR 0x57
+  #define ADDR 0x56
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
 =}
 
 main reactor {
   preamble {=
-
       static bool led;
       static struct
     {
