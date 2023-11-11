@@ -16,7 +16,7 @@ preamble {=
   #include <string.h>
 
   #define MAX_SLAVES 30
-  #define INTERNAL_PULL_UP 0
+  #define INTERNAL_PULL_UP 1
   #define I2C_DEFAULT_SLAVE_ADDR 0x55
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
@@ -39,7 +39,7 @@ main reactor {
     static bool addr_taken[MAX_SLAVES];
 
     static inline addr_at_index(int i) {
-      return i + I2C_DEFAULT_SLAVE_ADDR;
+      return i + I2C_DEFAULT_SLAVE_ADDR + 1;
     }
 
     static void setup_master() {
@@ -138,12 +138,8 @@ main reactor {
 
   reaction(startup) {=
     setup_master();
-    next_slave_addr = I2C_DEFAULT_SLAVE_ADDR + 1;
-
     gpio_init(0);
     gpio_set_dir(0, GPIO_IN);
-    gpio_init(16);
-    gpio_set_dir(16, GPIO_OUT);
   =}
 
   reaction(button_scan_t) -> button {=
@@ -161,9 +157,9 @@ main reactor {
     }
   =}
 
-  reaction(echo_t) {=
-    for (int i = 0; i < MAX_SLAVES; ++i) {
-      if (addr_taken[i]) echo(addr_at_index(i));
-    }
-  =}
+  // reaction(echo_t) {=
+  //   for (int i = 0; i < MAX_SLAVES; ++i) {
+  //     if (addr_taken[i]) echo(addr_at_index(i));
+  //   }
+  // =}
 }

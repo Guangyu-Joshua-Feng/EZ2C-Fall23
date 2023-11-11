@@ -27,8 +27,6 @@ preamble {=
 
 main reactor {
   preamble {=
-    static bool led = false;
-
     static struct {
       uint8_t mem[256];
       uint8_t mem_address;
@@ -85,7 +83,6 @@ main reactor {
 
       case I2C_SLAVE_FINISH: // master has signalled Stop / Restart
           context.mem_address = 0;
-          led = true;
           if (recvd) {
             recvd = false;
             process_command();
@@ -111,17 +108,15 @@ main reactor {
 
   reaction(startup) {=
     setup_slave();
-    gpio_init(16);
-    gpio_set_dir(16, GPIO_OUT);
+    // gpio_init(15);
+    // gpio_set_dir(15, GPIO_OUT);
   =}
 
   timer t(0,1s);
   state LED: bool;
   reaction (t){=
-    if(led){
-    self->LED = !self->LED;
-    gpio_put(16, !self->LED);
-    }
+    // self->LED = !self->LED;
+    // gpio_put(15, !self->LED);
   =}
 
 }

@@ -1,8 +1,8 @@
 #ifndef _circularslave_main_H
 #define _circularslave_main_H
-#ifndef TOP_LEVEL_PREAMBLE_691826490_H
-#define TOP_LEVEL_PREAMBLE_691826490_H
-/*Correspondence: Range: [(10, 2), (25, 22)) -> Range: [(0, 0), (15, 22)) (verbatim=true; src=/home/robert/249/EZ2C-Fall23/lf-3pi/src/circular/CircularSlave.lf)*/#include <stdio.h>
+#ifndef TOP_LEVEL_PREAMBLE_492947164_H
+#define TOP_LEVEL_PREAMBLE_492947164_H
+/*Correspondence: Range: [(11, 2), (26, 22)) -> Range: [(0, 0), (15, 22)) (verbatim=true; src=/home/foobar/EZ2C-Fall23/lf-3pi/src/circular/CircularSlave.lf)*/#include <stdio.h>
 #include <pico/stdlib.h>
 #include <pico/unique_id.h>
 #include <hardware/gpio.h>
@@ -10,7 +10,7 @@
 #include <pico/i2c_slave.h>
 #include <string.h>
 
-#define INTERNAL_PULL_UP 0
+#define INTERNAL_PULL_UP 1
 #define I2C_DEFAULT_SLAVE_ADDR 0x55
 #define PICO_DEFAULT_I2C_SDA_PIN 4
 #define PICO_DEFAULT_I2C_SCL_PIN 5
