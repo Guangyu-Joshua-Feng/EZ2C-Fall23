@@ -1,0 +1,1 @@
+/usr/bin/cc -O3 -DNDEBUG CMakeFiles/federate__c1.dir/lib/schedule.c.o CMakeFiles/federate__c1.dir/_federate__c1_main.c.o CMakeFiles/federate__c1.dir/_count1.c.o CMakeFiles/federate__c1.dir/_networksender_0null.c.o CMakeFiles/federate__c1.dir/federate__c1.c.o -o federate__c1  -lm core/libcore.a 

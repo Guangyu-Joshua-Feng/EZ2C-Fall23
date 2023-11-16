@@ -1,1 +1,0 @@
-/usr/bin/cc -O3 -DNDEBUG CMakeFiles/federate__p.dir/lib/schedule.c.o CMakeFiles/federate__p.dir/_federate__p_main.c.o CMakeFiles/federate__p.dir/_print.c.o CMakeFiles/federate__p.dir/_networkreceiver_0.c.o CMakeFiles/federate__p.dir/__pin.c.o CMakeFiles/federate__p.dir/federate__p.c.o -o federate__p  -lm core/libcore.a 
