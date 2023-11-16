@@ -1,0 +1,126 @@
+target C {
+  platform: {
+    name: "rp2040",
+    board: "pololu_3pi_2040_robot"
+  },
+  threading: false,
+  cmake-include: ["../cmake_include/i2cslave.txt"]
+}
+
+preamble {=
+  #include <stdio.h>
+  #include <pico/stdlib.h>
+  #include <hardware/gpio.h>
+  #include <hardware/i2c.h>
+  #include <pico/unique_id.h>
+  #include <string.h>
+
+  #define I2C_DEFAULT_SLAVE_ADDR 0x55
+  #define PICO_DEFAULT_I2C_SDA_PIN 4
+  #define PICO_DEFAULT_I2C_SCL_PIN 5
+
+  #define COMMAND_DISCOVER 0
+  #define COMMAND_ASSIGN 1
+  #define COMMAND_ECHO 2
+=}
+
+/**
+ * master: 1. boardcast discover command 2. read response, which should contain the unique
+ * identifier of a device whose address is yet to be assigned, or fail if no device is waiting to be
+ * discovered 3. if at least one response is read, go to 4; otherwise, go to X 4. get the next
+ * unused slave address, increment counter 5. send address reassignment command + unique identifier
+ * + new address for the slave; only the slave with the right unique identifier should change their
+ * address accordingly 6. go to 1 X. done
+ */
+main reactor {
+  preamble {=
+    static uint8_t next_slave_addr;
+    static void setup_master() {
+      gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
+      gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
+      gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+      gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+      gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+      gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+      i2c_init(i2c0, 100);
+    }
+
+    static void echo(uint8_t slave_addr) {
+      static const char *const msg = "Master Sent!";
+      uint8_t buf[32];
+      buf[0] = COMMAND_ECHO;
+      memcpy(buf, msg, strlen(msg) + 1);
+      printf("echoing slave at address %x\n", slave_addr);
+      int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
+      printf("bytes sent: %d\n", bytes_sent);
+
+      uint8_t recv[32] = {0};
+      int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
+      printf("slave sent back %d bytes: %s\n", bytes_read, recv);
+    }
+
+    static void assign(pico_unique_board_id_t id) {
+      printf("assigning address for id %llx\n", *(uint64_t *)&id);
+      uint8_t addr = next_slave_addr++;
+      printf("Assigning %x as the new slave address\n", addr);
+
+      // Format: [address reassignment command | unique identifier | new address]
+      uint8_t buf[2 + sizeof(pico_unique_board_id_t)];
+      buf[0] = COMMAND_ASSIGN;
+      memcpy(buf + 1, &id, sizeof(id));
+      buf[1 + sizeof(pico_unique_board_id_t)] = addr;
+
+      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, buf, sizeof(buf), false);
+      printf("Assignment command bytes sent: %d\n", bytes_sent);
+
+      echo(addr);
+    }
+
+    static bool discover() {
+      uint8_t command = COMMAND_DISCOVER;
+      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
+      printf("Discover bytes sent: %d\n", bytes_sent);
+      if (bytes_sent == 1) {
+        // at least one slave device got the command
+        pico_unique_board_id_t id;
+        int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
+        printf("Discover unique id size returned %d\n", bytes_recvd);
+        assign(id);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  =}
+
+  state discover_done: bool
+  timer t(0, 1 s)
+  timer t0(0, 10 ms)
+  logical action button
+  state LED: bool
+
+  reaction(startup) {=
+    setup_master();
+    next_slave_addr = I2C_DEFAULT_SLAVE_ADDR + 1;
+
+    gpio_init(0);
+    gpio_set_dir(0, GPIO_IN);
+    gpio_init(16);
+    gpio_set_dir(16, GPIO_OUT);
+  =}
+
+  reaction(t0) -> button {=
+    // Scan button press
+    if (gpio_get(0)) {
+      lf_schedule(button,0);
+    }
+  =}
+
+  reaction(button) {=
+    printf("button pressed\n");
+    self->discover_done = false;
+    while (!self->discover_done) {
+      self->discover_done = !discover();
+    }
+  =}
+}
