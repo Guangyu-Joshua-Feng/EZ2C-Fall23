@@ -1,6 +1,4 @@
 target C {
-  cmake-include: "include/federate__d_extension.cmake",
-  threading: true,
   compile-definitions: {
     EXECUTABLE_PREAMBLE: "",
     NUMBER_OF_FEDERATES: "3",
@@ -8,6 +6,8 @@ target C {
     FEDERATED_CENTRALIZED: ""
   },
   keepalive: true,
+  cmake-include: "include/federate__d_extension.cmake",
+  threading: true,
   _fed_setup: "include/_federate__d_preamble.h"
 }
 

@@ -1,7 +1,7 @@
 #ifndef _federate__c_main_H
 #define _federate__c_main_H
-#ifndef TOP_LEVEL_PREAMBLE_1238814958_H
-#define TOP_LEVEL_PREAMBLE_1238814958_H
+#ifndef TOP_LEVEL_PREAMBLE_42668921_H
+#define TOP_LEVEL_PREAMBLE_42668921_H
 /*Correspondence: Range: [(15, 0), (27, 6)) -> Range: [(0, 0), (12, 6)) (verbatim=true; src=/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf)*/#ifdef __cplusplus
 extern "C" {
 #endif
