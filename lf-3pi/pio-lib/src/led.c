@@ -2,16 +2,17 @@
  * Copyright (c) 2020 Raspberry Pi (Trading) Ltd.
  *
  * SPDX-License-Identifier: BSD-3-Clause
+ * 
+ * Modified: replaced default LED pin with 16.
  */
 
 #include <hardware/pio.h>
 #include <hello.pio.h>
 #include <pico/stdlib.h>
 
+#define LED_PIN 16
+
 int led_start() {
-#ifndef PICO_DEFAULT_LED_PIN
-#warning pio/hello_pio example requires a board with a regular LED
-#else
     // Choose which PIO instance to use (there are two instances)
     PIO pio = pio0;
 
@@ -25,7 +26,7 @@ int led_start() {
     // none). Configure it to run our program, and start it, using the
     // helper function we included in our .pio file.
     uint sm = pio_claim_unused_sm(pio, true);
-    hello_program_init(pio, sm, offset, PICO_DEFAULT_LED_PIN);
+    hello_program_init(pio, sm, offset, LED_PIN);
 
     // The state machine is now running. Any value we push to its TX FIFO will
     // appear on the LED pin.
@@ -37,5 +38,4 @@ int led_start() {
         pio_sm_put_blocking(pio, sm, 0);
         sleep_ms(500);
     }
-#endif
 }
