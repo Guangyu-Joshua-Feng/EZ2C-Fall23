@@ -419,6 +419,36 @@ void _lf_initialize_watchdog_mutexes(void);
 
 
 /**
+ * @brief Retrives the enclave ids of the direct upstream enclaves.
+ * The implementation is code-generated.
+ * 
+ * @param enclave_id The enclave for which to search for direct upstream
+ * @param result This pointer is dereferenced and pointed to the resulting array.
+ * @return int The number of direct upstreams.
+ */
+int _lf_get_upstream_of(int enclave_id, int** result);
+
+/**
+ * @brief Retrives the enclave ids of the direct downstream enclaves.
+ * The implementation is code-generated.
+ * 
+ * @param enclave_id The enclave for which to search for direct downstream.
+ * @param result This pointer is dereferenced and pointed to the resulting array.
+ * @return int The number of direct downstream.
+ */
+int _lf_get_downstream_of(int enclave_id, int** result);
+
+/**
+ * @brief Retrives the delays on the connections to the direct upstream enclaves.
+ * The implementation is code-generated.
+ * 
+ * @param enclave_id The enclave for which to search for upstream delays.
+ * @param result This pointer is dereferenced and pointed to the resulting array.
+ * @return int The number of direct upstreams.
+ */
+int _lf_get_upstream_delay_of(int enclave_id, interval_t** result);
+
+/**
  * Function (to be code generated) to terminate execution.
  * This will be invoked after all shutdown actions have completed.
  * @param env The environment in which we are executing
@@ -426,7 +456,6 @@ void _lf_initialize_watchdog_mutexes(void);
 void terminate_execution(environment_t* env);
 
 void termination();
-
 
 /**
  * Schedule the specified action with an integer value at a later logical
@@ -543,7 +572,7 @@ void _lf_create_environments();
 
 
 /**
- * These functions must be implemented by both threaded and unthreaded
+ * These functions must be implemented by both threaded and single-threaded
  * runtime. Should be routed to appropriate API calls in platform.h
 */
 

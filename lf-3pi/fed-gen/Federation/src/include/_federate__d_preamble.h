@@ -4,6 +4,7 @@
 #include "core/threaded/reactor_threaded.h"
 #include "core/utils/util.h"
 extern federate_instance_t _fed;
+interval_t _lf_action_delay_table[0];
 lf_action_base_t* _lf_action_table[0];
 size_t _lf_action_table_size = 0;
 lf_action_base_t* _lf_zero_delay_action_table[0];

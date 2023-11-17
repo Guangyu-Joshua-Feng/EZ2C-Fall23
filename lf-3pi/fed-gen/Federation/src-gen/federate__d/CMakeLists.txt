@@ -25,7 +25,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 cmake_policy(SET CMP0023 OLD)  # This causes deprecation warnings
 
-set(DEFAULT_BUILD_TYPE Release)
+set(DEFAULT_BUILD_TYPE Debug)
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
     set(CMAKE_BUILD_TYPE ${DEFAULT_BUILD_TYPE} CACHE STRING "Choose the type of build." FORCE)
 endif()
@@ -34,6 +34,25 @@ endif()
 set(CMAKE_INSTALL_MESSAGE NEVER)
 
 
+# Set default values for build parameters
+if (NOT DEFINED LF_REACTION_GRAPH_BREADTH)
+    set(LF_REACTION_GRAPH_BREADTH 2)
+endif()
+if (NOT DEFINED EXECUTABLE_PREAMBLE)
+    set(EXECUTABLE_PREAMBLE TRUE)
+endif()
+if (NOT DEFINED NUMBER_OF_FEDERATES)
+    set(NUMBER_OF_FEDERATES 3)
+endif()
+if (NOT DEFINED FEDERATED)
+    set(FEDERATED TRUE)
+endif()
+if (NOT DEFINED FEDERATED_CENTRALIZED)
+    set(FEDERATED_CENTRALIZED TRUE)
+endif()
+if (NOT DEFINED LOG_LEVEL)
+    set(LOG_LEVEL 2)
+endif()
 add_subdirectory(core)
 
 set(LF_MAIN_TARGET federate__d)
@@ -67,8 +86,6 @@ target_link_libraries(${LF_MAIN_TARGET} PRIVATE Threads::Threads)
 # Set the number of workers to enable threading/tracing
 target_compile_definitions(${LF_MAIN_TARGET} PUBLIC NUMBER_OF_WORKERS=0)
 
-# Set flag to indicate a multi-threaded runtime
-target_compile_definitions( ${LF_MAIN_TARGET} PUBLIC LF_THREADED=1)
 
 
     install(

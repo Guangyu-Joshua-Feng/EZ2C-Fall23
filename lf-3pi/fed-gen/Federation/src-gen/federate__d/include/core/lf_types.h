@@ -62,17 +62,14 @@ typedef unsigned short int ushort;
 /**
  * Define scheduler types as integers. This way we can conditionally
  * include/exclude code with the preprocessor with
- * #if SCHEDULER == ADAPTIVE etc
+ * #if SCHEDULER == SCHED_ADAPTIVE etc
  * This means that `lf_types.h` MUST be included before doing any preprocessing
  * on SCHEDULER compile def.
  */
 
-#define ADAPTIVE 1
-#define GEDF_NP_CI 2
-#define GEDF_NP 3
-#define LET 4
-#define NP 5
-#define PEDF_NP 6
+#define SCHED_ADAPTIVE 1
+#define SCHED_GEDF_NP 2
+#define SCHED_NP 3
 
 /*
  * A struct representing a barrier in threaded
@@ -301,11 +298,11 @@ typedef struct self_base_t {
 	struct allocation_record_t *allocations;
 	struct reaction_t *executing_reaction;   // The currently executing reaction of the reactor.
     environment_t * environment;
-#ifdef LF_THREADED
+#if !defined(LF_SINGLE_THREADED)
     void* reactor_mutex; // If not null, this is expected to point to an lf_mutex_t.
                           // It is not declared as such to avoid a dependence on platform.h.
 #endif
-#ifdef MODAL_REACTORS
+#if defined(MODAL_REACTORS)
     reactor_mode_state_t _lf__mode_state;    // The current mode (for modal models).
 #endif
 } self_base_t;

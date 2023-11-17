@@ -6,8 +6,8 @@
 #include "__pin2.h"
 #include "__pin1.h"
 #include "_networkreceiver_1.h"
-#ifndef TOP_LEVEL_PREAMBLE_1811954558_H
-#define TOP_LEVEL_PREAMBLE_1811954558_H
+#ifndef TOP_LEVEL_PREAMBLE_1512167587_H
+#define TOP_LEVEL_PREAMBLE_1512167587_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -24,8 +24,8 @@ extern federate_instance_t _fed;
 #endif
 typedef struct {
     struct self_base_t base;
-    
-    
+#line 28 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/_federate__p_main.h"
+#line 29 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/_federate__p_main.h"
 } _federate__p_main_main_self_t;
 _federate__p_main_main_self_t* new__federate__p_main();
 #endif // _FEDERATE__P_MAIN_H

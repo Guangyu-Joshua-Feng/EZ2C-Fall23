@@ -1,8 +1,8 @@
 #ifndef _PRINT_H
 #define _PRINT_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_1811954558_H
-#define TOP_LEVEL_PREAMBLE_1811954558_H
+#ifndef TOP_LEVEL_PREAMBLE_1512167587_H
+#define TOP_LEVEL_PREAMBLE_1512167587_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,42 +47,26 @@ typedef struct {
 } _print_in2_t;
 typedef struct {
     struct self_base_t base;
-    
-    
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
+#line 51 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/_print.h"
+#line 52 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/_print.h"
     _print_in1_t* _lf_in1;
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     // width of -2 indicates that it is not a multiport.
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     int _lf_in1_width;
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     // Default input (in case it does not get connected)
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     _print_in1_t _lf_default__in1;
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     _print_in2_t* _lf_in2;
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     // width of -2 indicates that it is not a multiport.
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     int _lf_in2_width;
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     // Default input (in case it does not get connected)
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     _print_in2_t _lf_default__in2;
-    #line 37 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t _lf__reaction_0;
-    #line 44 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t _lf__reaction_1;
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     trigger_t _lf__in1;
-    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t* _lf__in1_reactions[1];
     #ifdef FEDERATED
     
     #endif // FEDERATED
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     trigger_t _lf__in2;
-    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t* _lf__in2_reactions[1];
     #ifdef FEDERATED
     

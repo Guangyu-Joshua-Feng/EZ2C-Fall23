@@ -1,8 +1,8 @@
 #ifndef _NETWORKSENDER_0NULL_H
 #define _NETWORKSENDER_0NULL_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_42668921_H
-#define TOP_LEVEL_PREAMBLE_42668921_H
+#ifndef TOP_LEVEL_PREAMBLE_536495399_H
+#define TOP_LEVEL_PREAMBLE_536495399_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,31 +33,24 @@ typedef struct {
 } _networksender_0null_msg_t;
 typedef struct {
     struct self_base_t base;
-    
-    
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
-    _networksender_0null_msg_t* _lf_msg;
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
-    // width of -2 indicates that it is not a multiport.
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
+#line 37 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__c/_networksender_0null.h"
+#line 38 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__c/_networksender_0null.h"
+    // Multiport input array will be malloc'd later.
+    _networksender_0null_msg_t** _lf_msg;
     int _lf_msg_width;
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
     // Default input (in case it does not get connected)
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
     _networksender_0null_msg_t _lf_default__msg;
-    #line 47 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
+    // Struct to support efficiently reading sparse inputs.
+    lf_sparse_io_record_t* _lf_msg__sparse;
     reaction_t _lf__reaction_0;
-    #line 56 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
     reaction_t _lf__reaction_1;
-    #line 65 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
     reaction_t _lf__reaction_2;
     trigger_t _lf__startup;
     reaction_t* _lf__startup_reactions[1];
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
     trigger_t _lf__msg;
-    #line 45 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__c.lf"
     reaction_t* _lf__msg_reactions[1];
     #ifdef FEDERATED
+    trigger_t* _lf__msg_network_port_status;
     
     #endif // FEDERATED
 } _networksender_0null_self_t;

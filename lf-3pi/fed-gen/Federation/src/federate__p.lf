@@ -1,14 +1,14 @@
 target C {
+  cmake-include: "include/federate__p_extension.cmake",
   compile-definitions: {
     EXECUTABLE_PREAMBLE: "",
-    NUMBER_OF_FEDERATES: "3",
     FEDERATED: "",
-    FEDERATED_CENTRALIZED: ""
+    FEDERATED_CENTRALIZED: "",
+    NUMBER_OF_FEDERATES: "3"
   },
+  _fed_setup: "include/_federate__p_preamble.h",
   keepalive: true,
-  cmake-include: "include/federate__p_extension.cmake",
-  threading: true,
-  _fed_setup: "include/_federate__p_preamble.h"
+  single-threaded: false
 }
 
 
@@ -51,37 +51,41 @@ reactor Print {
 reactor _pin1 {
   input port0: int
 
-  output port: int
+  output[1] port: int
 
   port0 -> port
 }
 reactor _pin2 {
   input port0: int
 
-  output port: int
+  output[1] port: int
 
   port0 -> port
 }
-@_NetworkReactor(Receiver)
+@_networkReactor("receiver")
 reactor NetworkReceiver_0 {
   output msg: int
 
   logical action networkMessage: int
 
-  reaction(startup) {= self->_lf__reaction_1.is_an_input_reaction = true; =}
+  reaction(startup) {=
+    self->_lf__reaction_1.is_an_input_reaction = true;
+  =}
 
   reaction(networkMessage) -> msg {=
     msg->physical_time_of_arrival = self->_lf__networkMessage.physical_time_of_arrival;
     lf_set(msg, networkMessage->value);
   =}
 }
-@_NetworkReactor(Receiver)
+@_networkReactor("receiver")
 reactor NetworkReceiver_1 {
   output msg: int
 
   logical action networkMessage: int
 
-  reaction(startup) {= self->_lf__reaction_1.is_an_input_reaction = true; =}
+  reaction(startup) {=
+    self->_lf__reaction_1.is_an_input_reaction = true;
+  =}
 
   reaction(networkMessage) -> msg {=
     msg->physical_time_of_arrival = self->_lf__networkMessage.physical_time_of_arrival;
