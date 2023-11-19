@@ -7,80 +7,114 @@
 ;   . ISR is used as a counter for the number of rises.
 ;   . OSR is initialized at the "init" stage to "rise count" limit to which
 ;     ISR is compared to. The total number of rises to measure before an
-;     output IRQ is asserted is this number plus 1.
-;   . The jmp_pin is set to the low-threshold input pin because it's used more
-;     frequently as a jmp condition.
-;   . The ONLY input pin enabled is the high-threshold input pin.
+;     output IRQ is asserted is this value + 1.
+;   . The jmp pin is set to the high-threshold input pin because it's used in
+;     the performance-critical section of the code.
+;   . The ONLY input pin enabled is the low-threshold input pin.
 
 init:
-    pull block     ; Pulls the rise count limit into the OSR register.
+    pull block     ; A blocking pull that pulls the rise count limit into the
+                   ; OSR register.
 
 .wrap_target       ; The program should restart from here.
 reset:
     mov isr, osr   ; Reset rise counter to its limit.
-    jmp pin reset  ; Keep looping in "reset" mode until pin is low.
-                   ; Falls through to "low" mode and start monitoring.
+    mov y, pins    ; Copy low-threshold value to y.
+    jmp y-- reset  ; Keep looping in "reset" mode until low-threshold is low.
+                   ; Note that the decrement is unavoidable by op code design.
+                   ; Fall through to "low" mode and start monitoring.
+    set x, 0       ; Set x to 0.
+    jmp x-- low    ; Start counting backwards from 0xFFFFFFFF so that future
+                   ; "jmp x--" branches are always taken. Note that this branch
+                   ; is never taken but is required by op code design of "x--".
+                   ; Always fall through to low.
 
 low:
-    jmp pin low_rising      ; The low-threshold input pin is high.
-    jmp low                 ; The low-threshold input pin is low, keep looping
-                            ; in low.
-
-low_rising:                     ; Reaches here if low-threshold is high.
-    mov y, pins                 ; Copy high-threshold value to y.
-    jmp y-- resolution_warning  ; If high-threshold value is high, it means that
-                                ; the rise time was too short to be detected
-                                ; using this method.
-    set x 0 [1]                 ; Set x to 0 and delay 1 cycle. Then, start
-                                ; cycle counting.
-    ; Falls through to "rise".
-
-rise:
-    jmp pin capacitance_warning  ; If low-threshold becomes low before we reaches
-                                 ; "high", the current rise failed.
-    jmp x-- rise_continue        ; Decrement x every 4 cycles and continue.
-                                 ; IMPORTANT: THE NUMBER OF CYCLES HERE DEPEND ON
-                                 ; THE ACTUAL ASSEMBLY CODE. MUST ADJUST C CODE
-                                 ; ACCRODINGLY TO CALCULATE RISE TIME.
+    mov y, pins                 ; Copy low-threshold value to y.
+    jmp !y low                  ; The low-threshold input pin is low, keep
+                                ; looping in low.
+    jmp pin resolution_warning  ; If high-threshold value is already high, then
+                                ; it means that the rise time was too short to
+                                ; be detected using this method.
+    jmp rise                    ; Go to "rise" mode and to start counting.
 
 rise_continue:
-    mov y, pins              ; Copy high-threshold value to y.
-    jmp !y rise              ; If high-threshold is low, stay in "rise" mode.
-    ; Falls through to "high".
+    jmp pin high                 ; If high-threshold is high, go to "high" mode
+                                 ; and stop counting.
+                                 ; Otherwise, fall through to "rise" and keep
+                                 ; counting.
+
+rise:
+    jmp pin capacitance_warning  ; If low-threshold becomes low before we
+                                 ; reaches "high", the current rise failed.
+    jmp x-- rise_continue        ; Decrement x every 3 cycles and continue.
+                                 ; Note that the jmp here is always taken and
+                                 ; is unavoidable by op code design.
+                                 ; IMPORTANT: THE NUMBER OF CYCLES HERE DEPEND
+                                 ; ON THE ACTUAL ASSEMBLY CODE. PLEASE ADJUST
+                                 ; C CODE ACCRODINGLY TO CALCULATE RISE TIME.
 
 high:
-    mov isr, y     ; Copy rise counter value from ISR to y so that we can modify.
-    jmp y-- reset  ; Decrement the rise counter in ISR. If it was 0 to begin with, go to "output" mode.
+    mov y, isr              ; Copy rise counter value from ISR to y so that we can
+                            ; modify.
+    jmp y-- high_continue   ; Decrement Y. If it has not reached 0, proceed to
+                            ; "high_continue" mode to write y back to ISR.
+    jmp output              ; Otherwise, go to "output" mode.
+
+high_continue:
+    mov isr, y              ; Copy the decremented y value back to ISR...
+.wrap                       ; And restart the program.
 
 output:
-    mov isr, !x   ; Copy the total number of clock cycles spent in "rise" mode to ISR.
-    push block     ; Pushes the cycle count to RX FIFO.
-    irq wait 1     ; Signals 
-.wrap  ; Restart the program.
+    mov isr, !x    ; Copy the total number of clock cycles spent in "rise" mode
+                   ; to ISR. Note that the C component system code should
+                   ; calculate the total number of cycles spent as (X-1)*3.
+    push block     ; Pushes the cycle count into the RX FIFO.
+    irq wait 0 rel ; Asserts pio interrupt 0 to the main system, notifying it
+                   ; that the counter result is ready in RX FIFO. This
+                   ; statement blocks the pio state machine until the flag is
+                   ; cleared by the main system.
+    jmp reset      ; Reset the program.
 
 resolution_warning:
-    ; TODO: send out res_warning
-    jmp high
+    irq wait 1 rel ; Asserts pio interrupt 1 to the main system, notifying it
+                   ; that a resolution warning is triggered by the pio. This
+                   ; statement blocks the pio state machine until the flag is
+                   ; cleared by the main system.
+    jmp high       ; Zero cycles counted but a rise was complete.
 
 capacitance_warning:
-    ; TODO: send out cap_warning
-    jmp reset
+    irq wait 2 rel ; Asserts pio interrupt 2 to the main system, notifying it
+                   ; that a capacitance warning is triggered by the pio. This
+                   ; statement blocks the pio state machine until the flag is
+                   ; cleared by the main system.
+    jmp reset      ; No clock cycle is counted and the program is reset.
 
 % c-sdk {
-static inline void hello_program_init(PIO pio, uint sm, uint offset, uint pin) {
+static inline void rise_time_program_init(PIO pio, uint sm, uint offset,
+                                          uint lo_pin, uint hi_pin) {
+    // According to the SDK function documentation, these two lines are not
+    // necessary if they are only used as input pins. But only one of the
+    // examples provided did not include a call to pio_gpio_init on these
+    // pins. Consider toggling these two lines for debugging.
+    pio_gpio_init(pio, lo_pin);
+    pio_gpio_init(pio, hi_pin);
+
+    pio_sm_set_consecutive_pindirs(pio, sm, lo_pin, 1, false);
+    pio_sm_set_consecutive_pindirs(pio, sm, hi_pin, 1, false);
+
+    // State machine configuration.
     pio_sm_config c = rise_time_program_get_default_config(offset);
+    sm_config_set_jmp_pin(&c, hi_pin);
+    sm_config_set_in_pins(&c, lo_pin, 1);
 
-    ; Map the state machine's OUT pin group to one pin, namely the `pin`
-    ; parameter to this function.
-    sm_config_set_out_pins(&c, pin, 1);
-    ; Set this pin's GPIO function (connect PIO to the pad)
-    pio_gpio_init(pio, pin);
-    ; Set the pin direction to output at the PIO
-    pio_sm_set_consecutive_pindirs(pio, sm, pin, 1, true);
-
-    ; Load our configuration, and jump to the start of the program
+    // Initialize.
     pio_sm_init(pio, sm, offset, &c);
-    ; Set the state machine running
     pio_sm_set_enabled(pio, sm, true);
 }
+
+static inline uint32_t rise_time_program_recv(PIO pio, uint sm) {
+    return *(io_rw_32 *)&pio->rxf[sm];
+}
+
 %}

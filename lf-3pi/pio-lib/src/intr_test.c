@@ -34,7 +34,7 @@ void intr_test_start() {
                                 true);
 }
 
-// Find a free pio and state machine and load the program into it.
+// Finds a free pio and state machine and load the program into it.
 // Returns false if this fails
 static bool init_pio(const pio_program_t *program, PIO *pio_hw, uint *sm,
                      uint *offset) {
