@@ -1,0 +1,14 @@
+.program intr
+
+start:
+    irq wait 4 rel
+    jmp start
+
+% c-sdk {
+static inline void intr_program_init(PIO pio, uint sm, uint offset) {
+    pio_sm_config c = intr_program_get_default_config(offset);
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+%}

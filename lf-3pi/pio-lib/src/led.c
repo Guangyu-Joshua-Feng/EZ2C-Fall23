@@ -6,6 +6,7 @@
  * Modified: replaced default LED pin with 16.
  */
 
+#include <led.h>
 #include <hardware/pio.h>
 #include <hello.pio.h>
 #include <pico/stdlib.h>

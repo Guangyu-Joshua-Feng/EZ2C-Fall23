@@ -5,7 +5,7 @@
 ;   . Scratch register X is used as the clock cycle counter.
 ;   . Scratch register Y is used as temp space.
 ;   . ISR is used as a counter for the number of rises.
-;   . OSR is initialized at the "init" stage to a rise count limit to which
+;   . OSR is initialized at the "init" stage to "rise count" limit to which
 ;     ISR is compared to. The total number of rises to measure before an
 ;     output IRQ is asserted is this number plus 1.
 ;   . The jmp_pin is set to the low-threshold input pin because it's used more
@@ -53,7 +53,7 @@ high:
     jmp y-- reset  ; Decrement the rise counter in ISR. If it was 0 to begin with, go to "output" mode.
 
 output:
-    mov isr, x     ; Copy the total number of clock cycles spent in "rise" mode to ISR.
+    mov isr, !x   ; Copy the total number of clock cycles spent in "rise" mode to ISR.
     push block     ; Pushes the cycle count to RX FIFO.
     irq wait 1     ; Signals 
 .wrap  ; Restart the program.
@@ -68,7 +68,7 @@ capacitance_warning:
 
 % c-sdk {
 static inline void hello_program_init(PIO pio, uint sm, uint offset, uint pin) {
-    pio_sm_config c = hello_program_get_default_config(offset);
+    pio_sm_config c = rise_time_program_get_default_config(offset);
 
     ; Map the state machine's OUT pin group to one pin, namely the `pin`
     ; parameter to this function.
