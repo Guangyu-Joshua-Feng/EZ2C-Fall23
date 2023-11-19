@@ -1,6 +1,7 @@
 add_library(pio
   src/led.c
   src/rise_time.c
+  src/intr_test.c
 )
 
 pico_generate_pio_header(pio

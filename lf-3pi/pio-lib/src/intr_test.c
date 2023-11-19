@@ -23,17 +23,14 @@ void intr_test_start() {
     if (!init_pio(&intr_program, &pio, &sm, &offset)) {
         panic("failed to setup pio");
     }
-    intr_program_init(pio, sm, offset);
+    intr_program_init(pio, sm, offset, 15);
     link_available_irq();
 
     // Enable interrupt
-    irq_add_shared_handler(pio_irq, pio_irq_func,
-                           PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY);
+    irq_set_exclusive_handler(pio_irq, pio_irq_func);
     irq_set_enabled(pio_irq, true);
     const uint irq_index = pio_irq - ((pio == pio0) ? PIO0_IRQ_0 : PIO1_IRQ_0);
-
-    // Set pio to tell us when the FIFO is NOT empty
-    pio_set_irqn_source_enabled(pio, irq_index, pis_sm0_rx_fifo_not_empty + sm,
+    pio_set_irqn_source_enabled(pio, irq_index, pis_interrupt0 + sm,
                                 true);
 }
 
@@ -72,5 +69,11 @@ static void link_available_irq() {
 
 static void pio_irq_func() {
     static bool on = false;
-    gpio_put(LED_PIN, on = !on);
+    for (int i = 0; i < 4; ++i) {
+        if (pio_interrupt_get(pio, i)) {
+            gpio_put(LED_PIN, on = !on);
+            pio_interrupt_clear(pio, i);
+        }
+    }
+    for (volatile int i = 0; i < 10000000; ++i);
 }
