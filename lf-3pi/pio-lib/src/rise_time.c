@@ -44,8 +44,7 @@ static void nvic_pio_irq_handler() {
     static bool on = false;
     for (int i = 0; i < 4; ++i) {
         if (pio_interrupt_get(pio, i)) {
-            gpio_put(LED_PIN, on = !on);
-            pio_interrupt_clear(pio, i);
+            irq_handler_helper(i);
         }
     }
 }
@@ -53,20 +52,24 @@ static void nvic_pio_irq_handler() {
 static void irq_handler_helper(int i) {
     switch (i) {
         case 0:
-            // Extract from RX FIFO
+            uint32_t x = rise_time_program_recv(pio_hw, sm);
+            float avg_cycles = 3.0f * (x - 1) / 10;
+            printf("average rise time: %f cycles\n", avg_cycles);
             break;
 
         case 1:
-            // resolution_warning
+            printf("resolution warning\n");
             break;
 
         case 2:
-            // capacitance_warning
+            printf("capacitance warning\n");
             break;
 
         default:
+            printf("unknown irq flag warning\n");
             break;
     }
+    pio_interrupt_get(pio_hw, i);
 }
 
 static uint32_t get_rise_count_limit() {
