@@ -36,6 +36,10 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+#if defined(LF_THREADED) && defined(LF_UNTHREADED)
+#error LF_UNTHREADED and LF_THREADED runtime requested
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,7 +51,7 @@ extern "C" {
 typedef struct environment_t environment_t;
 
 /**
- * @brief Notify of new event.
+ * @brief Notify of new event by calling the unthreaded platform API
  * @param env Environment in which we are executing.
  */
 int lf_notify_of_event(environment_t* env);
@@ -94,13 +98,16 @@ int lf_critical_section_exit(environment_t* env);
 #error "Platform not supported"
 #endif
 
+#if !defined(LF_THREADED)
+    typedef void lf_mutex_t;
+#endif
+
 #define LF_TIMEOUT 1
 
 
-// To support the single-threaded runtime, we need the following functions. They
+// To support the unthreaded runtime, we need the following functions. They
 //  are not required by the threaded runtime and is thus hidden behind a #ifdef.
-#if defined (LF_SINGLE_THREADED)
-    typedef void lf_mutex_t;
+#if defined (LF_UNTHREADED)
     /**
      * @brief Disable interrupts with support for nested calls
      * 
@@ -115,14 +122,17 @@ int lf_critical_section_exit(environment_t* env);
     int lf_enable_interrupts_nested();
 
     /**
-     * @brief Notify sleeping single-threaded context of new event
+     * @brief Notify sleeping unthreaded context of new event
      * 
      * @return int 
      */
-    int _lf_single_threaded_notify_of_event();
-#else 
+    int _lf_unthreaded_notify_of_event();
+#endif
+
+
 // For platforms with threading support, the following functions
 // abstract the API so that the LF runtime remains portable.
+#if defined LF_THREADED
 
 
 /**

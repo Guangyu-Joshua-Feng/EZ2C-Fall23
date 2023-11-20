@@ -1,5 +1,4 @@
 #include "include/api/api.h"
-#include "include/core/platform.h"
 #include "include/federate__c/federate__c.h"
 #include "_federate__c_main.h"
 // ***** Start of method declarations.

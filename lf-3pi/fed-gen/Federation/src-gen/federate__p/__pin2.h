@@ -1,8 +1,8 @@
 #ifndef __PIN2_H
 #define __PIN2_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_1438448393_H
-#define TOP_LEVEL_PREAMBLE_1438448393_H
+#ifndef TOP_LEVEL_PREAMBLE_1618737150_H
+#define TOP_LEVEL_PREAMBLE_1618737150_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -47,23 +47,23 @@ typedef struct {
 } __pin2_port_t;
 typedef struct {
     struct self_base_t base;
-#line 51 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/__pin2.h"
-#line 52 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/__pin2.h"
+    
+    
+    #line 59 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     __pin2_port0_t* _lf_port0;
+    #line 59 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     // width of -2 indicates that it is not a multiport.
+    #line 59 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     int _lf_port0_width;
+    #line 59 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     // Default input (in case it does not get connected)
+    #line 59 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     __pin2_port0_t _lf_default__port0;
-    // Array of output ports.
-    __pin2_port_t* _lf_port;
+    #line 61 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
+    __pin2_port_t _lf_port;
+    #line 61 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     int _lf_port_width;
-    // An array of pointers to the individual ports. Useful
-    // for the lf_set macros to work out-of-the-box for
-    // multiports in the body of reactions because their 
-    // value can be accessed via a -> operator (e.g.,foo[i]->value).
-    // So we have to handle multiports specially here a construct that
-    // array of pointers.
-    __pin2_port_t** _lf_port_pointers;
+    #line 59 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     trigger_t _lf__port0;
     #ifdef FEDERATED
     

@@ -1,4 +1,4 @@
-#if !defined(LF_SINGLE_THREADED)
+#if defined(LF_THREADED)
 /* Non-preemptive scheduler for the threaded runtime of the C target of Lingua
 Franca. */
 
@@ -37,7 +37,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @author{Marten Lohstroh <marten@berkeley.edu>}
  */
 #include "lf_types.h"
-#if SCHEDULER == SCHED_NP || !defined(SCHEDULER)
+#if SCHEDULER == NP || (!defined(SCHEDULER) && defined(LF_THREADED))
 #ifndef NUMBER_OF_WORKERS
 #define NUMBER_OF_WORKERS 1
 #endif  // NUMBER_OF_WORKERS
@@ -279,8 +279,9 @@ void lf_sched_init(
     if (init_sched_instance(env, &env->scheduler, number_of_workers, params)) {
         // Scheduler has not been initialized before.
         if (params == NULL || params->num_reactions_per_level == NULL) {
-            lf_print_warning("Scheduler initialized with no reactions");
-            return;
+            lf_print_error_and_exit(
+                "Scheduler: Internal error. The NP scheduler "
+                "requires params.num_reactions_per_level to be set.");
         }
     } else {
         // Already initialized
@@ -331,13 +332,10 @@ void lf_sched_init(
  * This must be called when the scheduler is no longer needed.
  */
 void lf_sched_free(lf_scheduler_t* scheduler) {
-    if (scheduler->triggered_reactions) {
-        for (size_t j = 0; j <= scheduler->max_reaction_level; j++) {
-            free(((reaction_t***)scheduler->triggered_reactions)[j]);
-        }        
-    free(scheduler->triggered_reactions);
+    for (size_t j = 0; j <= scheduler->max_reaction_level; j++) {
+        free(((reaction_t***)scheduler->triggered_reactions)[j]);
     }
-
+    free(scheduler->triggered_reactions);
     lf_semaphore_destroy(scheduler->semaphore);
 }
 
@@ -434,7 +432,7 @@ void lf_sched_done_with_reaction(size_t worker_number,
  * @param reaction The reaction to trigger at the current tag.
  * @param worker_number The ID of the worker that is making this call. 0 should
  *  be used if there is only one worker (e.g., when the program is using the
- *  single-threaded C runtime). -1 is used for an anonymous call in a context where a
+ *  unthreaded C runtime). -1 is used for an anonymous call in a context where a
  *  worker number does not make sense (e.g., the caller is not a worker thread).
  *
  */

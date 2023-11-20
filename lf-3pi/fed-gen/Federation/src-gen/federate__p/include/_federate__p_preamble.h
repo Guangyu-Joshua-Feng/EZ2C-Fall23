@@ -4,7 +4,6 @@
 #include "core/threaded/reactor_threaded.h"
 #include "core/utils/util.h"
 extern federate_instance_t _fed;
-interval_t _lf_action_delay_table[2];
 lf_action_base_t* _lf_action_table[2];
 size_t _lf_action_table_size = 2;
 lf_action_base_t* _lf_zero_delay_action_table[2];
@@ -47,10 +46,8 @@ void staa_initialization() {
 }
 #define initialize_triggers_for_federate() \
 do { \
-    _lf_action_delay_table[0] = NEVER; \
     _lf_action_table[0] = (lf_action_base_t*)&federate__p_nr_federate__p_self[0]->_lf_networkMessage; \
     _lf_zero_delay_action_table[0] = (lf_action_base_t*)&federate__p_nr_federate__p_self[0]->_lf_networkMessage; \
-    _lf_action_delay_table[1] = NEVER; \
     _lf_action_table[1] = (lf_action_base_t*)&federate__p_nr_federate__p_0_self[0]->_lf_networkMessage; \
     _lf_zero_delay_action_table[1] = (lf_action_base_t*)&federate__p_nr_federate__p_0_self[0]->_lf_networkMessage; \
     staa_initialization(); \

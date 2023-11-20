@@ -1,14 +1,14 @@
 target C {
   cmake-include: "include/federate__d_extension.cmake",
+  threading: true,
   compile-definitions: {
     EXECUTABLE_PREAMBLE: "",
+    NUMBER_OF_FEDERATES: "3",
     FEDERATED: "",
-    FEDERATED_CENTRALIZED: "",
-    NUMBER_OF_FEDERATES: "3"
+    FEDERATED_CENTRALIZED: ""
   },
-  _fed_setup: "include/_federate__d_preamble.h",
   keepalive: true,
-  single-threaded: false
+  _fed_setup: "include/_federate__d_preamble.h"
 }
 
 
@@ -40,9 +40,9 @@ reactor Dount {
     lf_set(out, self->c++);
   =}
 }
-@_networkReactor("sender")
+@_NetworkReactor(Sender)
 reactor NetworkSender_0<SENDERINDEXPARAMETER> {
-  input[1] msg: int
+  input msg: int
 
   reaction(startup) {=
     extern reaction_t* port_absent_reaction[];
@@ -54,12 +54,12 @@ reactor NetworkSender_0<SENDERINDEXPARAMETER> {
   =}
 
   reaction(msg) {=
-    // Sending from msg[0] in federate federate__d to p.in2 in federate federate__p
-    if (!msg[0]->is_present) {
+    // Sending from msg in federate federate__d to p.in2 in federate federate__p
+    if (!msg->is_present) {
     return;
     }
     size_t _lf_message_length = sizeof(int);
-    send_timed_message(self->base.environment, NEVER, MSG_TYPE_TAGGED_MESSAGE, 1, 2, "federate 2 via the RTI", _lf_message_length, (unsigned char*)&msg[0]->value);
+    send_timed_message(self->base.environment, NEVER, MSG_TYPE_TAGGED_MESSAGE, 1, 2, "federate 2 via the RTI", _lf_message_length, (unsigned char*)&msg->value);
   =}
 
   reaction() msg {=
@@ -67,7 +67,7 @@ reactor NetworkSender_0<SENDERINDEXPARAMETER> {
     // send an ABSENT message to the receiving federate
     LF_PRINT_LOG("Executing port absent reaction for port %d to federate %d at time %lld.",
               1, 2, (long long) lf_time_logical_elapsed());
-    if (msg[0] == NULL || !msg[0]->is_present) {
+    if (msg == NULL || !msg->is_present) {
     LF_PRINT_LOG("The output port is NULL or it is not present.");
         send_port_absent_to_federate(self->base.environment, NEVER, 1, 2);
     }

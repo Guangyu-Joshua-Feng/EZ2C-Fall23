@@ -1,9 +1,8 @@
 #ifndef _networkreceiver_0_H
 #define _networkreceiver_0_H
-#ifndef _NETWORKRECEIVER_0_H // necessary for arduino-cli, which automatically includes headers that are not used
-#ifndef TOP_LEVEL_PREAMBLE_1438448393_H
-#define TOP_LEVEL_PREAMBLE_1438448393_H
-/*Correspondence: Range: [(15, 0), (27, 6)) -> Range: [(0, 0), (12, 6)) (verbatim=true; src=/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf)*/#ifdef __cplusplus
+#ifndef TOP_LEVEL_PREAMBLE_1618737150_H
+#define TOP_LEVEL_PREAMBLE_1618737150_H
+/*Correspondence: Range: [(15, 0), (27, 6)) -> Range: [(0, 0), (12, 6)) (verbatim=true; src=/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf)*/#ifdef __cplusplus
 extern "C" {
 #endif
 #include "core/federated/federate.h"
@@ -59,5 +58,4 @@ typedef struct {
     interval_t physical_time_of_arrival;
     #endif
 } networkreceiver_0_networkMessage_t;
-#endif
 #endif

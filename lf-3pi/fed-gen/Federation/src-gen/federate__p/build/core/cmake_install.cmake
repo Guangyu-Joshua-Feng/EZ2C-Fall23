@@ -1,8 +1,8 @@
-# Install script for directory: /home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/core
+# Install script for directory: /home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/core
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
-  set(CMAKE_INSTALL_PREFIX "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation")
+  set(CMAKE_INSTALL_PREFIX "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation")
 endif()
 string(REGEX REPLACE "/$" "" CMAKE_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 

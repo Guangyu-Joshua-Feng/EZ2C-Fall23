@@ -1,8 +1,8 @@
 #ifndef _NETWORKRECEIVER_0_H
 #define _NETWORKRECEIVER_0_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_1438448393_H
-#define TOP_LEVEL_PREAMBLE_1438448393_H
+#ifndef TOP_LEVEL_PREAMBLE_1618737150_H
+#define TOP_LEVEL_PREAMBLE_1618737150_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -49,16 +49,23 @@ typedef struct {
 } _networkreceiver_0_networkMessage_t;
 typedef struct {
     struct self_base_t base;
-#line 53 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/_networkreceiver_0.h"
-#line 54 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__p/_networkreceiver_0.h"
+    
+    
+    #line 69 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     _networkreceiver_0_networkMessage_t _lf_networkMessage;
+    #line 67 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     _networkreceiver_0_msg_t _lf_msg;
+    #line 67 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     int _lf_msg_width;
+    #line 71 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t _lf__reaction_0;
+    #line 73 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t _lf__reaction_1;
     trigger_t _lf__startup;
     reaction_t* _lf__startup_reactions[1];
+    #line 69 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     trigger_t _lf__networkMessage;
+    #line 69 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__p.lf"
     reaction_t* _lf__networkMessage_reactions[1];
 } _networkreceiver_0_self_t;
 _networkreceiver_0_self_t* new__networkreceiver_0();

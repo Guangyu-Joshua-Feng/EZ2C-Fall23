@@ -9,8 +9,6 @@ lf_macos_support.c
 lf_windows_support.c
 lf_nrf52_support.c
 lf_zephyr_support.c
-lf_zephyr_clock_counter.c
-lf_zephyr_clock_kernel.c
 lf_rp2040_support.c
 )
 

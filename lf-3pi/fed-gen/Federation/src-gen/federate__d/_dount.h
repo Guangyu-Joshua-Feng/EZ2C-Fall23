@@ -1,8 +1,8 @@
 #ifndef _DOUNT_H
 #define _DOUNT_H
 #include "include/core/reactor.h"
-#ifndef TOP_LEVEL_PREAMBLE_748482365_H
-#define TOP_LEVEL_PREAMBLE_748482365_H
+#ifndef TOP_LEVEL_PREAMBLE_2012890819_H
+#define TOP_LEVEL_PREAMBLE_2012890819_H
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,14 +33,18 @@ typedef struct {
 } _dount_out_t;
 typedef struct {
     struct self_base_t base;
-#line 37 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__d/_dount.h"
-    #line 35 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
+    
+    #line 35 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
     int c;
-#line 40 "/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src-gen/federate__d/_dount.h"
+    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
     _dount_out_t _lf_out;
+    #line 34 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
     int _lf_out_width;
+    #line 38 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
     reaction_t _lf__reaction_0;
+    #line 36 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
     trigger_t _lf__t;
+    #line 36 "/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf"
     reaction_t* _lf__t_reactions[1];
 } _dount_self_t;
 _dount_self_t* new__dount();

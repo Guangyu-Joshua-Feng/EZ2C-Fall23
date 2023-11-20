@@ -1,9 +1,8 @@
 #ifndef _federate__d_main_H
 #define _federate__d_main_H
-#ifndef _FEDERATE__D_MAIN_H // necessary for arduino-cli, which automatically includes headers that are not used
-#ifndef TOP_LEVEL_PREAMBLE_748482365_H
-#define TOP_LEVEL_PREAMBLE_748482365_H
-/*Correspondence: Range: [(15, 0), (27, 6)) -> Range: [(0, 0), (12, 6)) (verbatim=true; src=/home/ee149/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf)*/#ifdef __cplusplus
+#ifndef TOP_LEVEL_PREAMBLE_2012890819_H
+#define TOP_LEVEL_PREAMBLE_2012890819_H
+/*Correspondence: Range: [(15, 0), (27, 6)) -> Range: [(0, 0), (12, 6)) (verbatim=true; src=/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/src/federate__d.lf)*/#ifdef __cplusplus
 extern "C" {
 #endif
 #include "core/federated/federate.h"
@@ -47,5 +46,4 @@ typedef struct {
     int value;
 
 } networksender_00_msg_t;
-#endif
 #endif
