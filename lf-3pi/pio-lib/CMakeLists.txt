@@ -1,6 +1,7 @@
 add_library(pio
   src/led.c
   src/rise_time.c
+  src/pio_lib_utils.c
   src/intr_test.c
 )
 

@@ -44,9 +44,10 @@ int8_t pio_lib_utils_find_available_nvic_irq(const PIO pio_hw) {
     return nvic_pio_irq;
 }
 
-uint pio_lib_utils_get_nvic_pio_irq_index(int8_t nvic_pio_irq) {
+uint pio_lib_utils_get_nvic_pio_irq_index(const PIO pio_hw,
+                                          int8_t nvic_pio_irq) {
     static_assert(PIO0_IRQ_1 == PIO0_IRQ_0 + 1 && PIO1_IRQ_1 == PIO1_IRQ_0 + 1,
                   "");
 
-    return nvic_pio_irq - ((pio == pio0) ? PIO0_IRQ_0 : PIO1_IRQ_0);
+    return nvic_pio_irq - ((pio_hw == pio0) ? PIO0_IRQ_0 : PIO1_IRQ_0);
 }

@@ -13,23 +13,32 @@
 ;   . The ONLY input pin enabled is the low-threshold input pin.
 
 init:
+    set pins, 1    ; Turn PIO LED off.
     pull block     ; A blocking pull that pulls the rise count limit into the
                    ; OSR register.
 
 .wrap_target       ; The program should restart from here.
 reset:
     mov isr, osr   ; Reset rise counter to its limit.
-    mov y, pins    ; Copy low-threshold value to y.
-    jmp y-- reset  ; Keep looping in "reset" mode until low-threshold is low.
-                   ; Note that the decrement is unavoidable by op code design.
-                   ; Fall through to "low" mode and start monitoring.
-    set x, 0       ; Set x to 0.
-    jmp x-- low    ; Start counting backwards from 0xFFFFFFFF so that future
-                   ; "jmp x--" branches are always taken. Note that this branch
-                   ; is never taken but is required by op code design of "x--".
-                   ; Always fall through to low.
+
+reset_loop:
+    ;set pins, 0         ; Turn PIO LED on.
+    mov y, pins         ; Copy low-threshold value to y.
+    mov pins, y         ; Output y as LED state.
+    jmp y-- reset_loop  ; Keep looping in "reset" mode until low-threshold is low.
+                        ; Note that the decrement is unavoidable by op code design.
+                        ; Fall through to "low" mode and start monitoring.
+halt:
+    jmp halt
+
+    set x, 0            ; Set x to 0.
+    jmp x-- low         ; Start counting backwards from 0xFFFFFFFF so that future
+                        ; "jmp x--" branches are always taken. Note that this branch
+                        ; is never taken but is required by op code design of "x--".
+                        ; Always fall through to low.
 
 low:
+    set pins, 1                 ; Turn PIO LED off.
     mov y, pins                 ; Copy low-threshold value to y.
     jmp !y low                  ; The low-threshold input pin is low, keep
                                 ; looping in low.
@@ -45,6 +54,7 @@ rise_continue:
                                  ; counting.
 
 rise:
+    set pins, 1                  ; Turn PIO LED off.
     jmp pin capacitance_warning  ; If low-threshold becomes low before we
                                  ; reaches "high", the current rise failed.
     jmp x-- rise_continue        ; Decrement x every 3 cycles and continue.
@@ -55,6 +65,7 @@ rise:
                                  ; C CODE ACCRODINGLY TO CALCULATE RISE TIME.
 
 high:
+    set pins, 1             ; Turn PIO LED off.
     mov y, isr              ; Copy rise counter value from ISR to y so that we can
                             ; modify.
     jmp y-- high_continue   ; Decrement Y. If it has not reached 0, proceed to
@@ -92,21 +103,26 @@ capacitance_warning:
 
 % c-sdk {
 static inline void rise_time_program_init(PIO pio, uint sm, uint offset,
-                                          uint lo_pin, uint hi_pin) {
+                                          uint lo_pin, uint hi_pin,
+                                          uint led_pin) {
     // According to the SDK function documentation, these two lines are not
     // necessary if they are only used as input pins. But only one of the
     // examples provided did not include a call to pio_gpio_init on these
     // pins. Consider toggling these two lines for debugging.
     pio_gpio_init(pio, lo_pin);
     pio_gpio_init(pio, hi_pin);
+    pio_gpio_init(pio, led_pin);
 
     pio_sm_set_consecutive_pindirs(pio, sm, lo_pin, 1, false);
     pio_sm_set_consecutive_pindirs(pio, sm, hi_pin, 1, false);
+    pio_sm_set_consecutive_pindirs(pio, sm, led_pin, 1, true);
 
     // State machine configuration.
     pio_sm_config c = rise_time_program_get_default_config(offset);
     sm_config_set_jmp_pin(&c, hi_pin);
-    sm_config_set_in_pins(&c, lo_pin, 1);
+    sm_config_set_in_pins(&c, lo_pin);
+    sm_config_set_out_pins(&c, led_pin, 1);
+    sm_config_set_set_pins(&c, led_pin, 1);
 
     // Initialize.
     pio_sm_init(pio, sm, offset, &c);
