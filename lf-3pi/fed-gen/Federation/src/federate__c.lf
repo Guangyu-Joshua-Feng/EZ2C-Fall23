@@ -1,14 +1,14 @@
 target C {
   cmake-include: "include/federate__c_extension.cmake",
+  _fed_setup: "include/_federate__c_preamble.h",
   threading: true,
+  keepalive: true,
   compile-definitions: {
     EXECUTABLE_PREAMBLE: "",
     NUMBER_OF_FEDERATES: "3",
     FEDERATED: "",
     FEDERATED_CENTRALIZED: ""
-  },
-  keepalive: true,
-  _fed_setup: "include/_federate__c_preamble.h"
+  }
 }
 
 
