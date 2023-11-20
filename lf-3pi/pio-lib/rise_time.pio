@@ -12,24 +12,24 @@
 
 init:
     pull block     ; A blocking pull that pulls the rise count limit into OSR.
+    set x, 0       ; Set X (clock cycle counter) to 0.
 
 .wrap_target       ; The program should restart from here.
 reset:
     in pins, 1     ; Read low-threshold pin state to ISR.
-    mov y, isr     ; Copy ISR to Y. Y is 0 if low-threshold is high, or 
+    mov y, isr     ; Copy ISR to Y. Y is 0 if low-threshold is low, or 
                    ; 1 otherwise.
     jmp y-- reset  ; Keep looping in "reset" mode until low-threshold is low.
                    ; Note that the decrement is unavoidable by op code design.
                    ; Fall through to "low" mode and start monitoring.
-    set x, 0       ; Set x to 0.
     jmp x-- low    ; Start counting backwards from 0xFFFFFFFF so that future
-                   ; "jmp x--" branches are always taken. Note that this branch
-                   ; is never taken but is required by op code design of "x--".
+                   ; "jmp x--" branches are always taken. Note that this jmp
+                   ; command is required by op code design of "x--".
                    ; Always fall through to low.
 
 low:
     in pins, 1                  ; Read low-threshold pin state to ISR.
-    mov y, isr                  ; Copy ISR to Y. Y is 0 if low-threshold is high,
+    mov y, isr                  ; Copy ISR to Y. Y is 0 if low-threshold is low,
                                 ; or 1 otherwise.
     jmp !y low                  ; If the low-threshold input pin is low, keep
                                 ; looping in low.
@@ -45,7 +45,10 @@ rise_continue:
                                  ; counting.
 
 rise:
-    jmp pin capacitance_warning  ; If low-threshold becomes low before we
+    in pins, 1                   ; Read low-threshold pin state to ISR.
+    mov y, isr                   ; Copy ISR to Y. Y is 0 if low-threshold is low,
+                                 ; or 1 otherwise.
+    jmp !y capacitance_warning   ; If low-threshold becomes low before we
                                  ; reaches "high", the current rise failed.
     jmp x-- rise_continue        ; Decrement x every 3 cycles and continue.
                                  ; Note that the jmp here is always taken and
