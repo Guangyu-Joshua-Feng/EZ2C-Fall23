@@ -4,47 +4,38 @@
 ;   . Both Autopull and Autopush should be disabled.
 ;   . Scratch register X is used as the clock cycle counter.
 ;   . Scratch register Y is used as temp space.
-;   . ISR is used as a counter for the number of rises.
-;   . OSR is initialized at the "init" stage to "rise count" limit to which
-;     ISR is compared to. The total number of rises to measure before an
-;     output IRQ is asserted is this value + 1.
+;   . ISR is used as a temp space for bit shifting.
+;   . OSR is used as a counter for the number of rises.
 ;   . The jmp pin is set to the high-threshold input pin because it's used in
 ;     the performance-critical section of the code.
 ;   . The ONLY input pin enabled is the low-threshold input pin.
 
 init:
-    set pins, 1    ; Turn PIO LED off.
-    pull block     ; A blocking pull that pulls the rise count limit into the
-                   ; OSR register.
+    pull block     ; A blocking pull that pulls the rise count limit into OSR.
 
 .wrap_target       ; The program should restart from here.
 reset:
-    mov isr, osr   ; Reset rise counter to its limit.
-
-reset_loop:
-    ;set pins, 0         ; Turn PIO LED on.
-    mov y, pins         ; Copy low-threshold value to y.
-    mov pins, y         ; Output y as LED state.
-    jmp y-- reset_loop  ; Keep looping in "reset" mode until low-threshold is low.
-                        ; Note that the decrement is unavoidable by op code design.
-                        ; Fall through to "low" mode and start monitoring.
-halt:
-    jmp halt
-
-    set x, 0            ; Set x to 0.
-    jmp x-- low         ; Start counting backwards from 0xFFFFFFFF so that future
-                        ; "jmp x--" branches are always taken. Note that this branch
-                        ; is never taken but is required by op code design of "x--".
-                        ; Always fall through to low.
+    in pins, 1     ; Read low-threshold pin state to ISR.
+    mov y, isr     ; Copy ISR to Y. Y is 0 if low-threshold is high, or 
+                   ; 1 otherwise.
+    jmp y-- reset  ; Keep looping in "reset" mode until low-threshold is low.
+                   ; Note that the decrement is unavoidable by op code design.
+                   ; Fall through to "low" mode and start monitoring.
+    set x, 0       ; Set x to 0.
+    jmp x-- low    ; Start counting backwards from 0xFFFFFFFF so that future
+                   ; "jmp x--" branches are always taken. Note that this branch
+                   ; is never taken but is required by op code design of "x--".
+                   ; Always fall through to low.
 
 low:
-    set pins, 1                 ; Turn PIO LED off.
-    mov y, pins                 ; Copy low-threshold value to y.
-    jmp !y low                  ; The low-threshold input pin is low, keep
+    in pins, 1                  ; Read low-threshold pin state to ISR.
+    mov y, isr                  ; Copy ISR to Y. Y is 0 if low-threshold is high,
+                                ; or 1 otherwise.
+    jmp !y low                  ; If the low-threshold input pin is low, keep
                                 ; looping in low.
     jmp pin resolution_warning  ; If high-threshold value is already high, then
                                 ; it means that the rise time was too short to
-                                ; be detected using this method.
+                                ; be measured with this method.
     jmp rise                    ; Go to "rise" mode and to start counting.
 
 rise_continue:
@@ -54,7 +45,6 @@ rise_continue:
                                  ; counting.
 
 rise:
-    set pins, 1                  ; Turn PIO LED off.
     jmp pin capacitance_warning  ; If low-threshold becomes low before we
                                  ; reaches "high", the current rise failed.
     jmp x-- rise_continue        ; Decrement x every 3 cycles and continue.
@@ -65,15 +55,15 @@ rise:
                                  ; C CODE ACCRODINGLY TO CALCULATE RISE TIME.
 
 high:
-    set pins, 1             ; Turn PIO LED off.
-    mov y, isr              ; Copy rise counter value from ISR to y so that we can
+    mov y, osr              ; Copy rise counter value from OSR to y so that we can
                             ; modify.
     jmp y-- high_continue   ; Decrement Y. If it has not reached 0, proceed to
-                            ; "high_continue" mode to write y back to ISR.
+                            ; "high_continue" mode to write y back to OSR.
     jmp output              ; Otherwise, go to "output" mode.
 
-high_continue:
-    mov isr, y              ; Copy the decremented y value back to ISR...
+high_continue:              ; TODO: may be reordered with "high" to eliminate
+                            ; one instruction.
+    mov osr, y              ; Copy the decremented y value back to osr...
 .wrap                       ; And restart the program.
 
 output:
@@ -85,7 +75,7 @@ output:
                    ; that the counter result is ready in RX FIFO. This
                    ; statement blocks the pio state machine until the flag is
                    ; cleared by the main system.
-    jmp reset      ; Reset the program.
+    jmp init       ; Reset the program, reinitializing the rise counter.
 
 resolution_warning:
     irq wait 1 rel ; Asserts pio interrupt 1 to the main system, notifying it
