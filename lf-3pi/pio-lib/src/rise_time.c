@@ -64,7 +64,7 @@ static void irq_handler_helper(int i) {
             printf("clock: %d\n", curr_clock);
 
             uint32_t x = rise_time_program_recv(pio_hw, sm);
-            float avg_cycles = 5.0f * x / 4 - 1;
+            float avg_cycles = 5.0f * x / 500 - 1;
             printf("average rise time: %f cycles\n", avg_cycles);
             printf("pushing new rise count limit...\n");
             pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit());
@@ -88,5 +88,5 @@ static void irq_handler_helper(int i) {
 
 static uint32_t get_rise_count_limit() {
     uint32_t curr_clock = clock_get_hz(clk_sys);
-    return 3;  // TODO: modify this when ready to use.
+    return 499;  // TODO: modify this when ready to use.
 }
