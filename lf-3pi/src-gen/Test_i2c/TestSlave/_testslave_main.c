@@ -15,8 +15,9 @@ static void output_addr(uint8_t addr){
   bool bit[ADDR_BIT_NUM];  
   int reminder[ADDR_BIT_NUM];
   reminder[ADDR_BIT_NUM-1] = addr_index;
-  for(int i = ADDR_BIT_NUM-1; i=0; i--){
+  for(int i = ADDR_BIT_NUM-1; i>=0; i--){
     bit[i] = (reminder[i]/((int)pow(2,i))) > 0;
+    // printf("i = %d, bit = %d, reminder = %d. \n",i,bit[i],reminder[i]);
     gpio_put(18+i, bit[i]);
     if (i>0){
       reminder[i-1] = reminder[i]%((int)pow(2,i));
@@ -112,7 +113,7 @@ static void setup_slave() {
 void _testslave_mainreaction_function_0(void* instance_args) {
     _testslave_main_main_self_t* self = (_testslave_main_main_self_t*)instance_args; SUPPRESS_UNUSED_WARNING(self);
     
-    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 139 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     setup_slave();
     for (int i=16; i<18+ADDR_BIT_NUM; i++){
       gpio_init(i);
@@ -122,19 +123,19 @@ void _testslave_mainreaction_function_0(void* instance_args) {
 #include "include/api/set_undef.h"
 _testslave_main_main_self_t* new__testslave_main() {
     _testslave_main_main_self_t* self = (_testslave_main_main_self_t*)_lf_new_reactor(sizeof(_testslave_main_main_self_t));
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.number = 0;
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.function = _testslave_mainreaction_function_0;
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.self = self;
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.deadline_violation_handler = NULL;
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.STP_handler = NULL;
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.name = "?";
-    #line 137 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
+    #line 138 "/home/foobar/EZ2C-Fall23/lf-3pi/src/Test_i2c/TestSlave.lf"
     self->_lf__reaction_0.mode = NULL;
     #ifdef FEDERATED_DECENTRALIZED
     self->_lf__startup.intended_tag = (tag_t) { .time = NEVER, .microstep = 0u};
