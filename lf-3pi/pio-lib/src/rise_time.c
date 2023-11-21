@@ -60,10 +60,11 @@ static void nvic_pio_irq_handler() {
 static void irq_handler_helper(int i) {
     switch (i) {
         case 0: {
+            uint32_t rise_time_limit = get_rise_count_limit();
             uint32_t x = rise_time_program_recv(pio_hw, sm);
-            float avg_cycles = 5.0f * x / 500 - 1;
+            float avg_cycles = 5.0f * x / rise_time_limit - 1;
             printf("average rise time: %f cycles\n", avg_cycles);
-            pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit());
+            pio_sm_put_blocking(pio_hw, sm, rise_time_limit);
             break;
         }
         case 1:
@@ -83,5 +84,5 @@ static void irq_handler_helper(int i) {
 
 static uint32_t get_rise_count_limit() {
     uint32_t curr_clock = clock_get_hz(clk_sys);
-    return 499;  // TODO: modify this when ready to use.
+    return 999;  // TODO: modify this when ready to use.
 }

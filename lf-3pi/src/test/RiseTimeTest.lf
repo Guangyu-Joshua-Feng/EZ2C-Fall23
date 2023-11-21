@@ -11,6 +11,7 @@ target C {
 
 preamble {=
   #include <rise_time.h>
+  #include <hardware/gpio.h>
 
   #define LO_THRESHOLD_SIM_OUT 11
   #define HI_THRESHOLD_SIM_OUT 10
@@ -18,10 +19,14 @@ preamble {=
 
 main reactor {
   // simulating rise time: 2000ns
-  timer lo_rise(0, 2 ms);
-  timer lo_fall(1500 us, 2 ms);
-  timer hi_rise(2100 ns, 2 ms);
-  timer hi_fall(1 ms, 2 ms);
+  // timer lo_rise(0, 2 ms);
+  // timer lo_fall(1500 us, 2 ms);
+  // timer hi_rise(2100 ns, 2 ms);
+  // timer hi_fall(1 ms, 2 ms);
+  timer lo_rise(0, 300 ms);
+  timer lo_fall(200 ms, 300 ms);
+  timer hi_rise(100 ns, 300 ms);
+  timer hi_fall(150 ms, 300 ms);
   reaction(startup) {=
     rise_time_start();
     gpio_init(LO_THRESHOLD_SIM_OUT);
