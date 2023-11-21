@@ -20,7 +20,7 @@ main reactor {
   // simulating rise time: 2000ns
   timer lo_rise(0, 2 ms);
   timer lo_fall(1500 us, 2 ms);
-  timer hi_rise(2000 ns, 2 ms);
+  timer hi_rise(2100 ns, 2 ms);
   timer hi_fall(1 ms, 2 ms);
   reaction(startup) {=
     rise_time_start();
