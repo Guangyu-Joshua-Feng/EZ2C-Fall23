@@ -61,7 +61,7 @@ static void irq_handler_helper(int i) {
     switch (i) {
         case 0: {
             uint32_t x = rise_time_program_recv(pio_hw, sm);
-            float avg_cycles = 5.0f * x / 500 - 1;
+            float avg_cycles = 5.0f * x / 500;
             printf("average rise time: %f cycles\n", avg_cycles);
             pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit());
             break;

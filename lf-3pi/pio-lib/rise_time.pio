@@ -16,10 +16,10 @@ init:
 
 .wrap_target       ; The program should restart from here.
 reset:
-    in pins, 1     ; Read low-threshold pin state to ISR.
-    mov y, isr     ; Copy ISR to Y. Y is 0 if low-threshold is low, or 
+    ;in pins, 1     ; Read low-threshold pin state to ISR.
+    ;mov y, isr     ; Copy ISR to Y. Y is 0 if low-threshold is low, or 
                    ; 1 otherwise.
-    jmp y-- reset  ; Keep looping in "reset" mode until low-threshold is low.
+    jmp pin reset  ; Keep looping in "reset" mode until low-threshold is low.
                    ; Note that the decrement is unavoidable by op code design.
                    ; Fall through to "low" mode and start monitoring.
     jmp x-- low    ; Start counting backwards from 0xFFFFFFFF so that future

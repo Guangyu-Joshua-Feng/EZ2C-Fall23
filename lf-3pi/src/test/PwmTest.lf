@@ -10,31 +10,33 @@ target C {
 
 preamble {=
   #include <hardware/pwm.h>
+  #include <hardware/gpio.h>
 
-  #define PWM_125_PIN 0
-  #define PWM_150_PIN 2
-  #define PWM_200_PIN 4
+  #define PWM_1_PIN 0
+  #define PWM_240_PIN 2
+  #define PWM_245_PIN 4
   #define PWM_250_PIN 6
 
-  void init_pwm(uint pin, float div) {
+  static void my_init_pwm(uint pin, float div) {
     gpio_set_function(pin, GPIO_FUNC_PWM);
+    gpio_set_function(pin + 1, GPIO_FUNC_PWM);
     uint slice_num = pwm_gpio_to_slice_num(pin);
-    
-    pwm_set_wrap(slice_num, 1);
-    pwm_set_chan_level(slice_num, PWM_CHAN_A, 1);
-    pwm_set_chan_level(slice_num, PWM_CHAN_B, 1);
 
     pwm_config config = pwm_get_default_config();
     pwm_config_set_clkdiv(&config, div);
     pwm_init(slice_num, &config, true);
+    
+    pwm_set_wrap(slice_num, 1);
+    pwm_set_chan_level(slice_num, PWM_CHAN_A, 1);
+    pwm_set_chan_level(slice_num, PWM_CHAN_B, 1);
   }
 =}
 
 main reactor {
   reaction(startup) {=
-    init_pwm(PWM_125_PIN, 125.f);
-    init_pwm(PWM_150_PIN, 150.f);
-    init_pwm(PWM_200_PIN, 200.f);
-    init_pwm(PWM_250_PIN, 250.f);
+    my_init_pwm(PWM_1_PIN, 3.f);
+    my_init_pwm(PWM_240_PIN, 20.f);
+    my_init_pwm(PWM_245_PIN, 30.f);
+    my_init_pwm(PWM_250_PIN, 40.f);
   =}
 }

@@ -1,0 +1,20 @@
+target C {
+    platform: {
+      name: "rp2040",
+      board: "pololu_3pi_2040_robot"
+    },
+    threading: false,
+    files: ["../../pio-lib/"],
+    cmake-include: ["../../pio-lib/pio-lib.txt"],
+    keepalive: true
+}
+
+preamble {=
+  #include <rise_time.h>
+=}
+
+main reactor {
+  reaction(startup) {=
+    rise_time_start();
+  =}
+}
