@@ -1,0 +1,24 @@
+// Standalone rise time measurement program.
+// Set baud rate according to the I2C target you wish to measure.
+target C {
+    platform: {
+      name: "rp2040",
+      board: "pololu_3pi_2040_robot"
+    },
+    threading: false,
+    files: ["../../pio-lib/"],
+    cmake-include: ["../../pio-lib/pio-lib.txt"],
+    keepalive: true
+}
+
+preamble {=
+  #include <rise_time.h>
+
+  #define BAUD_RATE 100
+=}
+
+main reactor {
+  reaction(startup) {=
+    rise_time_start(BAUD_RATE);
+  =}
+}

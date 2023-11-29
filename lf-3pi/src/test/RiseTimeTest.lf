@@ -1,0 +1,53 @@
+target C {
+    platform: {
+      name: "rp2040",
+      board: "pololu_3pi_2040_robot"
+    },
+    threading: false,
+    files: ["../../pio-lib/"],
+    cmake-include: ["../../pio-lib/pio-lib.txt"],
+    keepalive: true
+}
+
+preamble {=
+  #include <rise_time.h>
+  #include <hardware/gpio.h>
+
+  #define LO_THRESHOLD_SIM_OUT 11
+  #define HI_THRESHOLD_SIM_OUT 10
+=}
+
+main reactor {
+  // simulating rise time: 2000ns
+  // timer lo_rise(0, 2 ms);
+  // timer lo_fall(1500 us, 2 ms);
+  // timer hi_rise(2100 ns, 2 ms);
+  // timer hi_fall(1 ms, 2 ms);
+  timer lo_rise(0, 300 ms);
+  timer lo_fall(200 ms, 300 ms);
+  timer hi_rise(100 ns, 300 ms);
+  timer hi_fall(150 ms, 300 ms);
+  reaction(startup) {=
+    rise_time_start();
+    gpio_init(LO_THRESHOLD_SIM_OUT);
+    gpio_set_dir(LO_THRESHOLD_SIM_OUT, GPIO_OUT);
+    gpio_init(HI_THRESHOLD_SIM_OUT);
+    gpio_set_dir(HI_THRESHOLD_SIM_OUT, GPIO_OUT);
+  =}
+
+  reaction(lo_rise) {=
+    gpio_put(LO_THRESHOLD_SIM_OUT, 1);
+  =}
+  
+  reaction(lo_fall) {=
+    gpio_put(LO_THRESHOLD_SIM_OUT, 0);
+  =}
+  
+  reaction(hi_rise) {=
+    gpio_put(HI_THRESHOLD_SIM_OUT, 1);
+  =}
+  
+  reaction(hi_fall) {=
+    gpio_put(HI_THRESHOLD_SIM_OUT, 0);
+  =}
+}
