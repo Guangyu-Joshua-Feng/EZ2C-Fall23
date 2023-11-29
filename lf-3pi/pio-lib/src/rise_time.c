@@ -9,25 +9,23 @@
 // Number of clock cycles per PIO counter increment. Adjust this according
 // to the assembly program in rise_time.pio.
 #define PIO_CYCLES_PER_COUNTER_INCERMENT 5
-#define PIO_LO_THRESHOLD_PIN 20
-#define PIO_HI_THRESHOLD_PIN 21
 
 static uint32_t global_baud;
 static PIO pio_hw;
 static uint sm;
 static uint offset;
 static int8_t pio_irq;
+static float avg_cycles;
 
 static void nvic_pio_irq_handler();
 static void irq_handler_helper(int i);
 static inline uint32_t get_rise_count_limit(uint32_t baud_rate);
 
-void rise_time_start(uint32_t baud_rate) {
+void rise_time_start(uint32_t baud_rate, uint lo_pin, uint hi_pin) {
     if (!pio_lib_utils_init_pio(&rise_time_program, &pio_hw, &sm, &offset)) {
         panic("failed to setup pio");
     }
-    rise_time_program_init(pio_hw, sm, offset, PIO_LO_THRESHOLD_PIN,
-                           PIO_HI_THRESHOLD_PIN);
+    rise_time_program_init(pio_hw, sm, offset, lo_pin, hi_pin);
 
     // Set up IRQ.
     int8_t nvic_pio_irq = pio_lib_utils_find_available_nvic_irq(pio_hw);
@@ -46,6 +44,10 @@ void rise_time_start(uint32_t baud_rate) {
     pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit(global_baud));
 }
 
+float get_avg_cycles() {
+    return avg_cycles;
+}
+
 static void nvic_pio_irq_handler() {
     static bool on = false;
     for (int i = 0; i < 4; ++i) {
@@ -60,10 +62,10 @@ static void irq_handler_helper(int i) {
         case 0: {
             uint32_t rise_time_limit = get_rise_count_limit(global_baud);
             uint32_t x = rise_time_program_recv(pio_hw, sm);
-            float avg_cycles =
+            avg_cycles =
                 (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_time_limit;
-            printf("average rise time: %f cycles\n", avg_cycles);
-            pio_sm_put_blocking(pio_hw, sm, rise_time_limit);
+            printf("PIO: %f cycles\n", avg_cycles);
+            pio_sm_put_blocking(pio_hw, sm, rise_time_limit - 1);
             break;
         }
         case 1:
@@ -82,6 +84,8 @@ static void irq_handler_helper(int i) {
 }
 
 static inline uint32_t get_rise_count_limit(uint32_t baud_rate) {
-    static uint32_t min_baud_rate = 2000;
-    return baud_rate < min_baud_rate ? min_baud_rate : baud_rate;
+    // static uint32_t min_baud_rate = 2000;
+    // return baud_rate < min_baud_rate ? min_baud_rate : baud_rate;
+    // TODO: decide whether or not to get rid of baud_rate
+    return 1000;
 }

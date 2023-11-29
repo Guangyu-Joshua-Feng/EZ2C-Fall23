@@ -1,3 +1,0 @@
-/home/ee149/EZ2C-Fall23/lf-3pi/src-gen/circular/CircularSlave/build/pioasm/CMakeFiles/pioasm.dir
-/home/ee149/EZ2C-Fall23/lf-3pi/src-gen/circular/CircularSlave/build/pioasm/CMakeFiles/edit_cache.dir
-/home/ee149/EZ2C-Fall23/lf-3pi/src-gen/circular/CircularSlave/build/pioasm/CMakeFiles/rebuild_cache.dir

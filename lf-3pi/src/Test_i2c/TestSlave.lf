@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["../cmake_include/i2cslave.txt"],
+  cmake-include: ["../cmake_include/i2c.txt"],
   keepalive: true,
 }
 
@@ -18,7 +18,8 @@ preamble {=
   #include <string.h>
   #include <math.h>
 
-  #define INTERNAL_PULL_UP 1
+  #define BAUD_RATE (100 * 1000)
+  #define INTERNAL_PULL_UP 0
   #define I2C_DEFAULT_SLAVE_ADDR 0x55
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
@@ -130,14 +131,14 @@ main reactor {
         gpio_disable_pulls(PICO_DEFAULT_I2C_SDA_PIN);
         gpio_disable_pulls(PICO_DEFAULT_I2C_SCL_PIN);
       }
-      i2c_init(i2c0, 100);
+      i2c_init(i2c0, BAUD_RATE);
       i2c_slave_init(i2c0, I2C_DEFAULT_SLAVE_ADDR, &i2c_slave_handler);
     }
   =}
 
   reaction(startup) {=
     setup_slave();
-    for (int i=16; i<18+ADDR_BIT_NUM; i++){
+    for (int i = 16; i < 18 + ADDR_BIT_NUM; i++){
       gpio_init(i);
       gpio_set_dir(i, GPIO_OUT);
     }

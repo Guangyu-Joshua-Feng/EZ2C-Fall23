@@ -1,3 +1,5 @@
 .vscode
-# src-gen
-# bin
+fed-gen
+src-gen
+bin
+include

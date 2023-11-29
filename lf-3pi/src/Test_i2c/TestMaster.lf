@@ -4,22 +4,34 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["../cmake_include/i2cslave.txt"]
+  cmake-include: ["../../pio-lib/pio-lib.txt", "../cmake_include/i2c.txt"],
+  files: ["../../pio-lib/"],
+  keepalive: true
 }
 
 preamble {=
   #include <stdio.h>
-  #include <pico/stdlib.h>
   #include <hardware/gpio.h>
   #include <hardware/i2c.h>
+  #include <pico/stdlib.h>
   #include <pico/unique_id.h>
+  #include <rise_time.h>
   #include <string.h>
 
+  #define RISE_TIME_CYCLES_MAX 150
+  #define RISE_TIME_CYCLES_MIN 50
+  #define BAUD_RATE (100 * 1000)
   #define MAX_SLAVES 30
-  #define INTERNAL_PULL_UP 1
+  #define INTERNAL_PULL_UP 0
   #define I2C_DEFAULT_SLAVE_ADDR 0x55
+
+  #define ADDR_ASSIGNMENT_BUTTON_PIN 0
   #define PICO_DEFAULT_I2C_SDA_PIN 4
   #define PICO_DEFAULT_I2C_SCL_PIN 5
+  #define PULLUP_DEMUX_A0 14
+  #define PULLUP_DEMUX_A1 15
+  #define PIO_LO_THRESHOLD_PIN 20
+  #define PIO_HI_THRESHOLD_PIN 21
 
   #define COMMAND_DISCOVER 0
   #define COMMAND_ASSIGN 1
@@ -54,11 +66,18 @@ main reactor {
         gpio_disable_pulls(PICO_DEFAULT_I2C_SDA_PIN);
         gpio_disable_pulls(PICO_DEFAULT_I2C_SCL_PIN);
       }
-      i2c_init(i2c0, 100);
-      
+      i2c_init(i2c0, BAUD_RATE);
+
       for (int i = 0; i < MAX_SLAVES; ++i) {
         addr_taken[i] = false;
       }
+    }
+
+    static void setup_pullup_demux() {
+      gpio_init(PULLUP_DEMUX_A0);
+      gpio_init(PULLUP_DEMUX_A1);
+      gpio_set_dir(PULLUP_DEMUX_A0, GPIO_OUT);
+      gpio_set_dir(PULLUP_DEMUX_A1, GPIO_OUT);
     }
 
     // Dynamic address allocation helper methods.
@@ -66,6 +85,12 @@ main reactor {
     static void assign(pico_unique_board_id_t id);
     static uint8_t get_next_addr();
     static void echo(uint8_t slave_addr);
+
+    // Demux adjustment helper method.
+    static void set_demux_pullup(uint8_t pullup) {
+      gpio_put(PULLUP_DEMUX_A0, pullup & 0b1);
+      gpio_put(PULLUP_DEMUX_A1, pullup & 0b10);
+    }
 
     static bool discover() {
       uint8_t command = COMMAND_DISCOVER;
@@ -104,14 +129,14 @@ main reactor {
       // Echo device at new address to test connectivity.
       echo(addr);
     }
-    
+
     static uint8_t get_next_addr() {
       int i = 0;
       while (addr_taken[i] && i < MAX_SLAVES) {
         ++i;
       }
       if (i == MAX_SLAVES) return -1;
-      
+
       addr_taken[i] = true;
       return addr_at_index(i);
     }
@@ -132,25 +157,31 @@ main reactor {
   =}
 
   state discover_done: bool
+  state pullup: uint8_t
   timer button_scan_t(0, 10 ms)
   timer echo_t(3 s, 3 s)
+  timer demux_adjust_t(3 s, 1 s)
   logical action button
 
   reaction(startup) {=
     setup_master();
-    gpio_init(0);
-    gpio_set_dir(0, GPIO_IN);
+    setup_pullup_demux();
+    setup_pullup_demux(self->pullup = 2);
+
+    gpio_init(ADDR_ASSIGNMENT_BUTTON_PIN);
+    gpio_set_dir(ADDR_ASSIGNMENT_BUTTON_PIN, GPIO_IN);
+    
+    rise_time_start(BAUD_RATE, PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN);
   =}
 
   reaction(button_scan_t) -> button {=
     // Scan button press
-    if (gpio_get(0)) {
-      lf_schedule(button,0);
+    if (gpio_get(ADDR_ASSIGNMENT_BUTTON_PIN)) {
+      lf_schedule(button, 0);  // Immediately trigger a button reaction.
     }
   =}
 
   reaction(button) {=
-    printf("button pressed\n");
     self->discover_done = false;
     while (!self->discover_done) {
       self->discover_done = !discover();
@@ -160,6 +191,18 @@ main reactor {
   reaction(echo_t) {=
     for (int i = 0; i < MAX_SLAVES; ++i) {
       if (addr_taken[i]) echo(addr_at_index(i));
+    }
+  =}
+
+  reaction(demux_adjust_t) {=
+    float cycles = get_avg_cycles();
+      printf("Master: %f cycles\n", cycles);
+    if (cycles < RISE_TIME_CYCLES_MIN && self->pullup > 0) {
+      printf("Master: increasing pull up resistance (%d -> %d)\n", self->pullup, self->pullup + 1);
+      set_demux_pullup(++self->pullup);
+    } else if (cycles > RISE_TIME_CYCLES_MAX && self->pullup < 3) {
+      printf("Master: decreasing pull up resistance (%d -> %d)\n", self->pullup, self->pullup - 1);
+      set_demux_pullup(--self->pullup);
     }
   =}
 }

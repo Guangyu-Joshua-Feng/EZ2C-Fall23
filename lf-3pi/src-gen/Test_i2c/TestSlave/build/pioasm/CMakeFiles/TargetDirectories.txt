@@ -1,3 +1,0 @@
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestSlave/build/pioasm/CMakeFiles/pioasm.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestSlave/build/pioasm/CMakeFiles/edit_cache.dir
-/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestSlave/build/pioasm/CMakeFiles/rebuild_cache.dir
