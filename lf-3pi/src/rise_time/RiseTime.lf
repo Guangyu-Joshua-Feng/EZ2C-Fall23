@@ -1,3 +1,5 @@
+// Standalone rise time measurement program.
+// Set baud rate according to the I2C target you wish to measure.
 target C {
     platform: {
       name: "rp2040",
@@ -11,10 +13,12 @@ target C {
 
 preamble {=
   #include <rise_time.h>
+
+  #define BAUD_RATE 100
 =}
 
 main reactor {
   reaction(startup) {=
-    rise_time_start();
+    rise_time_start(BAUD_RATE);
   =}
 }

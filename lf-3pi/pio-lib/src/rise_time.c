@@ -6,11 +6,13 @@
 #include <rise_time.h>
 #include <rise_time.pio.h>
 
-#define PIO_LED_PIN 15
-#define LED_PIN 16
+// Number of clock cycles per PIO counter increment. Adjust this according
+// to the assembly program in rise_time.pio.
+#define PIO_CYCLES_PER_COUNTER_INCERMENT 5
 #define PIO_LO_THRESHOLD_PIN 20
 #define PIO_HI_THRESHOLD_PIN 21
 
+static uint32_t global_baud;
 static PIO pio_hw;
 static uint sm;
 static uint offset;
@@ -18,18 +20,14 @@ static int8_t pio_irq;
 
 static void nvic_pio_irq_handler();
 static void irq_handler_helper(int i);
-static uint32_t get_rise_count_limit();
+static inline uint32_t get_rise_count_limit(uint32_t baud_rate);
 
-void rise_time_start() {
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
-    gpio_put(LED_PIN, true);
-
+void rise_time_start(uint32_t baud_rate) {
     if (!pio_lib_utils_init_pio(&rise_time_program, &pio_hw, &sm, &offset)) {
         panic("failed to setup pio");
     }
     rise_time_program_init(pio_hw, sm, offset, PIO_LO_THRESHOLD_PIN,
-                           PIO_HI_THRESHOLD_PIN, PIO_LED_PIN);
+                           PIO_HI_THRESHOLD_PIN);
 
     // Set up IRQ.
     int8_t nvic_pio_irq = pio_lib_utils_find_available_nvic_irq(pio_hw);
@@ -44,8 +42,8 @@ void rise_time_start() {
     pio_set_irqn_source_enabled(pio_hw, index, pis_interrupt2 + sm, true);
 
     // Send rise count limit to TX FIFO.
-    pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit());
-    gpio_put(LED_PIN, false);
+    global_baud = baud_rate;
+    pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit(global_baud));
 }
 
 static void nvic_pio_irq_handler() {
@@ -60,9 +58,10 @@ static void nvic_pio_irq_handler() {
 static void irq_handler_helper(int i) {
     switch (i) {
         case 0: {
-            uint32_t rise_time_limit = get_rise_count_limit();
+            uint32_t rise_time_limit = get_rise_count_limit(global_baud);
             uint32_t x = rise_time_program_recv(pio_hw, sm);
-            float avg_cycles = 5.0f * x / rise_time_limit - 1;
+            float avg_cycles =
+                (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_time_limit;
             printf("average rise time: %f cycles\n", avg_cycles);
             pio_sm_put_blocking(pio_hw, sm, rise_time_limit);
             break;
@@ -82,7 +81,7 @@ static void irq_handler_helper(int i) {
     pio_interrupt_clear(pio_hw, i);
 }
 
-static uint32_t get_rise_count_limit() {
-    uint32_t curr_clock = clock_get_hz(clk_sys);
-    return 999;  // TODO: modify this when ready to use.
+static inline uint32_t get_rise_count_limit(uint32_t baud_rate) {
+    static uint32_t min_baud_rate = 2000;
+    return baud_rate < min_baud_rate ? min_baud_rate : baud_rate;
 }
