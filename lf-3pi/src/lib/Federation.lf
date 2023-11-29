@@ -1,0 +1,41 @@
+target C 
+
+reactor Count {
+  output out: int
+  state c: int = 0
+  timer t(0, 1 sec)
+  reaction(t) -> out {=
+    lf_set(out, self->c++);
+  =}
+}
+
+reactor Dount {
+  output out: int
+  state c: int = 0
+  timer t(0, 2 sec)
+  reaction(t) -> out {=
+    lf_set(out, self->c++);
+  =}
+}
+
+reactor Print {
+  input in1: int
+  input in2: int
+  reaction(in1) {=
+    lf_print("Received: %d from Count at (%lld, %d)", in1->value,
+        lf_time_logical_elapsed(), lf_tag().microstep
+    );
+  =}
+  reaction(in2) {=
+    lf_print("Received: %d from Dount at (%lld, %d)", in2->value,
+        lf_time_logical_elapsed(), lf_tag().microstep
+    );
+  =}
+}
+federated reactor {
+  c = new Count()
+  d = new Dount()
+  p = new Print()
+  c.out -> p.in1
+  d.out -> p.in2
+}

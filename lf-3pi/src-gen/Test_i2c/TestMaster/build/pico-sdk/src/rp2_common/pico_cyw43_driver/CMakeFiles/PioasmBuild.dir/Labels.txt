@@ -1,0 +1,13 @@
+# Target labels
+ PioasmBuild
+# Source files and their labels
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/PioasmBuild
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/PioasmBuild.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/CMakeFiles/PioasmBuild-complete.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-build.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-configure.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-download.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-install.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-mkdir.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-patch.rule
+/home/foobar/EZ2C-Fall23/lf-3pi/src-gen/Test_i2c/TestMaster/build/pico-sdk/src/rp2_common/pico_cyw43_driver/pioasm/src/PioasmBuild-stamp/PioasmBuild-update.rule

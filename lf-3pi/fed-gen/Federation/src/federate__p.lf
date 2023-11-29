@@ -1,0 +1,111 @@
+target C {
+  cmake-include: "include/federate__p_extension.cmake",
+  _fed_setup: "include/_federate__p_preamble.h",
+  threading: true,
+  keepalive: true,
+  compile-definitions: {
+    EXECUTABLE_PREAMBLE: "",
+    NUMBER_OF_FEDERATES: "3",
+    FEDERATED: "",
+    FEDERATED_CENTRALIZED: ""
+  }
+}
+
+
+preamble {=
+#ifdef __cplusplus
+extern "C" {
+#endif
+#include "core/federated/federate.h"
+#include "core/federated/net_common.h"
+#include "core/federated/net_util.h"
+#include "core/federated/clock-sync.h"
+#include "core/threaded/reactor_threaded.h"
+#include "core/utils/util.h"
+extern federate_instance_t _fed;
+#ifdef __cplusplus
+}
+#endif
+
+
+=}
+
+reactor Print {
+  input in1: int
+  input in2: int
+
+  reaction(
+      in1) {=
+    lf_print("Received: %d from Count at (%lld, %d)", in1->value,
+        lf_time_logical_elapsed(), lf_tag().microstep
+    );
+  =}
+
+  reaction(
+      in2) {=
+    lf_print("Received: %d from Dount at (%lld, %d)", in2->value,
+        lf_time_logical_elapsed(), lf_tag().microstep
+    );
+  =}
+}
+reactor _pin1 {
+  input port0: int
+
+  output port: int
+
+  port0 -> port
+}
+reactor _pin2 {
+  input port0: int
+
+  output port: int
+
+  port0 -> port
+}
+@_NetworkReactor(Receiver)
+reactor NetworkReceiver_0 {
+  output msg: int
+
+  logical action networkMessage: int
+
+  reaction(startup) {= self->_lf__reaction_1.is_an_input_reaction = true; =}
+
+  reaction(networkMessage) -> msg {=
+    msg->physical_time_of_arrival = self->_lf__networkMessage.physical_time_of_arrival;
+    lf_set(msg, networkMessage->value);
+  =}
+}
+@_NetworkReactor(Receiver)
+reactor NetworkReceiver_1 {
+  output msg: int
+
+  logical action networkMessage: int
+
+  reaction(startup) {= self->_lf__reaction_1.is_an_input_reaction = true; =}
+
+  reaction(networkMessage) -> msg {=
+    msg->physical_time_of_arrival = self->_lf__networkMessage.physical_time_of_arrival;
+    lf_set(msg, networkMessage->value);
+  =}
+}
+@_fed_config()
+main reactor  {
+
+    p = new Print()
+    
+    
+    
+    
+    
+    
+    @_tpoLevel(2)
+    nr_federate__p = new NetworkReceiver_0()
+    @_tpoLevel(4)
+    nr_federate__p_0 = new NetworkReceiver_1()
+    _pin10 = new _pin1()
+    _pin20 = new _pin2()
+    _pin10.port -> p.in1
+    _pin20.port -> p.in2
+    nr_federate__p.msg -> _pin10.port0
+    nr_federate__p_0.msg -> _pin20.port0
+}

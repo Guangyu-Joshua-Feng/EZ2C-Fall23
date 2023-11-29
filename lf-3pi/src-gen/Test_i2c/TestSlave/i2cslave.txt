@@ -1,0 +1,5 @@
+target_link_libraries(${LF_MAIN_TARGET}
+  hardware_i2c
+  pico_i2c_slave
+  pico_unique_id
+)

@@ -1,0 +1,75 @@
+#!/bin/bash
+# Launcher for federated Federation.lf Lingua Franca program.
+# Uncomment to specify to behave as close as possible to the POSIX standard.
+# set -o posix
+
+# Enable job control
+set -m
+shopt -s huponexit
+
+# Set a trap to kill all background jobs on error or control-C
+# Use two distinct traps so we can see which signal causes this.
+cleanup() {
+    if [ "$EXITED_SUCCESSFULLY" = true ] ; then
+        exit 0
+    else
+        printf "Killing federate %s.\n" ${pids[*]}
+        # The || true clause means this is not an error if kill fails.
+        kill ${pids[@]} || true
+        printf "#### Killing RTI %s.\n" ${RTI}
+        kill ${RTI} || true
+        exit 1
+    fi
+}
+
+trap 'cleanup; exit' EXIT
+
+# Create a random 48-byte text ID for this federation.
+# The likelihood of two federations having the same ID is 1/16,777,216 (1/2^24).
+FEDERATION_ID=`openssl rand -hex 24`
+echo "Federate Federation in Federation ID '$FEDERATION_ID'"
+# Launch the federates:
+#### Host is localhostecho "#### Launching the runtime infrastructure (RTI)."
+# First, check if the RTI is on the PATH
+if ! command -v RTI &> /dev/null
+then
+    echo "RTI could not be found."
+    echo "The source code can be obtained from https://github.com/lf-lang/reactor-c/tree/main/core/federated/RTI"
+    exit 1
+fi                
+# The RTI is started first to allow proper boot-up
+# before federates will try to connect.
+# The RTI will be brought back to foreground
+# to be responsive to user inputs after all federates
+# are launched.
+RTI -i ${FEDERATION_ID} \
+                        -n 3 \
+                        -c init \
+exchanges-per-interval 10 \
+&
+# Store the PID of the RTI
+RTI=$!
+# Wait for the RTI to boot up before
+# starting federates (this could be done by waiting for a specific output
+# from the RTI, but here we use sleep)
+sleep 1
+echo "#### Launching the federate federate__c."
+/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/bin/federate__c -i $FEDERATION_ID &
+pids[0]=$!
+echo "#### Launching the federate federate__d."
+/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/bin/federate__d -i $FEDERATION_ID &
+pids[1]=$!
+echo "#### Launching the federate federate__p."
+/home/foobar/EZ2C-Fall23/lf-3pi/fed-gen/Federation/bin/federate__p -i $FEDERATION_ID &
+pids[2]=$!
+echo "#### Bringing the RTI back to foreground so it can receive Control-C."
+fg %1
+echo "RTI has exited. Wait for federates to exit."
+# Wait for launched processes to finish.
+# The errors are handled separately via trap.
+for pid in "${pids[@]}"
+do
+    wait $pid || exit $?
+done
+echo "All done."
+EXITED_SUCCESSFULLY=true
