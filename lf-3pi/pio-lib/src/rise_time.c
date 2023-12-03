@@ -10,9 +10,8 @@
 // to the assembly program in rise_time.pio.
 #define PIO_CYCLES_PER_COUNTER_INCERMENT 5
 
-void rise_time_init(uint32_t baud_rate, uint lo_pin, uint hi_pin,
-                    uint rise_count_limit, void (*callback)(void),
-                    PIO *pio_hw, uint *sm) {
+void rise_time_init(uint lo_pin, uint hi_pin, uint rise_count_limit,
+                    void (*callback)(void), PIO *pio_hw, uint *sm) {
     uint offset = 0;
     if (!pio_lib_utils_init_pio(&rise_time_program, pio_hw, sm, &offset)) {
         panic("failed to setup pio");
@@ -39,4 +38,11 @@ float get_avg_cycles(PIO pio_hw, uint sm, uint rise_count_limit) {
     uint32_t rise_time_limit = rise_count_limit;
     uint32_t x = rise_time_program_recv(pio_hw, sm);
     return (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_time_limit;
+}
+
+void rise_time_reset_rise_count_limit(PIO pio_hw, uint sm,
+                                      uint rise_count_limit) {
+    uint instr_jmp_init = pio_encode_jmp(0);
+    pio_sm_exec(pio_hw, sm, instr_jmp_init);
+    pio_sm_restart(pio_hw, sm);
 }

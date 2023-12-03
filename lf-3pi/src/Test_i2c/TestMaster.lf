@@ -22,12 +22,15 @@ preamble {=
 
   #define BAUD_RATE (100)             // I2C baud rate (Hz).
   #define RISE_TIME_COUNT_LIMIT 1000  // Take average number of cycles every this number of rises.
+  #define RISE_TIME_RECOVERY_COUNT_LIMIT 5  // Average cycle count limit under recovery mode.
   #define RISE_TIME_CYCLES_MAX 100    // I2C maximum allowed rise time in cycles.
   #define RISE_TIME_CYCLES_MIN 50     // I2C minimum allowed rise time in cycles.
+  #define I2C_DEFAULT_TIMEOUT_MS 1000 // Default I2C R/W timeout in milliseconds.
   #define INTERNAL_PULL_UP 0          // Disables (0) or enables (1) Pico's internal pull-up
 
   #define MAX_SLAVES 30                // Maximum supported number of I2C slave devices.
   #define I2C_DEFAULT_SLAVE_ADDR 0x55  // I2C default slave address.
+  #define I2C_DEFAULT_BUFFER_LEN 32
 
   #define PICO_DEFAULT_I2C_SDA_PIN 4    // I2C SDA (data).
   #define PICO_DEFAULT_I2C_SCL_PIN 5    // I2C SCL (clock).
@@ -60,6 +63,7 @@ main reactor {
      *      7. Done
      */
 
+    static const uint us_per_ms = 1000;
     static bool addr_taken[MAX_SLAVES];
 
     static void setup_i2c();
@@ -69,6 +73,13 @@ main reactor {
     static void daa_assign(pico_unique_board_id_t id);
     static uint8_t reserve_next_addr();
     static void echo(uint8_t slave_addr);
+    static int guarded_i2c_write_blocking(i2c_inst_t *i2c, uint8_t addr,
+                                          const uint8_t *src, size_t len,
+                                          bool nostop, uint timeout_ms);
+    static int guarded_i2c_read_blocking(i2c_inst_t *i2c, uint8_t addr,
+                                         uint8_t *dst, size_t len, bool nostop,
+                                         uint timeout_ms);
+    static void on_i2c_death(uint8_t slave_addr);
 
     // I2C pull-up resistor dynamic selection demux helper variables and functions.
 
@@ -122,14 +133,15 @@ main reactor {
 
     static bool daa_discover() {
       uint8_t command = COMMAND_DISCOVER;
-      printf("here\n");
-      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
-      printf("Discover bytes sent: %d\n", bytes_sent);
+      printf("daa_discover: begin\n");
+      int bytes_sent = guarded_i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR,
+                                                  &command, 1, false,
+                                                  I2C_DEFAULT_TIMEOUT_MS);
       if (bytes_sent == 1) {
         // at least one slave device got the command
         pico_unique_board_id_t id;
-        int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
-        printf("Discover unique id size returned %d\n", bytes_recvd);
+        guarded_i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id),
+                                  false, I2C_DEFAULT_TIMEOUT_MS);
         daa_assign(id);
         return true;
       } else {
@@ -152,8 +164,9 @@ main reactor {
       memcpy(buf + 1, &id, sizeof(id));
       buf[1 + sizeof(pico_unique_board_id_t)] = addr;
 
-      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, buf, sizeof(buf), false);
-      printf("Assignment command bytes sent: %d\n", bytes_sent);
+      int bytes_sent = guarded_i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR,
+                                                  buf, sizeof(buf), false,
+                                                  I2C_DEFAULT_TIMEOUT_MS);
 
       // Echo device at new address to test connectivity.
       echo(addr);
@@ -172,13 +185,71 @@ main reactor {
 
     static void echo(uint8_t slave_addr) {
       static const char *const msg = "Master Sent!";
-      uint8_t buf[32];
+      uint8_t buf[I2C_DEFAULT_BUFFER_LEN];
       buf[0] = COMMAND_ECHO;
       memcpy(buf, msg, strlen(msg) + 1);
-      int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
+      guarded_i2c_write_blocking(i2c0, slave_addr, buf, 2+strlen(msg), false,
+                                 I2C_DEFAULT_TIMEOUT_MS);
 
-      uint8_t recv[32] = {0};
-      int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
+      uint8_t recv[I2C_DEFAULT_BUFFER_LEN] = {0};
+      guarded_i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false,
+                                I2C_DEFAULT_TIMEOUT_MS);
+      printf("master received: %s\n", recv);
+    }
+
+    static int guarded_i2c_write_blocking(i2c_inst_t *i2c, uint8_t addr,
+                                          const uint8_t *src, size_t len,
+                                          bool nostop, uint timeout_ms) {
+      int bytes_written = i2c_write_timeout_us(i2c, addr, src, len,
+                                               nostop, timeout_ms * us_per_ms);
+      
+      // A timeout likely indicates that the pullup resistance is incorrectly set.
+      while (bytes_written == PICO_ERROR_TIMEOUT) {
+        // Initiate recovery subroutine.
+        on_i2c_death(addr);
+        // Retry I2C write.
+        bytes_written = i2c_write_timeout_us(i2c, addr, src, len,
+                                             nostop, timeout_ms * us_per_ms);
+      }
+      return bytes_written;
+    }
+
+    static int guarded_i2c_read_blocking(i2c_inst_t *i2c, uint8_t addr,
+                                         uint8_t *dst, size_t len, bool nostop,
+                                         uint timeout_ms) {
+      int bytes_read = i2c_read_timeout_us(i2c, addr, dst, len,
+                                           nostop, timeout_ms * us_per_ms);
+      // A timeout likely indicates that the pullup resistance is incorrectly set.
+      while (bytes_read == PICO_ERROR_TIMEOUT) {
+        // Initiate recovery subroutine.
+        on_i2c_death(addr);
+        // Retry I2C read.
+        bytes_read = i2c_read_timeout_us(i2c, addr, dst, len,
+                                         nostop, timeout_ms * us_per_ms);
+      }
+      return bytes_read;
+    }
+
+    static void on_i2c_death(uint8_t slave_addr) {
+      uint8_t buf[I2C_DEFAULT_BUFFER_LEN];
+      rise_time_reset_rise_count_limit(pio_hw, sm,
+                                       RISE_TIME_RECOVERY_COUNT_LIMIT);
+      int bytes_read = 0;
+      while (bytes_read >= 0 && bytes_read < 32) {
+        // If we can still do partial reads, keep reading and let dynamic
+        // resistance adjustment routine do its job.
+        bytes_read = i2c_read_timeout_us(i2c0, slave_addr, buf,
+          I2C_DEFAULT_BUFFER_LEN, false, I2C_DEFAULT_TIMEOUT_MS * us_per_ms);
+      }
+
+      // If it is now fixed, we can return to normal operation.
+      if (bytes_read == I2C_DEFAULT_BUFFER_LEN) {
+        rise_time_reset_rise_count_limit(pio_hw, sm, RISE_TIME_COUNT_LIMIT);
+        return;
+      } else if (bytes_read == PICO_ERROR_TIMEOUT) {
+        // TODO: this may always be the case even if partial read was possible
+        // need to figure out how to distinguish between the two.
+      }
     }
 
     static void setup_pullup_demux() {
@@ -257,7 +328,7 @@ main reactor {
     setup_pullup_demux();
     set_pullup_resistance_level(3);
 
-    rise_time_init(BAUD_RATE, PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN,
+    rise_time_init(PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN,
                    RISE_TIME_COUNT_LIMIT, &nvic_pio_irq_handler, &pio_hw, &sm);
 
     // Perform initial address allocation after a 10 second delay.
