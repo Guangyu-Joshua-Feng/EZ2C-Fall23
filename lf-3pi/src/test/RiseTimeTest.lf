@@ -28,7 +28,7 @@ main reactor {
   timer hi_rise(100 ns, 300 ms);
   timer hi_fall(150 ms, 300 ms);
   reaction(startup) {=
-    rise_time_start();
+    rise_time_init();
     gpio_init(LO_THRESHOLD_SIM_OUT);
     gpio_set_dir(LO_THRESHOLD_SIM_OUT, GPIO_OUT);
     gpio_init(HI_THRESHOLD_SIM_OUT);

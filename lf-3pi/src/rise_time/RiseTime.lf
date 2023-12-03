@@ -21,6 +21,6 @@ preamble {=
 
 main reactor {
   reaction(startup) {=
-    rise_time_start(BAUD_RATE, PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN);
+    rise_time_init(BAUD_RATE, PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN);
   =}
 }
