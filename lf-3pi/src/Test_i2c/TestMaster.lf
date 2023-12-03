@@ -22,7 +22,7 @@ preamble {=
 
   #define BAUD_RATE (100)             // I2C baud rate (Hz).
   #define RISE_TIME_COUNT_LIMIT 1000  // Take average number of cycles every this number of rises.
-  #define RISE_TIME_CYCLES_MAX 150    // I2C maximum allowed rise time in cycles.
+  #define RISE_TIME_CYCLES_MAX 100    // I2C maximum allowed rise time in cycles.
   #define RISE_TIME_CYCLES_MIN 50     // I2C minimum allowed rise time in cycles.
   #define INTERNAL_PULL_UP 0          // Disables (0) or enables (1) Pico's internal pull-up
 
@@ -75,7 +75,9 @@ main reactor {
     static uint8_t pullup_resistance_level;
 
     static void setup_pullup_demux();
-    static void set_pullup_resistance_level(int offset);
+    static void set_pullup_resistance_level(uint8_t value);
+    static uint8_t adjust_pullup_resistance_level(int offset);
+    static void apply_pullup_resistance_level();
 
     // PIO rise time measurement variables and functions.
 
@@ -120,6 +122,7 @@ main reactor {
 
     static bool daa_discover() {
       uint8_t command = COMMAND_DISCOVER;
+      printf("here\n");
       int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
       printf("Discover bytes sent: %d\n", bytes_sent);
       if (bytes_sent == 1) {
@@ -172,13 +175,10 @@ main reactor {
       uint8_t buf[32];
       buf[0] = COMMAND_ECHO;
       memcpy(buf, msg, strlen(msg) + 1);
-      printf("echoing slave at address %x\n", slave_addr);
       int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
-      printf("bytes sent: %d\n", bytes_sent);
 
       uint8_t recv[32] = {0};
       int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
-      printf("slave sent back %d bytes: %s\n", bytes_read, recv);
     }
 
     static void setup_pullup_demux() {
@@ -188,7 +188,16 @@ main reactor {
       gpio_set_dir(PULLUP_DEMUX_A1_PIN, GPIO_OUT);
     }
 
-    static void set_pullup_resistance_level(int offset) {
+    static void set_pullup_resistance_level(uint8_t value) {
+      pullup_resistance_level = value;
+      apply_pullup_resistance_level();
+    }
+
+    static uint8_t adjust_pullup_resistance_level(int offset) {
+      pullup_resistance_level += offset;
+      apply_pullup_resistance_level();
+    }
+    static void apply_pullup_resistance_level() {
       gpio_put(PULLUP_DEMUX_A0_PIN, pullup_resistance_level & 0b1);
       gpio_put(PULLUP_DEMUX_A1_PIN, pullup_resistance_level & 0b10);
     }
@@ -228,14 +237,14 @@ main reactor {
     }
 
     static void update_pullup_resistance_level(float avg_cycles) {
-      if (avg_cycles < RISE_TIME_CYCLES_MIN && pullup_resistance_level > 0) {
+      if (avg_cycles < RISE_TIME_CYCLES_MIN && pullup_resistance_level < 3) {
         printf("Master: increasing pull up resistance (%d -> %d)\n",
                 pullup_resistance_level, pullup_resistance_level + 1);
-        set_pullup_resistance_level(1);
-      } else if (avg_cycles > RISE_TIME_CYCLES_MAX && pullup_resistance_level < 3) {
+        adjust_pullup_resistance_level(1);
+      } else if (avg_cycles > RISE_TIME_CYCLES_MAX && pullup_resistance_level > 0) {
         printf("Master: decreasing pull up resistance (%d -> %d)\n",
                 pullup_resistance_level, pullup_resistance_level - 1);
-        set_pullup_resistance_level(-1);
+        adjust_pullup_resistance_level(-1);
       }
     }
   =}
@@ -246,14 +255,18 @@ main reactor {
   reaction(startup) -> initial_daa_scan {=
     setup_i2c();
     setup_pullup_demux();
-    set_pullup_resistance_level(pullup_resistance_level = 3);
+    set_pullup_resistance_level(3);
 
     rise_time_init(BAUD_RATE, PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN,
                    RISE_TIME_COUNT_LIMIT, &nvic_pio_irq_handler, &pio_hw, &sm);
 
-    // Perform initial address allocation after a 5 second delay.
+    // Perform initial address allocation after a 10 second delay.
     // This is to allow time to launch terminal to monitor USB output messages.
-    lf_schedule(initial_daa_scan, MSEC(5000));
+    lf_schedule(initial_daa_scan, MSEC(10000));
+  =}
+
+  reaction(initial_daa_scan) {=
+    daa_rescan();
   =}
 
   reaction(echo_timer) {=
