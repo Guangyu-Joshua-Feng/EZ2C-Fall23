@@ -22,7 +22,7 @@ preamble {=
 
   #define BAUD_RATE (100)             // I2C baud rate (Hz).
   #define RISE_TIME_COUNT_LIMIT 1000  // Take average number of cycles every this number of rises.
-  #define RISE_TIME_RECOVERY_COUNT_LIMIT 5  // Average cycle count limit under recovery mode.
+  #define RISE_TIME_RECOVERY_COUNT_LIMIT 1  // Average cycle count limit under recovery mode.
   #define RISE_TIME_CYCLES_MAX 100    // I2C maximum allowed rise time in cycles.
   #define RISE_TIME_CYCLES_MIN 50     // I2C minimum allowed rise time in cycles.
   #define I2C_DEFAULT_TIMEOUT_MS 1000 // Default I2C R/W timeout in milliseconds.
@@ -83,11 +83,13 @@ main reactor {
 
     // I2C pull-up resistor dynamic selection demux helper variables and functions.
 
+    static bool pullup_adjusted;
     static uint8_t pullup_resistance_level;
 
     static void setup_pullup_demux();
     static void set_pullup_resistance_level(uint8_t value);
     static uint8_t adjust_pullup_resistance_level(int offset);
+    static uint8_t step_pullup_resistance_level();
     static void apply_pullup_resistance_level();
 
     // PIO rise time measurement variables and functions.
@@ -97,7 +99,7 @@ main reactor {
 
     static void nvic_pio_irq_handler();
     static void irq_handler_helper(int i);
-    static void update_pullup_resistance_level(float avg_cycles);
+    static void adjust_pullup_if_necessary(float avg_cycles);
 
     // -----------------------------------------------------------------------------------
 
@@ -231,25 +233,33 @@ main reactor {
     }
 
     static void on_i2c_death(uint8_t slave_addr) {
-      uint8_t buf[I2C_DEFAULT_BUFFER_LEN];
+      uint8_t buf[2];
+      int bytes_read = 0;
+      bool read_success = false;
+
+      // Reset PIO cycle counter limit to a small value and restart state
+      // machine.
       rise_time_reset_rise_count_limit(pio_hw, sm,
                                        RISE_TIME_RECOVERY_COUNT_LIMIT);
-      int bytes_read = 0;
-      while (bytes_read >= 0 && bytes_read < 32) {
+      while (!read_success) {
+        pullup_adjusted = false;
+        bytes_read = i2c_read_timeout_us(i2c0, slave_addr, buf, sizeof(buf),
+          false, I2C_DEFAULT_TIMEOUT_MS * us_per_ms);
+        printf("on_i2c_death: bytes_read == %d, pullup_adjusted == %d\n",
+          bytes_read, pullup_adjusted);
+        read_success = (bytes_read == sizeof(buf));
+        if (read_success) break;
+
         // If we can still do partial reads, keep reading and let dynamic
-        // resistance adjustment routine do its job.
-        bytes_read = i2c_read_timeout_us(i2c0, slave_addr, buf,
-          I2C_DEFAULT_BUFFER_LEN, false, I2C_DEFAULT_TIMEOUT_MS * us_per_ms);
+        // resistance adjustment routine do its job. If not a single byte
+        // can be sent, iterate through all available pullup resistances.
+        bool partial_success = 
+          (bytes_read >= 0 && bytes_read < sizeof(buf)) || pullup_adjusted;
+        if (!partial_success) step_pullup_resistance_level();
       }
 
-      // If it is now fixed, we can return to normal operation.
-      if (bytes_read == I2C_DEFAULT_BUFFER_LEN) {
-        rise_time_reset_rise_count_limit(pio_hw, sm, RISE_TIME_COUNT_LIMIT);
-        return;
-      } else if (bytes_read == PICO_ERROR_TIMEOUT) {
-        // TODO: this may always be the case even if partial read was possible
-        // need to figure out how to distinguish between the two.
-      }
+      // Read was complete and successful and we can return to normal operation.
+      rise_time_reset_rise_count_limit(pio_hw, sm, RISE_TIME_COUNT_LIMIT);
     }
 
     static void setup_pullup_demux() {
@@ -267,8 +277,28 @@ main reactor {
     static uint8_t adjust_pullup_resistance_level(int offset) {
       pullup_resistance_level += offset;
       apply_pullup_resistance_level();
+      return pullup_resistance_level;
     }
+    
+    static uint8_t step_pullup_resistance_level() {
+      static bool increasing = false;
+      if (increasing && pullup_resistance_level >= 3) {
+        increasing = false;
+      }
+      if (!increasing && pullup_resistance_level <= 0) {
+        increasing = true;
+      }
+      if (increasing) {
+        pullup_resistance_level++;
+      } else {
+        pullup_resistance_level--;
+      }
+      apply_pullup_resistance_level();
+      return pullup_resistance_level;
+    }
+
     static void apply_pullup_resistance_level() {
+      pullup_adjusted = true;
       gpio_put(PULLUP_DEMUX_A0_PIN, pullup_resistance_level & 0b1);
       gpio_put(PULLUP_DEMUX_A1_PIN, pullup_resistance_level & 0b10);
     }
@@ -287,7 +317,7 @@ main reactor {
         case 0: {
           float avg_cycles = get_avg_cycles(pio_hw, sm, RISE_TIME_COUNT_LIMIT);
           printf("%f cycles\n", avg_cycles);
-          update_pullup_resistance_level(avg_cycles);
+          adjust_pullup_if_necessary(avg_cycles);
           pio_sm_put_blocking(pio_hw, sm, RISE_TIME_COUNT_LIMIT - 1);
           break;
         }
@@ -307,7 +337,7 @@ main reactor {
       pio_interrupt_clear(pio_hw, irq);
     }
 
-    static void update_pullup_resistance_level(float avg_cycles) {
+    static void adjust_pullup_if_necessary(float avg_cycles) {
       if (avg_cycles < RISE_TIME_CYCLES_MIN && pullup_resistance_level < 3) {
         printf("Master: increasing pull up resistance (%d -> %d)\n",
                 pullup_resistance_level, pullup_resistance_level + 1);
