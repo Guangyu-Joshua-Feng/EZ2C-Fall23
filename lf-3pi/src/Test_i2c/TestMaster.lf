@@ -27,6 +27,7 @@ preamble {=
   #define RISE_TIME_CYCLES_MIN 50     // I2C minimum allowed rise time in cycles.
   #define I2C_DEFAULT_TIMEOUT_MS 1000 // Default I2C R/W timeout in milliseconds.
   #define INTERNAL_PULL_UP 0          // Disables (0) or enables (1) Pico's internal pull-up
+  #define NUM_RECENT_AVG_CYCLES 30    // Keep a buffer of most recent average cycle counts of this size.
 
   #define MAX_SLAVES 30                // Maximum supported number of I2C slave devices.
   #define I2C_DEFAULT_SLAVE_ADDR 0x55  // I2C default slave address.
@@ -98,7 +99,13 @@ main reactor {
 
     static void nvic_pio_irq_handler();
     static void irq_handler_helper(int i);
-    static void adjust_pullup_if_necessary(float avg_cycles);
+    static bool adjust_pullup_if_necessary(float avg_cycles);
+
+    // Device change detection helper variables and methods.
+
+    static float recent_avg_cycles[NUM_RECENT_AVG_CYCLES];
+    static bool detection_flag;
+    // static 
 
     // -----------------------------------------------------------------------------------
 
@@ -320,8 +327,9 @@ main reactor {
         case 0: {
           float avg_cycles = get_avg_cycles(pio_hw, sm, rise_count_limit);
           printf("%f cycles\n", avg_cycles);
-          adjust_pullup_if_necessary(avg_cycles);
+          bool adjusted = adjust_pullup_if_necessary(avg_cycles);
           pio_sm_put_blocking(pio_hw, sm, rise_count_limit - 1);
+
           break;
         }
 
@@ -340,16 +348,19 @@ main reactor {
       pio_interrupt_clear(pio_hw, irq);
     }
 
-    static void adjust_pullup_if_necessary(float avg_cycles) {
+    static bool adjust_pullup_if_necessary(float avg_cycles) {
       if (avg_cycles < RISE_TIME_CYCLES_MIN && pullup_resistance_level < 3) {
         printf("Master: increasing pull up resistance (%d -> %d)\n",
                 pullup_resistance_level, pullup_resistance_level + 1);
         adjust_pullup_resistance_level(1);
+        return true;
       } else if (avg_cycles > RISE_TIME_CYCLES_MAX && pullup_resistance_level > 0) {
         printf("Master: decreasing pull up resistance (%d -> %d)\n",
                 pullup_resistance_level, pullup_resistance_level - 1);
         adjust_pullup_resistance_level(-1);
+        return true;
       }
+      return false;
     }
   =}
 
