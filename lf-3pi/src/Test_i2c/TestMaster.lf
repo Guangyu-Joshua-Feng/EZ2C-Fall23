@@ -22,7 +22,7 @@ preamble {=
 
   #define BAUD_RATE (100)             // I2C baud rate (Hz).
   #define RISE_TIME_COUNT_LIMIT 1000  // Take average number of cycles every this number of rises.
-  #define RISE_TIME_RECOVERY_COUNT_LIMIT 1  // Average cycle count limit under recovery mode.
+  #define RISE_TIME_RECOVERY_COUNT_LIMIT 4  // Average cycle count limit under recovery mode.
   #define RISE_TIME_CYCLES_MAX 100    // I2C maximum allowed rise time in cycles.
   #define RISE_TIME_CYCLES_MIN 50     // I2C minimum allowed rise time in cycles.
   #define I2C_DEFAULT_TIMEOUT_MS 1000 // Default I2C R/W timeout in milliseconds.
@@ -62,7 +62,7 @@ main reactor {
      *         addresss.
      *      7. Done
      */
-
+    static uint rise_count_limit;
     static const uint us_per_ms = 1000;
     static bool addr_taken[MAX_SLAVES];
 
@@ -237,11 +237,12 @@ main reactor {
       int bytes_read = 0;
       bool read_success = false;
 
-      // Reset PIO cycle counter limit to a small value and restart state
-      // machine.
-      rise_time_reset_rise_count_limit(pio_hw, sm,
-                                       RISE_TIME_RECOVERY_COUNT_LIMIT);
+
       while (!read_success) {
+        // Reset PIO cycle counter limit to a small value and restart state
+        // machine.
+        rise_count_limit = RISE_TIME_RECOVERY_COUNT_LIMIT;
+        rise_time_reset_rise_count_limit(pio_hw, sm, rise_count_limit);
         pullup_adjusted = false;
         bytes_read = i2c_read_timeout_us(i2c0, slave_addr, buf, sizeof(buf),
           false, I2C_DEFAULT_TIMEOUT_MS * us_per_ms);
@@ -259,7 +260,8 @@ main reactor {
       }
 
       // Read was complete and successful and we can return to normal operation.
-      rise_time_reset_rise_count_limit(pio_hw, sm, RISE_TIME_COUNT_LIMIT);
+      rise_count_limit = RISE_TIME_COUNT_LIMIT;
+      rise_time_reset_rise_count_limit(pio_hw, sm, rise_count_limit);
     }
 
     static void setup_pullup_demux() {
@@ -294,6 +296,8 @@ main reactor {
         pullup_resistance_level--;
       }
       apply_pullup_resistance_level();
+      printf("step_pullup_resistance_level: adjusting resistance level to %u\n",
+             pullup_resistance_level);
       return pullup_resistance_level;
     }
 
@@ -315,10 +319,10 @@ main reactor {
     static void irq_handler_helper(int irq) {
       switch (irq) {
         case 0: {
-          float avg_cycles = get_avg_cycles(pio_hw, sm, RISE_TIME_COUNT_LIMIT);
+          float avg_cycles = get_avg_cycles(pio_hw, sm, rise_count_limit);
           printf("%f cycles\n", avg_cycles);
           adjust_pullup_if_necessary(avg_cycles);
-          pio_sm_put_blocking(pio_hw, sm, RISE_TIME_COUNT_LIMIT - 1);
+          pio_sm_put_blocking(pio_hw, sm, rise_count_limit - 1);
           break;
         }
 
@@ -358,8 +362,9 @@ main reactor {
     setup_pullup_demux();
     set_pullup_resistance_level(3);
 
+    rise_count_limit = RISE_TIME_COUNT_LIMIT;
     rise_time_init(PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN,
-                   RISE_TIME_COUNT_LIMIT, &nvic_pio_irq_handler, &pio_hw, &sm);
+                   rise_count_limit, &nvic_pio_irq_handler, &pio_hw, &sm);
 
     // Perform initial address allocation after a 10 second delay.
     // This is to allow time to launch terminal to monitor USB output messages.
