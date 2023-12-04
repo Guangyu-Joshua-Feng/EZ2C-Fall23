@@ -33,13 +33,12 @@ void rise_time_init(uint lo_pin, uint hi_pin, uint rise_count_limit,
     pio_set_irqn_source_enabled(*pio_hw, index, pis_interrupt2 + *sm, true);
 
     // Send rise count limit to TX FIFO.
-    pio_sm_put_blocking(*pio_hw, *sm, rise_count_limit);
+    pio_sm_put_blocking(*pio_hw, *sm, rise_count_limit - 1);
 }
 
 float get_avg_cycles(PIO pio_hw, uint sm, uint rise_count_limit) {
-    uint32_t rise_time_limit = rise_count_limit;
     uint32_t x = rise_time_program_recv(pio_hw, sm);
-    return (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_time_limit;
+    return (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_count_limit;
 }
 
 void rise_time_reset_rise_count_limit(PIO pio_hw, uint sm,
@@ -47,5 +46,5 @@ void rise_time_reset_rise_count_limit(PIO pio_hw, uint sm,
     uint instr_jmp_init = pio_encode_jmp(offset);
     pio_sm_exec(pio_hw, sm, instr_jmp_init);
     pio_sm_restart(pio_hw, sm);
-    pio_sm_put_blocking(pio_hw, sm, rise_count_limit);
+    pio_sm_put_blocking(pio_hw, sm, rise_count_limit - 1);
 }

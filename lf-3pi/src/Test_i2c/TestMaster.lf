@@ -30,7 +30,6 @@ preamble {=
 
   #define MAX_SLAVES 30                // Maximum supported number of I2C slave devices.
   #define I2C_DEFAULT_SLAVE_ADDR 0x55  // I2C default slave address.
-  #define I2C_DEFAULT_BUFFER_LEN 32
 
   #define PICO_DEFAULT_I2C_SDA_PIN 4    // I2C SDA (data).
   #define PICO_DEFAULT_I2C_SCL_PIN 5    // I2C SCL (clock).
@@ -79,7 +78,7 @@ main reactor {
     static int guarded_i2c_read_blocking(i2c_inst_t *i2c, uint8_t addr,
                                          uint8_t *dst, size_t len, bool nostop,
                                          uint timeout_ms);
-    static void on_i2c_death(uint8_t slave_addr);
+    static void i2c_stall_handler(uint8_t slave_addr);
 
     // I2C pull-up resistor dynamic selection demux helper variables and functions.
 
@@ -187,13 +186,13 @@ main reactor {
 
     static void echo(uint8_t slave_addr) {
       static const char *const msg = "Master Sent!";
-      uint8_t buf[I2C_DEFAULT_BUFFER_LEN];
+      uint8_t buf[32];
       buf[0] = COMMAND_ECHO;
       memcpy(buf, msg, strlen(msg) + 1);
       guarded_i2c_write_blocking(i2c0, slave_addr, buf, 2+strlen(msg), false,
                                  I2C_DEFAULT_TIMEOUT_MS);
 
-      uint8_t recv[I2C_DEFAULT_BUFFER_LEN] = {0};
+      uint8_t recv[32] = {0};
       guarded_i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false,
                                 I2C_DEFAULT_TIMEOUT_MS);
       printf("master received: %s\n", recv);
@@ -208,7 +207,7 @@ main reactor {
       // A timeout likely indicates that the pullup resistance is incorrectly set.
       while (bytes_written == PICO_ERROR_TIMEOUT) {
         // Initiate recovery subroutine.
-        on_i2c_death(addr);
+        i2c_stall_handler(addr);
         // Retry I2C write.
         bytes_written = i2c_write_timeout_us(i2c, addr, src, len,
                                              nostop, timeout_ms * us_per_ms);
@@ -224,7 +223,7 @@ main reactor {
       // A timeout likely indicates that the pullup resistance is incorrectly set.
       while (bytes_read == PICO_ERROR_TIMEOUT) {
         // Initiate recovery subroutine.
-        on_i2c_death(addr);
+        i2c_stall_handler(addr);
         // Retry I2C read.
         bytes_read = i2c_read_timeout_us(i2c, addr, dst, len,
                                          nostop, timeout_ms * us_per_ms);
@@ -232,7 +231,7 @@ main reactor {
       return bytes_read;
     }
 
-    static void on_i2c_death(uint8_t slave_addr) {
+    static void i2c_stall_handler(uint8_t slave_addr) {
       uint8_t buf[2];
       int bytes_read = 0;
       bool read_success = false;
@@ -245,7 +244,7 @@ main reactor {
         pullup_adjusted = false;
         bytes_read = i2c_read_timeout_us(i2c0, slave_addr, buf, sizeof(buf),
           false, I2C_DEFAULT_TIMEOUT_MS * us_per_ms);
-        printf("on_i2c_death: bytes_read == %d, pullup_adjusted == %d\n",
+        printf("i2c_stall_handler: bytes_read == %d, pullup_adjusted == %d\n",
           bytes_read, pullup_adjusted);
         read_success = (bytes_read == sizeof(buf));
         if (read_success) break;
