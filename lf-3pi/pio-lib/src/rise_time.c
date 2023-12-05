@@ -63,7 +63,7 @@ static void irq_handler_helper(int i) {
             float avg_cycles =
                 (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_time_limit;
             printf("average rise time: %f cycles\n", avg_cycles);
-            pio_sm_put_blocking(pio_hw, sm, rise_time_limit);
+            pio_sm_put_blocking(pio_hw, sm, rise_time_limit - 1);
             break;
         }
         case 1:
@@ -82,6 +82,5 @@ static void irq_handler_helper(int i) {
 }
 
 static inline uint32_t get_rise_count_limit(uint32_t baud_rate) {
-    static uint32_t min_baud_rate = 2000;
-    return baud_rate < min_baud_rate ? min_baud_rate : baud_rate;
+    return 1000;
 }
