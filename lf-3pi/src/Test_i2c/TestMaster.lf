@@ -476,7 +476,7 @@ main reactor {
       device_change = false;
       daa_rescan();
       // Attempt to increase pull-up resistance to save energy.
-      adjust_pullup_resistance_level(1);
+      if (pullup_resistance_level < 3) adjust_pullup_resistance_level(1);
     }
     int alive_count = 0;
     for (int i = 0; i < MAX_SLAVES; ++i) {
