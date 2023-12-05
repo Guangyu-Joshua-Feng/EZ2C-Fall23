@@ -23,12 +23,14 @@ preamble {=
   #define BAUD_RATE (100 * 1000)             // I2C baud rate (Hz).
   #define RISE_TIME_COUNT_LIMIT 1000  // Take average number of cycles every this number of rises.
   #define RISE_TIME_RECOVERY_COUNT_LIMIT 4  // Average cycle count limit under recovery mode.
-  #define RISE_TIME_CYCLES_MAX 100000    // I2C maximum allowed rise time in cycles.
-  #define RISE_TIME_CYCLES_MIN 50     // I2C minimum allowed rise time in cycles.
   #define RISE_TIME_STABLE_THRESHOLD_CYCLES 5  // Stable iff within this number of cycles from avg.
   #define I2C_DEFAULT_TIMEOUT_MS 1000 // Default I2C R/W timeout in milliseconds.
   #define INTERNAL_PULL_UP 0          // Disables (0) or enables (1) Pico's internal pull-up
   #define NUM_RECENT_AVG_CYCLES 30    // Keep a buffer of most recent average cycle counts of this size.
+  #define SAFE_RISE_CYCLES_FACTOR 0.95f  // The upper limit for a safe rise time will be set to this
+                                         // value times the avgerage rise time of the first successful
+                                         // I2C communication, which uses the largest possible pull-up
+                                         // resistance. 
 
   #define MAX_SLAVES 30                // Maximum supported number of I2C slave devices.
   #define I2C_DEFAULT_SLAVE_ADDR 0x55  // I2C default slave address.
@@ -73,7 +75,7 @@ main reactor {
     static bool daa_discover();
     static void daa_assign(pico_unique_board_id_t id);
     static uint8_t reserve_next_addr();
-    static void echo(uint8_t slave_addr);
+    static bool echo(uint8_t slave_addr);
     static int guarded_i2c_write_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
                                             const uint8_t *src, size_t len,
                                             bool nostop, uint timeout_ms);
@@ -104,6 +106,7 @@ main reactor {
 
     // Device change detection helper variables and methods.
 
+    static float max_safe_rise_cycles;
     static float recent_avg_cycles[NUM_RECENT_AVG_CYCLES];
     static int recent_avg_cycles_size;  // [0, NUM_RECENT_AVG_CYCLES]
     static int recent_avg_cycles_next;  // [0, NUM_RECENT_AVG_CYCLES)
@@ -201,7 +204,7 @@ main reactor {
       return addr_at_index(i);
     }
 
-    static void echo(uint8_t slave_addr) {
+    static bool echo(uint8_t slave_addr) {
       static const char *const msg = "Master Sent!";
       uint8_t buf[32];
       buf[0] = COMMAND_ECHO;
@@ -210,9 +213,16 @@ main reactor {
                                    I2C_DEFAULT_TIMEOUT_MS);
 
       uint8_t recv[32] = {0};
-      guarded_i2c_read_timeout_ms(i2c0, slave_addr, recv, 1+strlen(msg), false,
-                                  I2C_DEFAULT_TIMEOUT_MS);
-      printf("master received: %s\n", recv);
+      int bytes_read = guarded_i2c_read_timeout_ms(i2c0, slave_addr, recv,
+                                                   1+strlen(msg), false,
+                                                   I2C_DEFAULT_TIMEOUT_MS);
+      if (bytes_read == PICO_ERROR_GENERIC) {
+        printf("Device at %u is disconnected\n", slave_addr);
+        return false;
+      } else {
+        printf("master received: %s\n", recv);
+        return true;
+      }
     }
 
     static int guarded_i2c_write_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
@@ -293,6 +303,8 @@ main reactor {
     }
 
     static uint8_t adjust_pullup_resistance_level(int offset) {
+      printf("adjust_pullup_resistance_level: adjusting pull up resistance level (%d -> %d)\n",
+             pullup_resistance_level, pullup_resistance_level + offset);
       pullup_resistance_level += offset;
       apply_pullup_resistance_level();
       return pullup_resistance_level;
@@ -337,6 +349,10 @@ main reactor {
         case 0: {
           float avg_cycles = get_avg_cycles(pio_hw, sm, rise_count_limit);
           printf("%f cycles\n", avg_cycles);
+          if (max_safe_rise_cycles < 1 && 
+              rise_count_limit !=I2C_DEFAULT_TIMEOUT_MS) {
+            max_safe_rise_cycles = avg_cycles * SAFE_RISE_CYCLES_FACTOR;
+          }
           bool adjusted = adjust_pullup_conditional(avg_cycles);
           detect_device_change(avg_cycles, adjusted);
           pio_sm_put_blocking(pio_hw, sm, rise_count_limit - 1);
@@ -359,14 +375,7 @@ main reactor {
     }
 
     static bool adjust_pullup_conditional(float cycles) {
-      if (cycles < RISE_TIME_CYCLES_MIN && pullup_resistance_level < 3) {
-        printf("Master: increasing pull up resistance (%d -> %d)\n",
-                pullup_resistance_level, pullup_resistance_level + 1);
-        adjust_pullup_resistance_level(1);
-        return true;
-      } else if (cycles > RISE_TIME_CYCLES_MAX && pullup_resistance_level > 0) {
-        printf("Master: decreasing pull up resistance (%d -> %d)\n",
-                pullup_resistance_level, pullup_resistance_level - 1);
+      if (cycles > max_safe_rise_cycles && pullup_resistance_level > 0) {
         adjust_pullup_resistance_level(-1);
         return true;
       }
@@ -378,7 +387,7 @@ main reactor {
       if (pullup_adjusted || !is_new_avg_cycles_stable(most_recent_cycles)) {
         // Unstable if pull-up resistance was recently adjusted, or if new cycle
         // measurement is outside of the stable range.
-        printf("detect_device_change: pullup_adjusted == %d, unstable detected\n",
+        printf("detect_device_change: pullup_adjusted == %d, instability detected\n",
                pullup_adjusted);
         clear_recent_avg_cycles(most_recent_cycles);
         device_change_pending = true;
@@ -462,12 +471,17 @@ main reactor {
   =}
 
   reaction(echo_timer) {=
+    static int echo_index = 0;
     if (device_change) {
       device_change = false;
       daa_rescan();
+      // Attempt to increase pull-up resistance to save energy.
+      adjust_pullup_resistance_level(1);
     }
+    int alive_count = 0;
     for (int i = 0; i < MAX_SLAVES; ++i) {
-      if (addr_taken[i]) echo(addr_at_index(i));
+      if (addr_taken[i]) alice_count += echo(addr_at_index(i));
     }
+    printf("echo set %d: %d alive\n", echo_index++, alive_count);
   =}
 }
