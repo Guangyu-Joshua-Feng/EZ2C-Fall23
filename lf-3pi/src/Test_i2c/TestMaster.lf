@@ -71,11 +71,11 @@ main reactor {
 
     static void setup_i2c();
     static inline uint8_t addr_at_index(int i);
-    static void daa_rescan();
+    static bool daa_rescan();
     static bool daa_discover();
     static void daa_assign(pico_unique_board_id_t id);
     static uint8_t reserve_next_addr();
-    static bool echo(uint8_t slave_addr);
+    static bool echo(uint8_t slave_addr, bool verbose);
     static int guarded_i2c_write_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
                                             const uint8_t *src, size_t len,
                                             bool nostop, uint timeout_ms);
@@ -106,6 +106,7 @@ main reactor {
 
     // Device change detection helper variables and methods.
 
+    static bool max_safe_rise_cycles_set;
     static float max_safe_rise_cycles;
     static float recent_avg_cycles[NUM_RECENT_AVG_CYCLES];
     static int recent_avg_cycles_size;  // [0, NUM_RECENT_AVG_CYCLES]
@@ -145,11 +146,15 @@ main reactor {
       return i + I2C_DEFAULT_SLAVE_ADDR + 1;
     }
 
-    static void daa_rescan() {
+    static bool daa_rescan() {
       bool discover_done = false;
+      bool change = false;
       while (!discover_done) {
-        discover_done = !daa_discover();
+        bool discovered = daa_discover();
+        change |= discovered;
+        discover_done = !discovered;
       }
+      return change;
     }
 
     static bool daa_discover() {
@@ -190,7 +195,7 @@ main reactor {
                                                     I2C_DEFAULT_TIMEOUT_MS);
 
       // Echo device at new address to test connectivity.
-      echo(addr);
+      echo(addr, true);
     }
 
     static uint8_t reserve_next_addr() {
@@ -204,7 +209,7 @@ main reactor {
       return addr_at_index(i);
     }
 
-    static bool echo(uint8_t slave_addr) {
+    static bool echo(uint8_t slave_addr, bool verbose) {
       static const char *const msg = "Master Sent!";
       uint8_t buf[32];
       buf[0] = COMMAND_ECHO;
@@ -217,10 +222,10 @@ main reactor {
                                                    1+strlen(msg), false,
                                                    I2C_DEFAULT_TIMEOUT_MS);
       if (bytes_read == PICO_ERROR_GENERIC) {
-        printf("Device at %u is disconnected\n", slave_addr);
+        if (verbose) printf("Device at %u is disconnected\n", slave_addr);
         return false;
       } else {
-        printf("master received: %s\n", recv);
+        if (verbose) printf("master received: %s\n", recv);
         return true;
       }
     }
@@ -263,7 +268,7 @@ main reactor {
       int bytes_read = 0;
       bool read_success = false;
 
-
+      max_safe_rise_cycles_set = true;
       while (!read_success) {
         // Reset PIO cycle counter limit to a small value and restart state
         // machine.
@@ -349,9 +354,10 @@ main reactor {
         case 0: {
           float avg_cycles = get_avg_cycles(pio_hw, sm, rise_count_limit);
           printf("%f cycles\n", avg_cycles);
-          if (max_safe_rise_cycles < 1 && 
-              rise_count_limit !=I2C_DEFAULT_TIMEOUT_MS) {
-            max_safe_rise_cycles = avg_cycles * SAFE_RISE_CYCLES_FACTOR;
+          if (!max_safe_rise_cycles_set && 
+              rise_count_limit != I2C_DEFAULT_TIMEOUT_MS &&
+              max_safe_rise_cycles < avg_cycles) {
+            max_safe_rise_cycles = avg_cycles;
           }
           bool adjusted = adjust_pullup_conditional(avg_cycles);
           detect_device_change(avg_cycles, adjusted);
@@ -375,8 +381,12 @@ main reactor {
     }
 
     static bool adjust_pullup_conditional(float cycles) {
-      if (cycles > max_safe_rise_cycles && pullup_resistance_level > 0) {
+      if (max_safe_rise_cycles_set && cycles > max_safe_rise_cycles && pullup_resistance_level > 0) {
         adjust_pullup_resistance_level(-1);
+        return true;
+      }
+      if (cycles < max_safe_rise_cycles * 0.9 && pullup_resistance_level < 3) {
+        adjust_pullup_resistance_level(1);
         return true;
       }
       return false;
@@ -460,6 +470,8 @@ main reactor {
     recent_avg_cycles_next = 0;
     device_change_pending = false;
     device_change = false;
+    max_safe_rise_cycles_set = false;
+    max_safe_rise_cycles = 0;
 
     // Perform initial address allocation after a 10 second delay.
     // This is to allow time to launch terminal to monitor USB output messages.
@@ -475,12 +487,11 @@ main reactor {
     if (device_change) {
       device_change = false;
       daa_rescan();
-      // Attempt to increase pull-up resistance to save energy.
-      if (pullup_resistance_level < 3) adjust_pullup_resistance_level(1);
     }
+
     int alive_count = 0;
     for (int i = 0; i < MAX_SLAVES; ++i) {
-      if (addr_taken[i]) alice_count += echo(addr_at_index(i));
+      if (addr_taken[i]) alive_count += echo(addr_at_index(i), true);
     }
     printf("echo set %d: %d alive\n", echo_index++, alive_count);
   =}
