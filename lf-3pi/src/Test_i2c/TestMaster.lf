@@ -106,6 +106,7 @@ main reactor {
 
     // Device change detection helper variables and methods.
 
+    static bool first_stall_recovered;
     static bool max_safe_rise_cycles_set;
     static float max_safe_rise_cycles;
     static float recent_avg_cycles[NUM_RECENT_AVG_CYCLES];
@@ -268,7 +269,6 @@ main reactor {
       int bytes_read = 0;
       bool read_success = false;
 
-      max_safe_rise_cycles_set = true;
       while (!read_success) {
         // Reset PIO cycle counter limit to a small value and restart state
         // machine.
@@ -293,6 +293,7 @@ main reactor {
       // Read was complete and successful and we can return to normal operation.
       rise_count_limit = RISE_TIME_COUNT_LIMIT;
       rise_time_reset_rise_count_limit(pio_hw, sm, rise_count_limit);
+      first_stall_recovered = true;
     }
 
     static void setup_pullup_demux() {
@@ -354,11 +355,6 @@ main reactor {
         case 0: {
           float avg_cycles = get_avg_cycles(pio_hw, sm, rise_count_limit);
           printf("%f cycles\n", avg_cycles);
-          if (!max_safe_rise_cycles_set && 
-              rise_count_limit != I2C_DEFAULT_TIMEOUT_MS &&
-              max_safe_rise_cycles < avg_cycles) {
-            max_safe_rise_cycles = avg_cycles;
-          }
           bool adjusted = adjust_pullup_conditional(avg_cycles);
           detect_device_change(avg_cycles, adjusted);
           pio_sm_put_blocking(pio_hw, sm, rise_count_limit - 1);
@@ -411,6 +407,9 @@ main reactor {
         device_change_pending = false;
         device_change = true;
         printf("detect_device_change: stablized\n");
+        if (!max_safe_rise_cycles_set && first_stall_recovered) {
+          max_safe_rise_cycles = most_recent_cycles;
+        }
       }
     }
 
