@@ -13,12 +13,10 @@ target C {
 
 preamble {=
   #include <rise_time.h>
-
-  #define BAUD_RATE 100
 =}
 
 main reactor {
   reaction(startup) {=
-    rise_time_start(BAUD_RATE);
+    rise_time_start();
   =}
 }

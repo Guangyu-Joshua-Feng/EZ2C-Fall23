@@ -6,13 +6,16 @@
 #include <rise_time.h>
 #include <rise_time.pio.h>
 
+// The PIO assembly program will take the average rise time every this
+// number of signal rises.
+#define RISE_COUNT_LIMIT 1000
+
 // Number of clock cycles per PIO counter increment. Adjust this according
 // to the assembly program in rise_time.pio.
 #define PIO_CYCLES_PER_COUNTER_INCERMENT 5
 #define PIO_LO_THRESHOLD_PIN 20
 #define PIO_HI_THRESHOLD_PIN 21
 
-static uint32_t global_baud;
 static PIO pio_hw;
 static uint sm;
 static uint offset;
@@ -20,9 +23,8 @@ static int8_t pio_irq;
 
 static void nvic_pio_irq_handler();
 static void irq_handler_helper(int i);
-static inline uint32_t get_rise_count_limit(uint32_t baud_rate);
 
-void rise_time_start(uint32_t baud_rate) {
+void rise_time_start() {
     if (!pio_lib_utils_init_pio(&rise_time_program, &pio_hw, &sm, &offset)) {
         panic("failed to setup pio");
     }
@@ -42,8 +44,7 @@ void rise_time_start(uint32_t baud_rate) {
     pio_set_irqn_source_enabled(pio_hw, index, pis_interrupt2 + sm, true);
 
     // Send rise count limit to TX FIFO.
-    global_baud = baud_rate;
-    pio_sm_put_blocking(pio_hw, sm, get_rise_count_limit(global_baud));
+    pio_sm_put_blocking(pio_hw, sm, RISE_COUNT_LIMIT);
 }
 
 static void nvic_pio_irq_handler() {
@@ -58,12 +59,15 @@ static void nvic_pio_irq_handler() {
 static void irq_handler_helper(int i) {
     switch (i) {
         case 0: {
-            uint32_t rise_time_limit = get_rise_count_limit(global_baud);
             uint32_t x = rise_time_program_recv(pio_hw, sm);
             float avg_cycles =
-                (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / rise_time_limit;
+                (float)PIO_CYCLES_PER_COUNTER_INCERMENT * x / RISE_COUNT_LIMIT;
             printf("average rise time: %f cycles\n", avg_cycles);
-            pio_sm_put_blocking(pio_hw, sm, rise_time_limit - 1);
+
+            // -1 because the PIO assembly program starts counting down from
+            // the parameter passed in (RISE_COUNT_LIMIT - 1) to 0, inclusive.
+            // [0, RISE_COUNT_LIMIT - 1] contains RISE_COUNT_LIMIT values.
+            pio_sm_put_blocking(pio_hw, sm, RISE_COUNT_LIMIT - 1);
             break;
         }
         case 1:
@@ -79,8 +83,4 @@ static void irq_handler_helper(int i) {
             break;
     }
     pio_interrupt_clear(pio_hw, i);
-}
-
-static inline uint32_t get_rise_count_limit(uint32_t baud_rate) {
-    return 1000;
 }
