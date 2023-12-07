@@ -1,2 +1,0 @@
-add_subdirectory(i2c-lib i2c)
-target_link_libraries(${LF_MAIN_TARGET} i2c)
