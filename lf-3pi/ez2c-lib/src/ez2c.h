@@ -13,3 +13,4 @@
 
 #include "ez2c_common.h"
 #include "ez2c_master.h"
+#include "ez2c_slave.h"
