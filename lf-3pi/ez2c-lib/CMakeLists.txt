@@ -1,6 +1,9 @@
 add_library(ez2c
-  src/common.c
+  src/circular_buffer.c
+  src/ez2c_common.c
   src/ez2c_master.c
+  src/rise_time.c
+  src/pio_utils.c
   src/rise_time.c
 )
 

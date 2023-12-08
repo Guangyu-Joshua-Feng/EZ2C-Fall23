@@ -1,4 +1,4 @@
-#include "common.h"
+#include "ez2c_common.h"
 
 #include <pico/stdlib.h>
 

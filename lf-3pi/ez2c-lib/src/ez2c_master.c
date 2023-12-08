@@ -7,7 +7,7 @@
 #include <pico/unique_id.h>
 
 #include "circular_buffer.h"
-#include "common.h"
+#include "ez2c_common.h"
 #include "rise_time.h"
 
 // ---------------------------- Defined Constants ------------------------------
@@ -87,7 +87,7 @@ static float ref_safe_rise_cycles;
 static uint8_t pull_up_level_bits;
 
 // Current pull-up resistance level.
-static uint curr_pullup_level;
+static uint curr_pull_up_level;
 
 // Flag indicating that pull-up resistance level was recently adjusted.
 // Used in stall recovery mode to determine whether we can still adjust
@@ -116,7 +116,7 @@ static void init_pull_up_demux(const uint *_pull_up_demux_pins,
 static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin);
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
                      bool internal_pullup);
-                     
+
 static inline uint pull_up_levels();
 static inline uint pull_up_level_max();
 
@@ -144,7 +144,9 @@ static uint8_t reserve_next_addr();
 static inline uint8_t addr_at_index(int i);
 
 // ez2c_master_write_timeout_ms, ez2c_master_read_timeout_ms
+
 static void stall_handler(uint8_t slave_addr);
+static uint8_t step_pullup_level();
 
 // -----------------------------------------------------------------------------
 
@@ -195,6 +197,8 @@ int ez2c_master_discover() {
     return count;
 }
 
+bool ez2c_master_slave_addr_exists(uint i) { return addr_reserved[i]; }
+
 bool ez2c_get_device_change() { return device_change; }
 
 void ez2c_clear_device_change() { device_change = false; }
@@ -202,6 +206,7 @@ void ez2c_clear_device_change() { device_change = false; }
 int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
                                  bool nostop, uint timeout_ms) {
     uint timeout_us = timeout_ms * US_PER_MS;
+    addr = addr_at_index(addr);
     int ret = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
@@ -218,6 +223,7 @@ int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
 int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms) {
     uint timeout_us = timeout_ms * US_PER_MS;
+    addr = addr_at_index(addr);
     int ret = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
@@ -353,7 +359,7 @@ static bool adjust_pullup_conditional(float cycles) {
     // determined.
     if (!ref_safe_rise_cycles_set) return false;
 
-    uint old_level = curr_pullup_level;
+    uint old_level = curr_pull_up_level;
     if (cycles > rise_cycles_control_max()) {
         // If the most recent rise time is longer than maximum allowed rise
         // time, tune pull-up resistance level down by 1 level. Return true if
@@ -374,22 +380,22 @@ static bool adjust_pullup_conditional(float cycles) {
 // level is valid and returns the new level. Does nothing and returns the
 // current level otherwise.
 static uint adjust_pullup_level(int offset) {
-    uint new_level = curr_pullup_level + offset;
-    if (new_level > pull_up_level_max()) return curr_pullup_level;
+    uint new_level = curr_pull_up_level + offset;
+    if (new_level > pull_up_level_max()) return curr_pull_up_level;
 
     printf(
         "adjust_pullup_level: adjusting pull up resistance level (%d -> %d)\n",
-        curr_pullup_level, new_level);
+        curr_pull_up_level, new_level);
     return set_pullup_level(new_level);
 }
 
 // Sets pull-up resistance level to LEVEL and returns LEVEL.
 // Assumes LEVEL is valid.
 static uint set_pullup_level(uint level) {
-    curr_pullup_level = level;
+    curr_pull_up_level = level;
     pullup_adjusted = true;
     for (uint i = 0; i < pull_up_level_bits; ++i) {
-        gpio_put(pull_up_demux_pins[i], curr_pullup_level & (1u << i));
+        gpio_put(pull_up_demux_pins[i], curr_pull_up_level & (1u << i));
     }
     return level;
 }
@@ -537,7 +543,7 @@ static void stall_handler(uint8_t slave_addr) {
         // can be sent, iterate through all available pullup resistances.
         bool partial_success =
             (bytes_read >= 0 && bytes_read < sizeof(buf)) || pullup_adjusted;
-        if (!partial_success) step_pullup_resistance_level();
+        if (!partial_success) step_pullup_level();
     }
 
     // Read was successful. We can now return to normal operation.
@@ -548,4 +554,22 @@ static void stall_handler(uint8_t slave_addr) {
     // to set the maximum safe rise time. Note that this assumes the subsequent
     // rise time measurement corresponds to successful I2C communications.
     first_stall_recovered = true;
+}
+
+static uint8_t step_pullup_level() {
+    static bool increasing = false;
+    if (increasing && curr_pull_up_level >= pull_up_level_max()) {
+        increasing = false;
+    }
+    if (!increasing && curr_pull_up_level <= 0) {
+        increasing = true;
+    }
+    if (increasing) {
+        set_pullup_level(++curr_pull_up_level);
+    } else {
+        set_pullup_level(--curr_pull_up_level);
+    }
+    printf("step_pullup_level: adjusting resistance level to %u\n",
+           curr_pull_up_level);
+    return curr_pull_up_level;
 }
