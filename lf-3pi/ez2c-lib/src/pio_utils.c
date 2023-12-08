@@ -1,5 +1,8 @@
 #include "pio_utils.h"
 
+#include <hardware/pio.h>
+#include <pico/stdlib.h>
+
 // Finds a free pio and state machine and load the program into it.
 // Returns false if this fails
 // Copyright (c) 2023 Raspberry Pi (Trading) Ltd.

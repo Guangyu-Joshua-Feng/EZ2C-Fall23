@@ -12,8 +12,6 @@
  * @param baudrate Baudrate.
  * @param sda_pin SDA (data) pin number.
  * @param scl_pin SCL (clock) pin number.
- * @param timeout_ms All I2C communications will timeout after this number of
- * milliseconds.
  * @param pio_lo_pin PIO rise time cycle counter low threshold input pin number.
  * @param pio_hi_pin PIO rise time cycle counter high threshold input pin
  * number.
@@ -26,9 +24,9 @@
  * @return Actual set baudrate.
  */
 uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
-                      uint scl_pin, uint timeout_ms, uint pio_lo_pin,
-                      uint pio_hi_pin, const uint *pull_up_demux_pins,
-                      uint pull_up_level_bits, bool internal_pullup);
+                      uint scl_pin, uint pio_lo_pin, uint pio_hi_pin,
+                      const uint *pull_up_demux_pins, uint pull_up_level_bits,
+                      bool internal_pullup);
 
 /**
  * @brief Discovers new slave devices.

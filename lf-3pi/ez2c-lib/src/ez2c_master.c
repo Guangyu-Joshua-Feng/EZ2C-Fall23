@@ -10,69 +10,148 @@
 #include "common.h"
 #include "rise_time.h"
 
+// ---------------------------- Defined Constants ------------------------------
+
+// The stall handler function will attempt to read this number of bytes
+// in attempts to reconnect to the slave.
 #define STALL_RECOVERY_NUM_TEST_BYTES 32
+
+// Maximum number of pull-up resistance levels supported. Since we use a
+// static array to store the addresses, we need to predefine a length for
+// it. This value can be increased in the future. The only limitation to
+// this value is the amount of static memory of the target device.
 #define NUM_PULL_UP_LEVELS_MAX 8
 
+// -------------------------------- Constants ----------------------------------
+
+// Default I2C R/W timeout in milliseconds. All non-user initiated I2C
+// communications will use this value as timeout for stall detection.
 static const uint I2C_DEFAULT_TIMEOUT_MS = 1000u;
+
+// The PIO cycle counter will assert an interrupt and report the average rise
+// time every this number of rises under normal operation.
 static const uint PIO_NORMAL_RISE_COUNT_LIMIT = 1000u;
+
+// The PIO cycle counter will assert an interrupt and report the average rise
+// time every this number of rises when attempting a stall recovery.
 static const uint PIO_RECOVERY_RISE_COUNT_LIMIT = 16u;
+
+// An absolute rise time difference no greater than this value is considered
+// noise under stable connection.
 static const float RISE_TIME_CYCLES_STABLE_THRESHOLD = 5.0f;
+
+// Used together with ref_safe_rise_cycles. The system will attempt to increase
+// pull-up resistance when a new average rise time is smaller than this factor
+// times ref_safe_rise_cycles to conserve energy.
 static const float SAFE_RISE_TIME_LOWER_BOUND_FACTOR = 0.8f;
+
+// Used together with ref_safe_rise_cycles. The system will attempt to decrease
+// pull-up resistance when a new average rise time is greater than this factor
+// times ref_safe_rise_cycles to ensure stable connection.
 static const float SAFE_RISE_TIME_UPPER_BOUND_FACTOR = 1.01f;
 
-static i2c_inst_t *i2c_hw;  // I2C hardware in use as master.
-static PIO pio_hw;          // PIO hardware in use for rise time cycle counter.
-static uint sm;  // PIO state machine number for rise time cycle counter.
+// ---------------------------- Global Variables -------------------------------
 
-// PIO rise count limit currently in use.
-static uint curr_pio_rise_count_limit;
+// I2C hardware in use as master.
+static i2c_inst_t *i2c_hw;
 
+// PIO hardware in use for I2C SCL (clock) rise time cycle counter.
+static PIO scl_pio_hw;
+
+// PIO state machine number for I2C SCL (clock) rise time cycle counter.
+static uint sm;
+
+// Pull-up resistance controller demux output pins. Provided by the user and
+// only set once by the master initialization function.
+static uint pull_up_demux_pins[NUM_PULL_UP_LEVELS_MAX];
+
+// Stores the reserved status of all available relative slave addresses.
+// The actual slave address is calculated as (relative_addr + default_addr + 1).
 static bool addr_reserved[EZ2C_SLAVES_MAX];
 
+// Flag indicating whether a stall has happened and been recovered from.
+// The system will attempt to set ref_safe_rise_cycles immediately after it
+// recovers from its first I2C stall.
 static bool first_stall_recovered;
+
+// Flag indicating whether ref_safe_rise_cycles has been set. Otherwise,
+// it contains garbage value and should not be used.
 static bool ref_safe_rise_cycles_set;
+
+// A reference rise time in number of cycles that is safe for I2C communication
+// under the current hardware configuration.
 static float ref_safe_rise_cycles;
 
-static void init_global_variables(const uint *_pull_up_demux_pins,
-                                  uint _pull_up_level_bits);
+// Number of bits currently used to represent a pull-up resistance level.
+// E.g., if set to 2, than there are 4 levels 0-3 available.
+static uint8_t pull_up_level_bits;
+
+// Current pull-up resistance level.
+static uint curr_pullup_level;
+
+// Flag indicating that pull-up resistance level was recently adjusted.
+// Used in stall recovery mode to determine whether we can still adjust
+// pull-up resistance according to PIO rise time measurement results.
+static bool pullup_adjusted;
+
+// Buffer containing recently measured rise time in number of cycles by the PIO
+// rise time program.
+static circular_buffer_t recent_rise_cycles;
+
+// Flag indicating if there's a pending device change. A pending change will
+// become a formal change once the recent rise time measurement becomes stable.
+static bool device_change_pending;
+
+// Flag indicating if there's a device change since the last time this flag was
+// cleared.
+static bool device_change;
+
+// ---------------------------- Helper Functions -------------------------------
+
+// ez2c_master_init
+
+static void init_global_variables();
+static void init_pull_up_demux(const uint *_pull_up_demux_pins,
+                               uint _pull_up_level_bits);
 static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin);
-static void pio_counter_irq_handler();
-static void pio_irq_handler_helper(int i);
+static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
+                     bool internal_pullup);
+                     
+static inline uint pull_up_levels();
+static inline uint pull_up_level_max();
+
+// PIO IRQ Handler and related helper functions
+
+static void pio_scl_counter_irq_handler();
+static void scl_irq_handler_helper(int irq);
+
+static bool adjust_pullup_conditional(float cycles);
+static uint adjust_pullup_level(int offset);
+static uint set_pullup_level(uint level);
+
+static inline float rise_cycles_control_max();
+static inline float rise_cycles_control_min();
+
+static void detect_device_change(float new_avg_cycles, bool pullup_adjusted);
+static bool is_new_avg_cycles_stable(float cycles);
+static bool is_recent_stable();
+
+// ez2c_master_discover
 
 static bool discover_slave();
 static bool assign_slave_addr(pico_unique_board_id_t id);
 static uint8_t reserve_next_addr();
 static inline uint8_t addr_at_index(int i);
 
-static bool adjust_pullup_conditional(float cycles);
-static uint set_pullup_level(uint level);
-static uint adjust_pullup_level(int offset);
-static void detect_device_change(float new_avg_cycles, bool pullup_adjusted);
-static bool is_new_avg_cycles_stable(float cycles);
-static bool is_recent_stable();
+// ez2c_master_write_timeout_ms, ez2c_master_read_timeout_ms
 static void stall_handler(uint8_t slave_addr);
-
-static uint8_t pull_up_level_bits;
-static uint curr_pullup_level;
-static bool pullup_adjusted;
-static uint pull_up_demux_pins[NUM_PULL_UP_LEVELS_MAX];
-
-static inline uint pull_up_levels();
-static inline uint pull_up_level_max();
-
-static circular_buffer_t recent_rise_cycles;
-static bool device_change_pending;
-static bool device_change;
-
-static inline float rise_cycles_control_max();
-static inline float rise_cycles_control_min();
 
 // -----------------------------------------------------------------------------
 
 uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
-                      uint scl_pin, uint timeout_ms, uint pio_lo_pin,
-                      uint pio_hi_pin, const uint *_pull_up_demux_pins,
-                      uint _pull_up_level_bits, bool internal_pullup) {
+                      uint scl_pin, uint pio_lo_pin, uint pio_hi_pin,
+                      const uint *_pull_up_demux_pins, uint _pull_up_level_bits,
+                      bool internal_pullup) {
     static bool once = false;
     if (!once) {
         once = true;
@@ -83,33 +162,27 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
         return 0;
     }
 
-    init_global_variables(_pull_up_demux_pins, _pull_up_level_bits);
+    init_global_variables();
+    init_pull_up_demux(_pull_up_demux_pins, _pull_up_level_bits);
     init_pio_rise_time_cycle_counter(pio_lo_pin, pio_hi_pin);
-
-    gpio_init(sda_pin);
-    gpio_init(scl_pin);
-    gpio_set_function(sda_pin, GPIO_FUNC_I2C);
-    gpio_set_function(scl_pin, GPIO_FUNC_I2C);
-
-    if (internal_pullup) {
-        // Enable internal pull-up.
-        gpio_pull_up(sda_pin);
-        gpio_pull_up(scl_pin);
-    } else {
-        // Disable all pulls.
-        gpio_disable_pulls(sda_pin);
-        gpio_disable_pulls(scl_pin);
-    }
-
-    // Clear all available addresses.
-    for (int i = 0; i < EZ2C_SLAVES_MAX; ++i) {
-        addr_reserved[i] = false;
-    }
-
-    i2c_hw = i2c;
-    return i2c_init(i2c_hw, baudrate);
+    return init_i2c(i2c, baudrate, sda_pin, scl_pin, internal_pullup);
 }
 
+/** Dynamic slave address allocation steps:
+ *  1. Boardcast discover command to the default slave address.
+ *  2. Read response, which should contain the unique identifier of a device
+ *     whose address is yet to be assigned, or fail if no device is waiting
+ *     to be discovered.
+ *  3. If at least one response is read, go to 4; otherwise, go to 7.
+ *  4. Get the next unused slave address from table and increment slave
+ *     counter.
+ *  5. Send address reassignment command + unique identifier + new address
+ *     to the slave. Only the slave with the right unique identifier will
+ *     change their address accordingly.
+ *  6. Go to 1 and restart the procedure until all slaves have their unique
+ *     addresss.
+ *  7. Done
+ */
 int ez2c_master_discover() {
     int count = 0;
     bool discovered = true;
@@ -128,105 +201,151 @@ void ez2c_clear_device_change() { device_change = false; }
 
 int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
                                  bool nostop, uint timeout_ms) {
-    int bytes_written = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop,
-                                             timeout_ms * US_PER_MS);
+    uint timeout_us = timeout_ms * US_PER_MS;
+    int ret = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
-    while (bytes_written == PICO_ERROR_TIMEOUT) {
+    while (ret == PICO_ERROR_TIMEOUT) {
         // Initiate recovery subroutine.
         stall_handler(addr);
         // Retry I2C write.
-        bytes_written = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop,
-                                             timeout_ms * US_PER_MS);
+        ret = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop, timeout_us);
     }
-    return bytes_written;
+
+    return ret;
 }
 
 int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms) {
-    int bytes_read = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop,
-                                         timeout_ms * US_PER_MS);
+    uint timeout_us = timeout_ms * US_PER_MS;
+    int ret = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop, timeout_us);
+
     // A timeout likely indicates that the pullup resistance is incorrectly set.
-    while (bytes_read == PICO_ERROR_TIMEOUT) {
+    while (ret == PICO_ERROR_TIMEOUT) {
         // Initiate recovery subroutine.
         stall_handler(addr);
         // Retry I2C read.
-        bytes_read = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop,
-                                         timeout_ms * US_PER_MS);
+        ret = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop, timeout_us);
     }
-    return bytes_read;
+
+    return ret;
 }
 
-// -----------------------------------------------------------------------------
+// ----------------------- Helper Function Definitions ------------------------
 
-static void init_global_variables(const uint *_pull_up_demux_pins,
-                                  uint _pull_up_level_bits) {
-    curr_pio_rise_count_limit = PIO_NORMAL_RISE_COUNT_LIMIT;
+static void init_global_variables() {
     first_stall_recovered = false;
     ref_safe_rise_cycles_set = false;
     ref_safe_rise_cycles = 0.0f;
     device_change_pending = false;
     device_change = false;
 
-    // Set up pull-up demux.
-    pull_up_level_bits = _pull_up_level_bits;
-    curr_pullup_level = pull_up_level_max();
-    if (_pull_up_demux_pins > NUM_PULL_UP_LEVELS_MAX) {
-        printf(
-            "init_global_variables: (WARNING) truncating pull-up level bits to "
-            "%d\n",
-            NUM_PULL_UP_LEVELS_MAX);
-        _pull_up_level_bits = NUM_PULL_UP_LEVELS_MAX;
-    }
-    for (uint i = 0; i < _pull_up_level_bits; ++i) {
-        pull_up_demux_pins[i] = _pull_up_demux_pins[i];
-    }
-    pullup_adjusted = false;
-
     // Set up recent PIO rise time buffer.
     circular_buffer_clear(&recent_rise_cycles);
 }
 
-static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin) {
-    rise_time_init(lo_pin, hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
-                   &pio_counter_irq_handler, &pio_hw, &sm);
+static void init_pull_up_demux(const uint *_pull_up_demux_pins,
+                               uint _pull_up_level_bits) {
+    // Validate user input for the number of pull-up level bits.
+    if (_pull_up_level_bits > NUM_PULL_UP_LEVELS_MAX) {
+        printf(
+            "init_pull_up_demux: (WARNING) truncating pull-up level bits to "
+            "%d\n",
+            NUM_PULL_UP_LEVELS_MAX);
+        _pull_up_level_bits = NUM_PULL_UP_LEVELS_MAX;
+    }
+
+    pull_up_level_bits = _pull_up_level_bits;
+
+    // Initialize GPIO pins for demux output.
+    for (uint i = 0; i < pull_up_level_bits; ++i) {
+        pull_up_demux_pins[i] = _pull_up_demux_pins[i];
+        gpio_init(pull_up_demux_pins[i]);
+        gpio_set_dir(pull_up_demux_pins[i], GPIO_OUT);
+    }
+
+    set_pullup_level(pull_up_level_max());
+    pullup_adjusted = false;
 }
 
-static void pio_counter_irq_handler() {
+static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin) {
+    rise_time_init(lo_pin, hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
+                   &pio_scl_counter_irq_handler, &scl_pio_hw, &sm);
+}
+
+static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
+                     bool internal_pullup) {
+    gpio_init(sda_pin);
+    gpio_init(scl_pin);
+    gpio_set_function(sda_pin, GPIO_FUNC_I2C);
+    gpio_set_function(scl_pin, GPIO_FUNC_I2C);
+
+    if (internal_pullup) {
+        // Enable internal pull-up.
+        gpio_pull_up(sda_pin);
+        gpio_pull_up(scl_pin);
+    } else {
+        // Disable all pulls.
+        gpio_disable_pulls(sda_pin);
+        gpio_disable_pulls(scl_pin);
+    }
+
+    // Clear all available slave addresses.
+    for (int i = 0; i < EZ2C_SLAVES_MAX; ++i) {
+        addr_reserved[i] = false;
+    }
+
+    i2c_hw = i2c;
+    return i2c_init(i2c_hw, baudrate);
+}
+
+static inline uint pull_up_levels() { return 1u << pull_up_level_bits; }
+
+static inline uint pull_up_level_max() { return pull_up_levels() - 1; }
+
+static void pio_scl_counter_irq_handler() {
     static const int PIO_IRQ_MAX = 4;
     for (int irq = 0; irq < PIO_IRQ_MAX; ++irq) {
-        if (pio_interrupt_get(pio_hw, irq)) {
-            pio_irq_handler_helper(irq);
+        if (pio_interrupt_get(scl_pio_hw, irq)) {
+            scl_irq_handler_helper(irq);
         }
     }
 }
 
-static void pio_irq_handler_helper(int irq) {
+static void scl_irq_handler_helper(int irq) {
     switch (irq) {
         case 0: {
-            float avg_cycles =
-                get_avg_cycles(pio_hw, sm, curr_pio_rise_count_limit);
-            printf("pio_irq_handler_helper: %f cycles\n", avg_cycles);
+            // Normal average rise time output received.
+            float avg_cycles = get_avg_cycles(scl_pio_hw, sm);
+            printf("scl_irq_handler_helper: %f cycles\n", avg_cycles);
             bool adjusted = adjust_pullup_conditional(avg_cycles);
             detect_device_change(avg_cycles, adjusted);
-            pio_sm_put_blocking(pio_hw, sm, curr_pio_rise_count_limit - 1);
+            rise_time_continue(scl_pio_hw, sm);
             break;
         }
 
         case 1:
-            printf("pio_irq_handler_helper: resolution warning\n");
+            // Resolution warning: (0, 0) -> (1, 1)
+            // rise time too short to measure.
+            printf("scl_irq_handler_helper: resolution warning\n");
             break;
 
         case 2:
-            printf("pio_irq_handler_helper: capacitance warning\n");
-            // TODO: decrease pullup here
+            // Capacitance warning: (0, 0) -> (1, 0) -> (0, 0)
+            // failed to rise to desired voltage level.
+            printf("scl_irq_handler_helper: capacitance warning\n");
+            adjust_pullup_level(-1);
+            detect_device_change(0, true);  // Force detect.
             break;
 
         default:
-            printf("pio_irq_handler_helper: unknown irq flag warning\n");
+            // NOT REACHED.
+            printf("scl_irq_handler_helper: unknown irq flag warning\n");
             break;
     }
-    pio_interrupt_clear(pio_hw, irq);
+
+    // Clear PIO interrupt to restart PIO program.
+    pio_interrupt_clear(scl_pio_hw, irq);
 }
 
 static bool adjust_pullup_conditional(float cycles) {
@@ -236,10 +355,14 @@ static bool adjust_pullup_conditional(float cycles) {
 
     uint old_level = curr_pullup_level;
     if (cycles > rise_cycles_control_max()) {
-        // True if adjusted, false otherwise.
+        // If the most recent rise time is longer than maximum allowed rise
+        // time, tune pull-up resistance level down by 1 level. Return true if
+        // adjusted, false otherwise.
         return old_level != adjust_pullup_level(-1);
     } else if (cycles < rise_cycles_control_min()) {
-        // True if adjusted, false otherwise.
+        // If the most recent rise time is shorter than minimum allowed rise
+        // time, tune pull-up resistance level up by 1 level. Return true if
+        // adjusted, false otherwise.
         return old_level != adjust_pullup_level(1);
     }
 
@@ -247,6 +370,21 @@ static bool adjust_pullup_conditional(float cycles) {
     return false;
 }
 
+// Sets pull-up resistance level to current level + OFFSET if the resulting
+// level is valid and returns the new level. Does nothing and returns the
+// current level otherwise.
+static uint adjust_pullup_level(int offset) {
+    uint new_level = curr_pullup_level + offset;
+    if (new_level > pull_up_level_max()) return curr_pullup_level;
+
+    printf(
+        "adjust_pullup_level: adjusting pull up resistance level (%d -> %d)\n",
+        curr_pullup_level, new_level);
+    return set_pullup_level(new_level);
+}
+
+// Sets pull-up resistance level to LEVEL and returns LEVEL.
+// Assumes LEVEL is valid.
 static uint set_pullup_level(uint level) {
     curr_pullup_level = level;
     pullup_adjusted = true;
@@ -256,14 +394,12 @@ static uint set_pullup_level(uint level) {
     return level;
 }
 
-static uint adjust_pullup_level(int offset) {
-    uint new_level = curr_pullup_level + offset;
-    if (new_level > pull_up_level_max()) return curr_pullup_level;
+static inline float rise_cycles_control_max() {
+    return ref_safe_rise_cycles * SAFE_RISE_TIME_UPPER_BOUND_FACTOR;
+}
 
-    printf(
-        "adjust_pullup_level: adjusting pull up resistance level (%d -> %d)\n",
-        curr_pullup_level, new_level);
-    return set_pullup_level(new_level);
+static inline float rise_cycles_control_min() {
+    return ref_safe_rise_cycles * SAFE_RISE_TIME_LOWER_BOUND_FACTOR;
 }
 
 static void detect_device_change(float new_avg_cycles, bool _pullup_adjusted) {
@@ -278,18 +414,25 @@ static void detect_device_change(float new_avg_cycles, bool _pullup_adjusted) {
         device_change_pending = true;
         return;
     }
+
     circular_buffer_push(&recent_rise_cycles, new_avg_cycles);
     printf(
         "detect_device_change: device_change_pending == %d, "
         "recent_rise_cycles.size = %d\n",
         device_change_pending, recent_rise_cycles.size);
+
     if (device_change_pending && recent_rise_cycles.size >= 4 &&
         is_recent_stable()) {
         device_change_pending = false;
         device_change = true;
         printf("detect_device_change: stablized\n");
+
+        // If this is the first time we reach a stable state after the first
+        // stall recovery, set current average rise time as the safe reference
+        // rise time.
         if (!ref_safe_rise_cycles_set && first_stall_recovered) {
             ref_safe_rise_cycles = new_avg_cycles;
+            ref_safe_rise_cycles_set = true;
         }
     }
 }
@@ -376,8 +519,8 @@ static void stall_handler(uint8_t slave_addr) {
     while (!read_success) {
         // Reset PIO cycle counter limit to a small value and restart state
         // machine.
-        curr_pio_rise_count_limit = PIO_RECOVERY_RISE_COUNT_LIMIT;
-        rise_time_reset_rise_count_limit(pio_hw, sm, curr_pio_rise_count_limit);
+        rise_time_reset_rise_count_limit(scl_pio_hw, sm,
+                                         PIO_RECOVERY_RISE_COUNT_LIMIT);
 
         // Reset pull-up adjusted flag and monitor pull-up changes.
         pullup_adjusted = false;
@@ -398,23 +541,11 @@ static void stall_handler(uint8_t slave_addr) {
     }
 
     // Read was successful. We can now return to normal operation.
-    curr_pio_rise_count_limit = PIO_NORMAL_RISE_COUNT_LIMIT;
-    rise_time_reset_rise_count_limit(pio_hw, sm, curr_pio_rise_count_limit);
+    rise_time_reset_rise_count_limit(scl_pio_hw, sm,
+                                     PIO_NORMAL_RISE_COUNT_LIMIT);
 
     // Once we successfully recovered from the first I2C stall, we are ready
     // to set the maximum safe rise time. Note that this assumes the subsequent
     // rise time measurement corresponds to successful I2C communications.
     first_stall_recovered = true;
-}
-
-static inline uint pull_up_levels() { return 1u << pull_up_level_bits; }
-
-static inline uint pull_up_level_max() { return pull_up_levels() - 1; }
-
-static inline float rise_cycles_control_max() {
-    return ref_safe_rise_cycles * SAFE_RISE_TIME_UPPER_BOUND_FACTOR;
-}
-
-static inline float rise_cycles_control_min() {
-    return ref_safe_rise_cycles * SAFE_RISE_TIME_LOWER_BOUND_FACTOR;
 }
