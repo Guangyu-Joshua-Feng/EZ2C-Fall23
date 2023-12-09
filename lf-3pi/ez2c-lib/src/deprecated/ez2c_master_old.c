@@ -14,7 +14,7 @@
 
 // The stall handler function will attempt to read this number of bytes
 // in attempts to reconnect to the slave.
-#define STALL_RECOVERY_NUM_TEST_BYTES 16
+#define STALL_RECOVERY_NUM_TEST_BYTES 32
 
 // Maximum number of pull-up resistance levels supported. Since we use a
 // static array to store the addresses, we need to predefine a length for
@@ -27,6 +27,14 @@
 // Default I2C R/W timeout in milliseconds. All non-user initiated I2C
 // communications will use this value as timeout for stall detection.
 static const uint I2C_DEFAULT_TIMEOUT_MS = 1000u;
+
+// The PIO cycle counter will assert an interrupt and report the average rise
+// time every this number of rises under normal operation.
+static const uint PIO_NORMAL_RISE_COUNT_LIMIT = 1000u;
+
+// The PIO cycle counter will assert an interrupt and report the average rise
+// time every this number of rises when attempting a stall recovery.
+static const uint PIO_RECOVERY_RISE_COUNT_LIMIT = 16u;
 
 // An absolute rise time difference no greater than this value is considered
 // noise under stable connection.
@@ -51,7 +59,7 @@ static i2c_inst_t *i2c_hw;
 static PIO scl_pio_hw;
 
 // PIO state machine number for I2C SCL (clock) rise time cycle counter.
-static uint scl_sm;
+static uint sm;
 
 // Pull-up resistance controller demux output pins. Provided by the user and
 // only set once by the master initialization function.
@@ -189,11 +197,7 @@ int ez2c_master_discover() {
     return count;
 }
 
-void ez2c_master_signal_output() {
-    rise_time_signal_output(scl_pio_hw, scl_sm);
-}
-
-bool ez2c_master_slave_addr_reserved(uint i) { return addr_reserved[i]; }
+bool ez2c_master_slave_addr_exists(uint i) { return addr_reserved[i]; }
 
 bool ez2c_get_device_change() { return device_change; }
 
@@ -271,8 +275,8 @@ static void init_pull_up_demux(const uint *_pull_up_demux_pins,
 }
 
 static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin) {
-    rise_time_init(lo_pin, hi_pin, &pio_scl_counter_irq_handler, &scl_pio_hw,
-                   &scl_sm);
+    rise_time_init(lo_pin, hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
+                   &pio_scl_counter_irq_handler, &scl_pio_hw, &sm);
 }
 
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
@@ -318,12 +322,11 @@ static void scl_irq_handler_helper(int irq) {
     switch (irq) {
         case 0: {
             // Normal average rise time output received.
-            float avg_cycles = rise_time_get_avg_cycles(scl_pio_hw, scl_sm);
-            if (avg_cycles < 0.01f) break;  // No rise time measured.
-
+            float avg_cycles = get_avg_cycles(scl_pio_hw, sm);
             printf("scl_irq_handler_helper: %f cycles\n", avg_cycles);
             bool adjusted = adjust_pullup_conditional(avg_cycles);
             detect_device_change(avg_cycles, adjusted);
+            rise_time_continue(scl_pio_hw, sm);
             break;
         }
 
@@ -334,10 +337,10 @@ static void scl_irq_handler_helper(int irq) {
             break;
 
         case 2:
-            // Capacitance warning: (0, 0) -> (0, 1) -> (0, 0)
+            // Capacitance warning: (0, 0) -> (1, 0) -> (0, 0)
             // failed to rise to desired voltage level.
             printf("scl_irq_handler_helper: capacitance warning\n");
-            adjust_pullup_level(-1);  // Pull-up resistance likely too big.
+            adjust_pullup_level(-1);
             detect_device_change(0, true);  // Force detect.
             break;
 
@@ -522,14 +525,11 @@ static void stall_handler(uint8_t slave_addr) {
     while (!read_success) {
         // Reset PIO cycle counter limit to a small value and restart state
         // machine.
-        rise_time_reset(scl_pio_hw, scl_sm);
+        rise_time_reset_rise_count_limit(scl_pio_hw, sm,
+                                         PIO_RECOVERY_RISE_COUNT_LIMIT);
 
         // Reset pull-up adjusted flag and monitor pull-up changes.
         pullup_adjusted = false;
-        bytes_read =
-            i2c_read_timeout_us(i2c_hw, slave_addr, buf, sizeof(buf), false,
-                                I2C_DEFAULT_TIMEOUT_MS * US_PER_MS);
-        rise_time_signal_output(scl_pio_hw, scl_sm);
         bytes_read =
             i2c_read_timeout_us(i2c_hw, slave_addr, buf, sizeof(buf), false,
                                 I2C_DEFAULT_TIMEOUT_MS * US_PER_MS);
@@ -547,7 +547,8 @@ static void stall_handler(uint8_t slave_addr) {
     }
 
     // Read was successful. We can now return to normal operation.
-    rise_time_reset(scl_pio_hw, scl_sm);
+    rise_time_reset_rise_count_limit(scl_pio_hw, sm,
+                                     PIO_NORMAL_RISE_COUNT_LIMIT);
 
     // Once we successfully recovered from the first I2C stall, we are ready
     // to set the maximum safe rise time. Note that this assumes the subsequent

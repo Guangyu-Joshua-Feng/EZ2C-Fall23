@@ -4,7 +4,7 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["../../ez2c-lib/ez2c-lib.txt", "../cmake_include/i2c.txt"],
+  cmake-include: ["../../ez2c-lib/ez2c-lib.txt"],
   files: ["../../ez2c-lib/"],
   keepalive: true
 }
@@ -16,16 +16,16 @@ preamble {=
   #include <pico/stdlib.h>
   #include <stdio.h>
 
-  #define BAUDRATE (100 * 1000)       // I2C baudrate (Hz).
+  #define BAUDRATE (100 * 1000)        // I2C baudrate (Hz).
   #define I2C_DEFAULT_TIMEOUT_MS 1000  // Default I2C R/W timeout in milliseconds.
   #define INTERNAL_PULL_UP 0           // Disables (0) or enables (1) Pico's internal pull-up
 
-  #define I2C_SDA_PIN 4   // I2C SDA (data).
-  #define I2C_SCL_PIN 5   // I2C SCL (clock).
-  #define PULLUP_DEMUX_A0_PIN 14       // Dynamic pull-up selection demux input A0.
-  #define PULLUP_DEMUX_A1_PIN 15       // Dynamic pull-up selection demux input A1.
-  #define PIO_LO_THRESHOLD_PIN 20      // PIO rise time measurement low threshold input pin.
-  #define PIO_HI_THRESHOLD_PIN 21      // PIO rise time measurement high threshold input pin.
+  #define I2C_SDA_PIN 4                // I2C SDA (data).
+  #define I2C_SCL_PIN 5            // I2C SCL (clock).
+  #define PULLUP_DEMUX_A0_PIN 14   // Dynamic pull-up selection demux input A0.
+  #define PULLUP_DEMUX_A1_PIN 15   // Dynamic pull-up selection demux input A1.
+  #define PIO_LO_THRESHOLD_PIN 20  // PIO rise time measurement low threshold input pin.
+  #define PIO_HI_THRESHOLD_PIN 21  // PIO rise time measurement high threshold input pin.
 =}
 
 main reactor {
@@ -51,7 +51,8 @@ main reactor {
       }
     }
   =}
-
+  
+  timer output_timer(1 s, 1 s)
   timer echo_timer(3 s, 2 s)
   logical action initial_daa_scan
 
@@ -77,6 +78,10 @@ main reactor {
     ez2c_master_discover();
   =}
 
+  reaction(output_timer) {=
+    ez2c_master_signal_output();
+  =}
+
   reaction(echo_timer) {=
     // Poll device change.
     if (ez2c_get_device_change()) {
@@ -88,7 +93,7 @@ main reactor {
     static int echo_index = 0;
     int alive_count = 0;
     for (int i = 0; i < EZ2C_SLAVES_MAX; ++i) {
-      if (ez2c_master_slave_addr_exists(i)) {
+      if (ez2c_master_slave_addr_reserved(i)) {
         alive_count += echo(i, false);
       }
     }

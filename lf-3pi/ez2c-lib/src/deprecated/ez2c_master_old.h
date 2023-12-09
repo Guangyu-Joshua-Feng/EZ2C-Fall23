@@ -35,9 +35,7 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
  */
 int ez2c_master_discover();
 
-void ez2c_master_signal_output();
-
-bool ez2c_master_slave_addr_reserved(uint i);
+bool ez2c_master_slave_addr_exists(uint i);
 
 bool ez2c_get_device_change();
 

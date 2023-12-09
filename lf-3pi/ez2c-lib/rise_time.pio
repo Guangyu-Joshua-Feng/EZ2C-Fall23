@@ -27,20 +27,20 @@ low:
     jmp low           ; Otherwise, keep looping in "low" mode.
 
 low_rise:
-    in pins, 1                ; Read high-threshold pin state to ISR.
-    mov x, isr                ; Copy ISR (high-threshold pin state) to X.
-    jmp x resolution_warning  ; If high-threshold value is already high, then
-                              ; it means that the rise time was too short to
-                              ; be measured with this method.
-    jmp rise                  ; Go to "rise" mode and start counting.
+    in pins, 1                  ; Read high-threshold pin state to ISR.
+    mov x, isr                  ; Copy ISR (high-threshold pin state) to X.
+    jmp x-- resolution_warning  ; If high-threshold value is already high, then
+                                ; it means that the rise time was too short to
+                                ; be measured with this method.
+    jmp rise                    ; Go to "rise" mode and start counting.
 
-rise_continue_1:  ; Placing this label here saves one instruction
-                  ; in this performance-critical section.
-    in pins, 1    ; Read high-threshold pin state to ISR.
-    mov x, isr    ; Copy ISR (high-threshold pin state) to X.
-    jmp x high    ; If high-threshold is high, go to "high" mode
-                  ; and stop counting.
-                  ; Otherwise, fall through to "rise" and keep counting.
+rise_continue_1:    ; Placing this label here saves one instruction
+                    ; in this performance-critical section.
+    in pins, 1      ; Read high-threshold pin state to ISR.
+    mov x, isr      ; Copy ISR (high-threshold pin state) to X.
+    jmp x-- high    ; If high-threshold is high, go to "high" mode
+                    ; and stop counting.
+                    ; Otherwise, fall through to "rise" and keep counting.
 
 rise:
     jmp pin rise_continue_0  ; Proceed only if low-threshold is still high.
