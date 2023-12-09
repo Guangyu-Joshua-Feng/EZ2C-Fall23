@@ -20,7 +20,7 @@ preamble {=
   #define I2C_DEFAULT_TIMEOUT_MS 1000  // Default I2C R/W timeout in milliseconds.
   #define INTERNAL_PULL_UP 0           // Disables (0) or enables (1) Pico's internal pull-up
 
-  #define I2C_SDA_PIN 4                // I2C SDA (data).
+  #define I2C_SDA_PIN 4            // I2C SDA (data).
   #define I2C_SCL_PIN 5            // I2C SCL (clock).
   #define PULLUP_DEMUX_A0_PIN 14   // Dynamic pull-up selection demux input A0.
   #define PULLUP_DEMUX_A1_PIN 15   // Dynamic pull-up selection demux input A1.

@@ -43,8 +43,8 @@ bool ez2c_get_device_change();
 
 void ez2c_clear_device_change();
 
-int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
+int ez2c_master_write_timeout_ms(int relative_addr, const uint8_t *src, size_t len,
                                  bool nostop, uint timeout_ms);
 
-int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
+int ez2c_master_read_timeout_ms(int relative_addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms);

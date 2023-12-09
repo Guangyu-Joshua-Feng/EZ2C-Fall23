@@ -48,8 +48,6 @@ float rise_time_get_avg_cycles(PIO pio_hw, uint sm) {
 }
 
 void rise_time_signal_output(PIO pio_hw, uint sm) {
-    int pio_number = pio_hw_number(pio_hw);
-
     // Send output signal to TX FIFO.
     pio_sm_put(pio_hw, sm, OUTPUT_SIGNAL);
 }

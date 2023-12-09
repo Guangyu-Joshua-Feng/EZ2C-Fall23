@@ -199,10 +199,10 @@ bool ez2c_get_device_change() { return device_change; }
 
 void ez2c_clear_device_change() { device_change = false; }
 
-int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
+int ez2c_master_write_timeout_ms(int relative_addr, const uint8_t *src, size_t len,
                                  bool nostop, uint timeout_ms) {
     uint timeout_us = timeout_ms * US_PER_MS;
-    addr = addr_at_index(addr);
+    uint8_t addr = addr_at_index(relative_addr);
     int ret = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
@@ -216,10 +216,10 @@ int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
     return ret;
 }
 
-int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
+int ez2c_master_read_timeout_ms(int relative_addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms) {
     uint timeout_us = timeout_ms * US_PER_MS;
-    addr = addr_at_index(addr);
+    uint8_t addr = addr_at_index(relative_addr);
     int ret = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
@@ -467,11 +467,11 @@ static bool discover_slave() {
         "devices\n",
         I2C_DEFAULT_SLAVE_ADDR);
     int bytes_sent = ez2c_master_write_timeout_ms(
-        I2C_DEFAULT_SLAVE_ADDR, &command, 1, false, I2C_DEFAULT_TIMEOUT_MS);
+        -1, &command, 1, false, I2C_DEFAULT_TIMEOUT_MS);
     if (bytes_sent == 1) {
         // at least one slave device got the command
         pico_unique_board_id_t id;
-        ez2c_master_read_timeout_ms(I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id),
+        ez2c_master_read_timeout_ms(-1, &id, sizeof(id),
                                     false, I2C_DEFAULT_TIMEOUT_MS);
         return assign_slave_addr(id);
     }
@@ -494,7 +494,7 @@ static bool assign_slave_addr(pico_unique_board_id_t id) {
     buf[1 + sizeof(pico_unique_board_id_t)] = addr;
 
     int bytes_sent =
-        ez2c_master_write_timeout_ms(I2C_DEFAULT_SLAVE_ADDR, buf, sizeof(buf),
+        ez2c_master_write_timeout_ms(-1, buf, sizeof(buf),
                                      false, I2C_DEFAULT_TIMEOUT_MS);
     return true;
 }
@@ -564,9 +564,9 @@ static uint8_t step_pullup_level() {
         increasing = true;
     }
     if (increasing) {
-        set_pullup_level(++curr_pull_up_level);
+        set_pullup_level(curr_pull_up_level + 1);
     } else {
-        set_pullup_level(--curr_pull_up_level);
+        set_pullup_level(curr_pull_up_level - 1);
     }
     printf("step_pullup_level: adjusting resistance level to %u\n",
            curr_pull_up_level);
