@@ -1,0 +1,125 @@
+; THIS PROGRAM EXCEEDS THE INSTRUCTION NUMBER LIMIT AND THEREFORE CANNOT
+; BE LOADED.
+
+.program rise_time
+
+; THROUGHOUT THIS PROGRAM:
+;   . Both Autopull and Autopush should be disabled.
+;   . Scratch register X is used as temp space.
+;   . Scratch register Y is used as the clock cycle counter.
+;   . ISR is used as a temp space for bit shifting.
+;   . OSR is used as a counter for the number of rises.
+;   . The jmp pin is set to the high-threshold input pin.
+;   . The ONLY input pin enabled is the low-threshold input pin.
+
+init:
+    set y, 0       ; Set Y (clock cycle counter) to 0.
+    mov osr, y     ; Set OSR (rise number counter) to 0.
+    jmp y-- reset  ; Decrement Y to start counting backwards from 0xFFFFFFFF.
+                   ; This makes sure that future "jmp y--" branches are always
+                   ; taken. Always fall through to reset.
+
+.wrap_target       ; The program would normally restart from here.
+reset:
+    in pins, 1     ; Read low-threshold pin state into ISR.
+    mov x, isr     ; Copy ISR to X. X is 0 if low-threshold is low, or 
+                   ; 1 otherwise.
+    jmp x-- reset  ; Keep looping in "reset" mode until low-threshold is low.
+                   ; Note that the decrement is unavoidable by op code design.
+                   ; Fall through to "low" mode and start monitoring..
+
+low:
+    in pins, 1                  ; Read low-threshold pin state to ISR.
+    mov x, isr                  ; Copy ISR to X. X is 0 if low-threshold is low,
+                                ; or 1 otherwise.
+    jmp !x low                  ; If the low-threshold input pin is low, keep
+                                ; looping in low.
+    jmp pin resolution_warning  ; If high-threshold value is already high, then
+                                ; it means that the rise time was too short to
+                                ; be measured with this method.
+    jmp rise                    ; Go to "rise" mode and to start counting.
+
+rise_continue:
+    jmp pin high                ; If high-threshold is high, go to "high" mode
+                                ; and stop counting.
+                                ; Otherwise, fall through to "rise" and keep
+                                ; counting.
+
+rise:
+    in pins, 1                  ; Read low-threshold pin state to ISR.
+    mov x, isr                  ; Copy ISR to X. X is 0 if low-threshold is low,
+                                ; or 1 otherwise.
+    jmp !x capacitance_warning  ; If low-threshold becomes low before we
+                                ; reach "high", the current rise failed.
+    jmp y-- rise_continue       ; Decrement Y every 5 cycles and continue.
+                                ; Note that the jmp here is always taken and
+                                ; is unavoidable by op code design.
+                                ; IMPORTANT: THE NUMBER OF CYCLES HERE DEPEND
+                                ; ON THE ACTUAL ASSEMBLY CODE. PLEASE ADJUST
+                                ; C CODE ACCRODINGLY TO CALCULATE RISE TIME.
+
+high:
+    mov isr, y              ; Copy clock cycle counter from Y to ISR.
+    mov y, osr              ; Copy rise counter value from OSR to Y.
+    jmp y-- high_continue   ; Decrement the rise number counter (Y) and always
+                            ; fall through to "high_continue".
+
+high_continue:
+    set X, 0        ; Set X to 0 in case TX FIFO is empty and X
+                    ; is copied to OSR.
+    pull noblock    ; Do a non-blocking pull of output signal.
+    mov x, osr      ; Copy output signal from OSR to X.
+    jmp x-- output  ; If output signal present, go to "output" mode.
+    mov osr, y      ; Copy the decremented y value back to OSR.
+    mov y, isr      ; Copy cycle counter from ISR back to Y.
+.wrap               ; Reset the program.
+
+output:
+    push block      ; Push the total number of clock cycles spent in
+                    ; "rise" mode (that is already in ISR) to RX FIFO.
+    mov isr, y      ; Copy the rise number counter to ISR.
+    push block      ; Push the rise number into the RX FIFO.
+    irq wait 0 rel  ; Asserts pio interrupt 0 to the main system, notifying it
+                    ; that the most recent results are ready in RX FIFO. This
+                    ; statement blocks the pio state machine until the flag is
+                    ; cleared by the main system.
+    jmp init        ; Reset the program, reinitializing the counters to 0.
+
+resolution_warning:
+    irq wait 1 rel ; Asserts pio interrupt 1 to the main system, notifying it
+                   ; that a resolution warning is triggered by the pio. This
+                   ; statement blocks the pio state machine until the flag is
+                   ; cleared by the main system.
+    jmp high       ; Zero cycles counted but a rise was complete.
+
+capacitance_warning:
+    irq wait 2 rel ; Asserts pio interrupt 2 to the main system, notifying it
+                   ; that a capacitance warning is triggered by the pio. This
+                   ; statement blocks the pio state machine until the flag is
+                   ; cleared by the main system.
+    jmp reset      ; No clock cycle is counted and the program is reset.
+
+% c-sdk {
+static inline void rise_time_program_init(PIO pio, uint sm, uint offset,
+                                          uint lo_pin, uint hi_pin) {
+    pio_gpio_init(pio, lo_pin);
+    pio_gpio_init(pio, hi_pin);
+
+    pio_sm_set_consecutive_pindirs(pio, sm, lo_pin, 1, false);
+    pio_sm_set_consecutive_pindirs(pio, sm, hi_pin, 1, false);
+
+    // State machine configuration.
+    pio_sm_config c = rise_time_program_get_default_config(offset);
+    sm_config_set_jmp_pin(&c, hi_pin);
+    sm_config_set_in_pins(&c, lo_pin);
+
+    // Initialize.
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+static inline uint32_t rise_time_program_recv(PIO pio, uint sm) {
+    return *(io_rw_32 *)&pio->rxf[sm];
+}
+
+%}
