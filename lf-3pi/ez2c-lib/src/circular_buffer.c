@@ -10,7 +10,7 @@ float circular_buffer_get_avg(const circular_buffer_t *buf) {
 }
 
 int circular_buffer_push(circular_buffer_t *buf, float val) {
-    buf->buf[buf->next] = 0;
+    buf->buf[buf->next] = val;
     buf->next = (buf->next + 1) % CIRCULAR_BUFFER_SIZE;
     if (buf->size < CIRCULAR_BUFFER_SIZE) {
         ++buf->size;

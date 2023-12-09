@@ -14,7 +14,7 @@
 
 // The stall handler function will attempt to read this number of bytes
 // in attempts to reconnect to the slave.
-#define STALL_RECOVERY_NUM_TEST_BYTES 32
+#define STALL_RECOVERY_NUM_TEST_BYTES 2
 
 // Maximum number of pull-up resistance levels supported. Since we use a
 // static array to store the addresses, we need to predefine a length for
@@ -167,6 +167,7 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
     init_global_variables();
     init_pull_up_demux(_pull_up_demux_pins, _pull_up_level_bits);
     init_pio_rise_time_cycle_counter(pio_lo_pin, pio_hi_pin);
+
     return init_i2c(i2c, baudrate, sda_pin, scl_pin, internal_pullup);
 }
 
@@ -197,7 +198,11 @@ int ez2c_master_discover() {
     return count;
 }
 
-bool ez2c_master_slave_addr_exists(uint i) { return addr_reserved[i]; }
+bool ez2c_master_slave_addr_exists(uint8_t addr) {
+    if (addr <= I2C_DEFAULT_SLAVE_ADDR) return false;
+    if (addr > I2C_DEFAULT_SLAVE_ADDR + EZ2C_SLAVES_MAX - 1) return false;
+    return addr_reserved[addr - I2C_DEFAULT_SLAVE_ADDR - 1];
+}
 
 bool ez2c_get_device_change() { return device_change; }
 
@@ -206,7 +211,6 @@ void ez2c_clear_device_change() { device_change = false; }
 int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
                                  bool nostop, uint timeout_ms) {
     uint timeout_us = timeout_ms * US_PER_MS;
-    addr = addr_at_index(addr);
     int ret = i2c_write_timeout_us(i2c_hw, addr, src, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
@@ -223,7 +227,6 @@ int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
 int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms) {
     uint timeout_us = timeout_ms * US_PER_MS;
-    addr = addr_at_index(addr);
     int ret = i2c_read_timeout_us(i2c_hw, addr, dst, len, nostop, timeout_us);
 
     // A timeout likely indicates that the pullup resistance is incorrectly set.
@@ -417,6 +420,7 @@ static void detect_device_change(float new_avg_cycles, bool _pullup_adjusted) {
             "detected\n",
             _pullup_adjusted);
         circular_buffer_clear(&recent_rise_cycles);
+        circular_buffer_push(&recent_rise_cycles, new_avg_cycles);
         device_change_pending = true;
         return;
     }
@@ -533,8 +537,8 @@ static void stall_handler(uint8_t slave_addr) {
         bytes_read =
             i2c_read_timeout_us(i2c_hw, slave_addr, buf, sizeof(buf), false,
                                 I2C_DEFAULT_TIMEOUT_MS * US_PER_MS);
-        printf("stall_handler: bytes_read == %d, pullup_adjusted == %d\n",
-               bytes_read, pullup_adjusted);
+        printf("stall_handler: slave_addr: %x, bytes_read == %d, pullup_adjusted == %d\n",
+               slave_addr, bytes_read, pullup_adjusted);
         read_success = (bytes_read == sizeof(buf));
         if (read_success) break;
 
