@@ -1,0 +1,497 @@
+target C {
+  platform: {
+    name: "rp2040",
+    board: "pololu_3pi_2040_robot"
+  },
+  threading: false,
+  cmake-include: ["../../pio-lib/pio-lib.txt", "../cmake_include/i2c.txt"],
+  files: ["../../pio-lib/"],
+  keepalive: true
+}
+
+preamble {=
+  #include <hardware/gpio.h>
+  #include <hardware/i2c.h>
+  #include <hardware/pio.h>
+  #include <pico/stdlib.h>
+  #include <pico/unique_id.h>
+  #include <rise_time.h>
+  #include <rise_time.pio.h>
+  #include <stdio.h>
+  #include <string.h>
+
+  #define BAUD_RATE (100 * 1000)             // I2C baud rate (Hz).
+  #define RISE_TIME_COUNT_LIMIT 1000  // Take average number of cycles every this number of rises.
+  #define RISE_TIME_RECOVERY_COUNT_LIMIT 4  // Average cycle count limit under recovery mode.
+  #define RISE_TIME_STABLE_THRESHOLD_CYCLES 5  // Stable iff within this number of cycles from avg.
+  #define I2C_DEFAULT_TIMEOUT_MS 1000 // Default I2C R/W timeout in milliseconds.
+  #define INTERNAL_PULL_UP 0          // Disables (0) or enables (1) Pico's internal pull-up
+  #define NUM_RECENT_AVG_CYCLES 30    // Keep a buffer of most recent average cycle counts of this size.
+  #define SAFE_RISE_CYCLES_FACTOR 0.95f  // The upper limit for a safe rise time will be set to this
+                                         // value times the avgerage rise time of the first successful
+                                         // I2C communication, which uses the largest possible pull-up
+                                         // resistance. 
+
+  #define MAX_SLAVES 30                // Maximum supported number of I2C slave devices.
+  #define I2C_DEFAULT_SLAVE_ADDR 0x55  // I2C default slave address.
+
+  #define PICO_DEFAULT_I2C_SDA_PIN 4    // I2C SDA (data).
+  #define PICO_DEFAULT_I2C_SCL_PIN 5    // I2C SCL (clock).
+  #define PULLUP_DEMUX_A0_PIN 14        // Dynamic pull-up selection demux input A0.
+  #define PULLUP_DEMUX_A1_PIN 15        // Dynamic pull-up selection demux input A1.
+  #define PIO_LO_THRESHOLD_PIN 20       // PIO rise time measurement low threshold input pin.
+  #define PIO_HI_THRESHOLD_PIN 21       // PIO rise time measurement high threshold input pin.
+
+  #define COMMAND_DISCOVER 0  // I2C command: discover new slave devices.
+  #define COMMAND_ASSIGN 1    // I2C command: assign address to new slave device.
+  #define COMMAND_ECHO 2      // I2C command: send test message to slave and monitor echo.
+=}
+
+main reactor {
+  preamble {=
+    // I2C variables and functions.
+    /** Dynamic slave address allocation steps:
+     *      1. Boardcast discover command to the default slave address.
+     *      2. Read response, which should contain the unique identifier of a device
+     *         whose address is yet to be assigned, or fail if no device is waiting
+     *         to be discovered.
+     *      3. If at least one response is read, go to 4; otherwise, go to 7.
+     *      4. Get the next unused slave address from table and increment slave
+     *         counter.
+     *      5. Send address reassignment command + unique identifier + new address
+     *         to the slave. Only the slave with the right unique identifier will
+     *         change their address accordingly.
+     *      6. Go to 1 and restart the procedure until all slaves have their unique
+     *         addresss.
+     *      7. Done
+     */
+    static uint rise_count_limit;
+    static const uint us_per_ms = 1000;
+    static bool addr_taken[MAX_SLAVES];
+
+    static void setup_i2c();
+    static inline uint8_t addr_at_index(int i);
+    static bool daa_rescan();
+    static bool daa_discover();
+    static void daa_assign(pico_unique_board_id_t id);
+    static uint8_t reserve_next_addr();
+    static bool echo(uint8_t slave_addr, bool verbose);
+    static int guarded_i2c_write_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
+                                            const uint8_t *src, size_t len,
+                                            bool nostop, uint timeout_ms);
+    static int guarded_i2c_read_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
+                                           uint8_t *dst, size_t len, bool nostop,
+                                           uint timeout_ms);
+    static void i2c_stall_handler(uint8_t slave_addr);
+
+    // I2C pull-up resistor dynamic selection demux helper variables and functions.
+
+    static bool pullup_adjusted;
+    static uint8_t pullup_resistance_level;
+
+    static void setup_pullup_demux();
+    static void set_pullup_resistance_level(uint8_t value);
+    static uint8_t adjust_pullup_resistance_level(int offset);
+    static uint8_t step_pullup_resistance_level();
+    static void apply_pullup_resistance_level();
+
+    // PIO rise time measurement variables and functions.
+
+    static PIO pio_hw;  // PIO hardware in use.
+    static uint sm;     // PIO state machine number.
+
+    static void nvic_pio_irq_handler();
+    static void irq_handler_helper(int i);
+    static bool adjust_pullup_conditional(float cycles);
+
+    // Device change detection helper variables and methods.
+
+    static bool first_stall_recovered;
+    static bool max_safe_rise_cycles_set;
+    static float max_safe_rise_cycles;
+    static float recent_avg_cycles[NUM_RECENT_AVG_CYCLES];
+    static int recent_avg_cycles_size;  // [0, NUM_RECENT_AVG_CYCLES]
+    static int recent_avg_cycles_next;  // [0, NUM_RECENT_AVG_CYCLES)
+    static bool device_change_pending;
+    static bool device_change;
+
+    static void detect_device_change(float most_recent_cycles,
+                                     bool pullup_adjusted);
+    static int push_most_recent_cycles(float cycles);
+    static bool is_new_avg_cycles_stable(float cycles);
+    static bool is_recent_stable();
+    static void clear_recent_avg_cycles(float most_recent_cycles);
+
+    // -----------------------------------------------------------------------------------
+
+    static void setup_i2c() {
+      gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
+      gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
+      gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
+      gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
+      if (INTERNAL_PULL_UP) {
+        gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
+        gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
+      } else {
+        gpio_disable_pulls(PICO_DEFAULT_I2C_SDA_PIN);
+        gpio_disable_pulls(PICO_DEFAULT_I2C_SCL_PIN);
+      }
+      i2c_init(i2c0, BAUD_RATE);
+
+      for (int i = 0; i < MAX_SLAVES; ++i) {
+        addr_taken[i] = false;
+      }
+    }
+
+    static inline uint8_t addr_at_index(int i) {
+      return i + I2C_DEFAULT_SLAVE_ADDR + 1;
+    }
+
+    static bool daa_rescan() {
+      bool discover_done = false;
+      bool change = false;
+      while (!discover_done) {
+        bool discovered = daa_discover();
+        change |= discovered;
+        discover_done = !discovered;
+      }
+      return change;
+    }
+
+    static bool daa_discover() {
+      uint8_t command = COMMAND_DISCOVER;
+      printf("daa_discover: begin\n");
+      int bytes_sent = guarded_i2c_write_timeout_ms(i2c0, I2C_DEFAULT_SLAVE_ADDR,
+                                                    &command, 1, false,
+                                                    I2C_DEFAULT_TIMEOUT_MS);
+      if (bytes_sent == 1) {
+        // at least one slave device got the command
+        pico_unique_board_id_t id;
+        guarded_i2c_read_timeout_ms(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id),
+                                    false, I2C_DEFAULT_TIMEOUT_MS);
+        daa_assign(id);
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    static void daa_assign(pico_unique_board_id_t id) {
+      printf("assigning address for id %llx\n", *(uint64_t *)&id);
+      uint8_t addr = reserve_next_addr();
+      if (addr == (uint8_t)-1) {
+        printf("assign: max address reached\n");
+        return;
+      }
+      printf("Assigning %x as the new slave address\n", addr);
+
+      // Format: [address reassignment command | unique identifier | new address]
+      uint8_t buf[2 + sizeof(pico_unique_board_id_t)];
+      buf[0] = COMMAND_ASSIGN;
+      memcpy(buf + 1, &id, sizeof(id));
+      buf[1 + sizeof(pico_unique_board_id_t)] = addr;
+
+      int bytes_sent = guarded_i2c_write_timeout_ms(i2c0, I2C_DEFAULT_SLAVE_ADDR,
+                                                    buf, sizeof(buf), false,
+                                                    I2C_DEFAULT_TIMEOUT_MS);
+
+      // Echo device at new address to test connectivity.
+      echo(addr, true);
+    }
+
+    static uint8_t reserve_next_addr() {
+      int i = 0;
+      while (addr_taken[i] && i < MAX_SLAVES) {
+        ++i;
+      }
+      if (i == MAX_SLAVES) return -1;
+
+      addr_taken[i] = true;
+      return addr_at_index(i);
+    }
+
+    static bool echo(uint8_t slave_addr, bool verbose) {
+      static const char *const msg = "Master Sent!";
+      uint8_t buf[32];
+      buf[0] = COMMAND_ECHO;
+      memcpy(buf, msg, strlen(msg) + 1);
+      guarded_i2c_write_timeout_ms(i2c0, slave_addr, buf, 2+strlen(msg), false,
+                                   I2C_DEFAULT_TIMEOUT_MS);
+
+      uint8_t recv[32] = {0};
+      int bytes_read = guarded_i2c_read_timeout_ms(i2c0, slave_addr, recv,
+                                                   1+strlen(msg), false,
+                                                   I2C_DEFAULT_TIMEOUT_MS);
+      if (bytes_read == PICO_ERROR_GENERIC) {
+        if (verbose) printf("Device at %u is disconnected\n", slave_addr);
+        return false;
+      } else {
+        if (verbose) printf("master received: %s\n", recv);
+        return true;
+      }
+    }
+
+    static int guarded_i2c_write_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
+                                            const uint8_t *src, size_t len,
+                                            bool nostop, uint timeout_ms) {
+      int bytes_written = i2c_write_timeout_us(i2c, addr, src, len,
+                                               nostop, timeout_ms * us_per_ms);
+      
+      // A timeout likely indicates that the pullup resistance is incorrectly set.
+      while (bytes_written == PICO_ERROR_TIMEOUT) {
+        // Initiate recovery subroutine.
+        i2c_stall_handler(addr);
+        // Retry I2C write.
+        bytes_written = i2c_write_timeout_us(i2c, addr, src, len,
+                                             nostop, timeout_ms * us_per_ms);
+      }
+      return bytes_written;
+    }
+
+    static int guarded_i2c_read_timeout_ms(i2c_inst_t *i2c, uint8_t addr,
+                                           uint8_t *dst, size_t len, bool nostop,
+                                           uint timeout_ms) {
+      int bytes_read = i2c_read_timeout_us(i2c, addr, dst, len,
+                                           nostop, timeout_ms * us_per_ms);
+      // A timeout likely indicates that the pullup resistance is incorrectly set.
+      while (bytes_read == PICO_ERROR_TIMEOUT) {
+        // Initiate recovery subroutine.
+        i2c_stall_handler(addr);
+        // Retry I2C read.
+        bytes_read = i2c_read_timeout_us(i2c, addr, dst, len,
+                                         nostop, timeout_ms * us_per_ms);
+      }
+      return bytes_read;
+    }
+
+    static void i2c_stall_handler(uint8_t slave_addr) {
+      uint8_t buf[2];
+      int bytes_read = 0;
+      bool read_success = false;
+
+      while (!read_success) {
+        // Reset PIO cycle counter limit to a small value and restart state
+        // machine.
+        rise_count_limit = RISE_TIME_RECOVERY_COUNT_LIMIT;
+        rise_time_reset_rise_count_limit(pio_hw, sm, rise_count_limit);
+        pullup_adjusted = false;
+        bytes_read = i2c_read_timeout_us(i2c0, slave_addr, buf, sizeof(buf),
+          false, I2C_DEFAULT_TIMEOUT_MS * us_per_ms);
+        printf("i2c_stall_handler: bytes_read == %d, pullup_adjusted == %d\n",
+          bytes_read, pullup_adjusted);
+        read_success = (bytes_read == sizeof(buf));
+        if (read_success) break;
+
+        // If we can still do partial reads, keep reading and let dynamic
+        // resistance adjustment routine do its job. If not a single byte
+        // can be sent, iterate through all available pullup resistances.
+        bool partial_success = 
+          (bytes_read >= 0 && bytes_read < sizeof(buf)) || pullup_adjusted;
+        if (!partial_success) step_pullup_resistance_level();
+      }
+
+      // Read was complete and successful and we can return to normal operation.
+      rise_count_limit = RISE_TIME_COUNT_LIMIT;
+      rise_time_reset_rise_count_limit(pio_hw, sm, rise_count_limit);
+      first_stall_recovered = true;
+    }
+
+    static void setup_pullup_demux() {
+      gpio_init(PULLUP_DEMUX_A0_PIN);
+      gpio_init(PULLUP_DEMUX_A1_PIN);
+      gpio_set_dir(PULLUP_DEMUX_A0_PIN, GPIO_OUT);
+      gpio_set_dir(PULLUP_DEMUX_A1_PIN, GPIO_OUT);
+    }
+
+    static void set_pullup_resistance_level(uint8_t value) {
+      pullup_resistance_level = value;
+      apply_pullup_resistance_level();
+    }
+
+    static uint8_t adjust_pullup_resistance_level(int offset) {
+      printf("adjust_pullup_resistance_level: adjusting pull up resistance level (%d -> %d)\n",
+             pullup_resistance_level, pullup_resistance_level + offset);
+      pullup_resistance_level += offset;
+      apply_pullup_resistance_level();
+      return pullup_resistance_level;
+    }
+    
+    static uint8_t step_pullup_resistance_level() {
+      static bool increasing = false;
+      if (increasing && pullup_resistance_level >= 3) {
+        increasing = false;
+      }
+      if (!increasing && pullup_resistance_level <= 0) {
+        increasing = true;
+      }
+      if (increasing) {
+        pullup_resistance_level++;
+      } else {
+        pullup_resistance_level--;
+      }
+      apply_pullup_resistance_level();
+      printf("step_pullup_resistance_level: adjusting resistance level to %u\n",
+             pullup_resistance_level);
+      return pullup_resistance_level;
+    }
+
+    static void apply_pullup_resistance_level() {
+      pullup_adjusted = true;
+      gpio_put(PULLUP_DEMUX_A0_PIN, pullup_resistance_level & 0b1);
+      gpio_put(PULLUP_DEMUX_A1_PIN, pullup_resistance_level & 0b10);
+    }
+
+    static void nvic_pio_irq_handler() {
+      static bool on = false;
+      for (int i = 0; i < 4; ++i) {
+        if (pio_interrupt_get(pio_hw, i)) {
+          irq_handler_helper(i);
+        }
+      }
+    }
+
+    static void irq_handler_helper(int irq) {
+      switch (irq) {
+        case 0: {
+          float avg_cycles = get_avg_cycles(pio_hw, sm, rise_count_limit);
+          printf("%f cycles\n", avg_cycles);
+          bool adjusted = adjust_pullup_conditional(avg_cycles);
+          detect_device_change(avg_cycles, adjusted);
+          pio_sm_put_blocking(pio_hw, sm, rise_count_limit - 1);
+          break;
+        }
+
+        case 1:
+          printf("resolution warning\n");
+          break;
+
+        case 2:
+          printf("capacitance warning\n");
+          break;
+
+        default:
+          printf("unknown irq flag warning\n");
+          break;
+      }
+      pio_interrupt_clear(pio_hw, irq);
+    }
+
+    static bool adjust_pullup_conditional(float cycles) {
+      if (max_safe_rise_cycles_set && cycles > max_safe_rise_cycles && pullup_resistance_level > 0) {
+        adjust_pullup_resistance_level(-1);
+        return true;
+      }
+      if (cycles < max_safe_rise_cycles * 0.9 && pullup_resistance_level < 3) {
+        adjust_pullup_resistance_level(1);
+        return true;
+      }
+      return false;
+    }
+
+    static void detect_device_change(float most_recent_cycles,
+                                     bool pullup_adjusted) {
+      if (pullup_adjusted || !is_new_avg_cycles_stable(most_recent_cycles)) {
+        // Unstable if pull-up resistance was recently adjusted, or if new cycle
+        // measurement is outside of the stable range.
+        printf("detect_device_change: pullup_adjusted == %d, instability detected\n",
+               pullup_adjusted);
+        clear_recent_avg_cycles(most_recent_cycles);
+        device_change_pending = true;
+        return;
+      }
+      push_most_recent_cycles(most_recent_cycles);
+      printf("detect_device_change: device_change_pending == %d, recent_avg_cycles_size = %d\n",
+             device_change_pending, recent_avg_cycles_size);
+      if (device_change_pending && recent_avg_cycles_size >= 4
+          && is_recent_stable()) {
+        device_change_pending = false;
+        device_change = true;
+        printf("detect_device_change: stablized\n");
+        if (!max_safe_rise_cycles_set && first_stall_recovered) {
+          max_safe_rise_cycles = most_recent_cycles;
+        }
+      }
+    }
+
+    static float get_ref_recent_avg_cycles() {
+      float sum = 0.0f;
+      for (int i = 0; i < recent_avg_cycles_size; ++i) {
+        sum += recent_avg_cycles[i];
+      }
+      return sum / recent_avg_cycles_size;
+    }
+
+    static int push_most_recent_cycles(float cycles) {
+      recent_avg_cycles[recent_avg_cycles_next] = cycles;
+      recent_avg_cycles_next = (recent_avg_cycles_next + 1) % 30;
+      if (recent_avg_cycles_size < 30) ++recent_avg_cycles_size;
+      return recent_avg_cycles_next;
+    }
+
+    static bool is_new_avg_cycles_stable(float cycles) {
+      float avg = get_ref_recent_avg_cycles();
+      float upper = avg + RISE_TIME_STABLE_THRESHOLD_CYCLES;
+      float lower = avg - RISE_TIME_STABLE_THRESHOLD_CYCLES;
+      return (cycles < upper && cycles > lower);
+    }
+
+    static bool is_recent_stable() {
+      float avg = get_ref_recent_avg_cycles();
+      float upper = avg + RISE_TIME_STABLE_THRESHOLD_CYCLES;
+      float lower = avg - RISE_TIME_STABLE_THRESHOLD_CYCLES;
+      for (int i = 0; i < recent_avg_cycles_size; ++i) {
+        if (recent_avg_cycles[i] >= upper || recent_avg_cycles[i] <= lower) {
+          return false;
+        }
+      }
+      return true;
+    }
+
+    static void clear_recent_avg_cycles(float most_recent_cycles) {
+      recent_avg_cycles[0] = most_recent_cycles;
+      recent_avg_cycles_next = recent_avg_cycles_size = 1;
+    }
+  =}
+
+  timer echo_timer(3 s, 2 s)
+  logical action initial_daa_scan
+
+  reaction(startup) -> initial_daa_scan {=
+    setup_i2c();
+    setup_pullup_demux();
+    set_pullup_resistance_level(3);
+
+    rise_count_limit = RISE_TIME_COUNT_LIMIT;
+    rise_time_init(PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN,
+                   rise_count_limit, &nvic_pio_irq_handler, &pio_hw, &sm);
+    pullup_adjusted = false;
+    recent_avg_cycles_size = 0;
+    recent_avg_cycles_next = 0;
+    device_change_pending = false;
+    device_change = false;
+    max_safe_rise_cycles_set = false;
+    max_safe_rise_cycles = 0;
+
+    // Perform initial address allocation after a 10 second delay.
+    // This is to allow time to launch terminal to monitor USB output messages.
+    lf_schedule(initial_daa_scan, MSEC(10000));
+  =}
+
+  reaction(initial_daa_scan) {=
+    daa_rescan();
+  =}
+
+  reaction(echo_timer) {=
+    static int echo_index = 0;
+    if (device_change) {
+      device_change = false;
+      daa_rescan();
+    }
+
+    int alive_count = 0;
+    for (int i = 0; i < MAX_SLAVES; ++i) {
+      if (addr_taken[i]) alive_count += echo(addr_at_index(i), true);
+    }
+    printf("echo set %d: %d alive\n", echo_index++, alive_count);
+  =}
+}

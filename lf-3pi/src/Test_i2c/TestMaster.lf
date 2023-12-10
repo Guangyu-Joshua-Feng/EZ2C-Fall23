@@ -4,162 +4,94 @@ target C {
     board: "pololu_3pi_2040_robot"
   },
   threading: false,
-  cmake-include: ["../cmake_include/i2cslave.txt"]
+  cmake-include: ["../../ez2c-lib/ez2c-lib.txt", "../cmake_include/i2c.txt"],
+  files: ["../../ez2c-lib/"],
+  keepalive: true
 }
 
 preamble {=
-  #include <stdio.h>
-  #include <pico/stdlib.h>
+  #include <ez2c.h>
   #include <hardware/gpio.h>
   #include <hardware/i2c.h>
-  #include <pico/unique_id.h>
-  #include <string.h>
+  #include <pico/stdlib.h>
+  #include <stdio.h>
 
-  #define MAX_SLAVES 30
-  #define INTERNAL_PULL_UP 1
-  #define I2C_DEFAULT_SLAVE_ADDR 0x55
-  #define PICO_DEFAULT_I2C_SDA_PIN 4
-  #define PICO_DEFAULT_I2C_SCL_PIN 5
+  #define BAUDRATE (100 * 1000)       // I2C baudrate (Hz).
+  #define I2C_DEFAULT_TIMEOUT_MS 1000  // Default I2C R/W timeout in milliseconds.
+  #define INTERNAL_PULL_UP 0           // Disables (0) or enables (1) Pico's internal pull-up
 
-  #define COMMAND_DISCOVER 0
-  #define COMMAND_ASSIGN 1
-  #define COMMAND_ECHO 2
+  #define I2C_SDA_PIN 4   // I2C SDA (data).
+  #define I2C_SCL_PIN 5   // I2C SCL (clock).
+  #define PULLUP_DEMUX_A0_PIN 14       // Dynamic pull-up selection demux input A0.
+  #define PULLUP_DEMUX_A1_PIN 15       // Dynamic pull-up selection demux input A1.
+  #define PIO_LO_THRESHOLD_PIN 20      // PIO rise time measurement low threshold input pin.
+  #define PIO_HI_THRESHOLD_PIN 21      // PIO rise time measurement high threshold input pin.
 =}
 
-/**
- * master: 1. boardcast discover command 2. read response, which should contain the unique
- * identifier of a device whose address is yet to be assigned, or fail if no device is waiting to be
- * discovered 3. if at least one response is read, go to 4; otherwise, go to X 4. get the next
- * unused slave address, increment counter 5. send address reassignment command + unique identifier
- * + new address for the slave; only the slave with the right unique identifier should change their
- * address accordingly 6. go to 1 X. done
- */
 main reactor {
   preamble {=
-    static bool addr_taken[MAX_SLAVES];
-
-    static inline addr_at_index(int i) {
-      return i + I2C_DEFAULT_SLAVE_ADDR + 1;
-    }
-
-    static void setup_master() {
-      gpio_init(PICO_DEFAULT_I2C_SDA_PIN);
-      gpio_init(PICO_DEFAULT_I2C_SCL_PIN);
-      gpio_set_function(PICO_DEFAULT_I2C_SDA_PIN, GPIO_FUNC_I2C);
-      gpio_set_function(PICO_DEFAULT_I2C_SCL_PIN, GPIO_FUNC_I2C);
-      if (INTERNAL_PULL_UP) {
-        gpio_pull_up(PICO_DEFAULT_I2C_SDA_PIN);
-        gpio_pull_up(PICO_DEFAULT_I2C_SCL_PIN);
-      } else {
-        gpio_disable_pulls(PICO_DEFAULT_I2C_SDA_PIN);
-        gpio_disable_pulls(PICO_DEFAULT_I2C_SCL_PIN);
-      }
-      i2c_init(i2c0, 100);
-      
-      for (int i = 0; i < MAX_SLAVES; ++i) {
-        addr_taken[i] = false;
-      }
-    }
-
-    // Dynamic address allocation helper methods.
-    static bool discover();
-    static void assign(pico_unique_board_id_t id);
-    static uint8_t get_next_addr();
-    static void echo(uint8_t slave_addr);
-
-    static bool discover() {
-      uint8_t command = COMMAND_DISCOVER;
-      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &command, 1, false);
-      printf("Discover bytes sent: %d\n", bytes_sent);
-      if (bytes_sent == 1) {
-        // at least one slave device got the command
-        pico_unique_board_id_t id;
-        int bytes_recvd = i2c_read_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, &id, sizeof(id), false);
-        printf("Discover unique id size returned %d\n", bytes_recvd);
-        assign(id);
-        return true;
-      } else {
-        return false;
-      }
-    }
-
-    static void assign(pico_unique_board_id_t id) {
-      printf("assigning address for id %llx\n", *(uint64_t *)&id);
-      uint8_t addr = get_next_addr();
-      if (addr == (uint8_t)-1) {
-        printf("assign: max address reached\n");
-        return;
-      }
-      printf("Assigning %x as the new slave address\n", addr);
-
-      // Format: [address reassignment command | unique identifier | new address]
-      uint8_t buf[2 + sizeof(pico_unique_board_id_t)];
-      buf[0] = COMMAND_ASSIGN;
-      memcpy(buf + 1, &id, sizeof(id));
-      buf[1 + sizeof(pico_unique_board_id_t)] = addr;
-
-      int bytes_sent = i2c_write_blocking(i2c0, I2C_DEFAULT_SLAVE_ADDR, buf, sizeof(buf), false);
-      printf("Assignment command bytes sent: %d\n", bytes_sent);
-
-      // Echo device at new address to test connectivity.
-      echo(addr);
-    }
-    
-    static uint8_t get_next_addr() {
-      int i = 0;
-      while (addr_taken[i] && i < MAX_SLAVES) {
-        ++i;
-      }
-      if (i == MAX_SLAVES) return -1;
-      
-      addr_taken[i] = true;
-      return addr_at_index(i);
-    }
-
-    static void echo(uint8_t slave_addr) {
+    static bool echo(uint8_t slave_addr, bool verbose) {
       static const char *const msg = "Master Sent!";
       uint8_t buf[32];
       buf[0] = COMMAND_ECHO;
       memcpy(buf, msg, strlen(msg) + 1);
-      printf("echoing slave at address %x\n", slave_addr);
-      int bytes_sent = i2c_write_blocking(i2c0, slave_addr, msg, 2+strlen(msg), false);
-      printf("bytes sent: %d\n", bytes_sent);
+      ez2c_master_write_timeout_ms(slave_addr, buf, 2+strlen(msg), false,
+                                   I2C_DEFAULT_TIMEOUT_MS);
 
       uint8_t recv[32] = {0};
-      int bytes_read = i2c_read_blocking(i2c0, slave_addr, recv, 1+strlen(msg), false);
-      printf("slave sent back %d bytes: %s\n", bytes_read, recv);
+      int bytes_read = ez2c_master_read_timeout_ms(slave_addr, recv,
+                                                   1+strlen(msg), false,
+                                                   I2C_DEFAULT_TIMEOUT_MS);
+      if (bytes_read == PICO_ERROR_GENERIC) {
+        if (verbose) printf("Device at %u is disconnected\n", slave_addr);
+        return false;
+      } else {
+        if (verbose) printf("master received: %s\n", recv);
+        return true;
+      }
     }
   =}
 
-  state discover_done: bool
-  timer button_scan_t(0, 10 ms)
-  timer echo_t(3 s, 3 s)
-  logical action button
+  timer echo_timer(3 s, 2 s)
+  logical action initial_daa_scan
 
-  reaction(startup) {=
-    setup_master();
-    gpio_init(0);
-    gpio_set_dir(0, GPIO_IN);
+  reaction(startup) -> initial_daa_scan {=
+    static const uint pull_up_demux_pins[] = {
+      PULLUP_DEMUX_A0_PIN,
+      PULLUP_DEMUX_A1_PIN,
+    };
+    uint pull_up_level_bits = 
+      sizeof(pull_up_demux_pins) / sizeof(pull_up_demux_pins[0]);
+    
+    // Initialize current device's i2c0 hardware block as master.
+    ez2c_master_init(i2c0, BAUDRATE, I2C_SDA_PIN, I2C_SCL_PIN, 
+                     PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN, 
+                     pull_up_demux_pins, pull_up_level_bits,
+                     INTERNAL_PULL_UP);
+
+    // Perform initial address allocation after a 10 second delay.
+    lf_schedule(initial_daa_scan, MSEC(10000));
   =}
 
-  reaction(button_scan_t) -> button {=
-    // Scan button press
-    if (gpio_get(0)) {
-      lf_schedule(button,0);
-    }
+  reaction(initial_daa_scan) {=
+    ez2c_master_discover();
   =}
 
-  reaction(button) {=
-    printf("button pressed\n");
-    self->discover_done = false;
-    while (!self->discover_done) {
-      self->discover_done = !discover();
+  reaction(echo_timer) {=
+    // Poll device change.
+    if (ez2c_get_device_change()) {
+      // Rescan for new slave devices.
+      ez2c_master_discover();
+      ez2c_clear_device_change();
     }
-  =}
 
-  reaction(echo_t) {=
-    for (int i = 0; i < MAX_SLAVES; ++i) {
-      if (addr_taken[i]) echo(addr_at_index(i));
+    static int echo_index = 0;
+    int alive_count = 0;
+    for (int i = 0; i < 0x55 + EZ2C_SLAVES_MAX; ++i) {
+      if (ez2c_master_slave_addr_exists(i)) {
+        alive_count += echo(i, false);
+      }
     }
+    printf("echo set %d: %d alive\n", echo_index++, alive_count);
   =}
 }

@@ -1,1 +1,0 @@
-/home/foobar/EZ2C-Fall23/lf-3pi/bin/TestSlave.elf

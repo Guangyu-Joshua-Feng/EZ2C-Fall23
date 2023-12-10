@@ -15,10 +15,12 @@ preamble {=
   #include <rise_time.h>
 
   #define BAUD_RATE 100
+  #define PIO_LO_THRESHOLD_PIN 20
+  #define PIO_HI_THRESHOLD_PIN 21
 =}
 
 main reactor {
   reaction(startup) {=
-    rise_time_start(BAUD_RATE);
+    rise_time_init(BAUD_RATE, PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN);
   =}
 }
