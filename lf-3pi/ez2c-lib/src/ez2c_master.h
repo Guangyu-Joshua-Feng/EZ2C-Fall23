@@ -20,13 +20,14 @@
  * @param pull_up_level_bits Number of bits used to represent one pull-up level.
  * @param internal_pullup Whether or not to use Pico's internal pull-up
  * resistors.
+ * @param pio_noblock Whether or not to use non-blocking PIO cycle counters.
  *
  * @return Actual set baudrate.
  */
 uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
                       uint scl_pin, uint pio_lo_pin, uint pio_hi_pin,
                       const uint *pull_up_demux_pins, uint pull_up_level_bits,
-                      bool internal_pullup);
+                      bool internal_pullup, bool pio_noblock);
 
 /**
  * @brief Discovers new slave devices.

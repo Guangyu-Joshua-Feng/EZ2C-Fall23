@@ -6,10 +6,15 @@ add_library(ez2c
   src/rise_time.c
   src/pio_utils.c
   src/rise_time.c
+  src/rise_time_noblock.c
 )
 
 pico_generate_pio_header(ez2c
   ${CMAKE_CURRENT_LIST_DIR}/rise_time.pio
+)
+
+pico_generate_pio_header(ez2c
+  ${CMAKE_CURRENT_LIST_DIR}/rise_time_noblock.pio
 )
 
 target_include_directories(ez2c PUBLIC src)

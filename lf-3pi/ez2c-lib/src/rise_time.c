@@ -43,7 +43,7 @@ void rise_time_init(uint lo_pin, uint hi_pin, uint rise_count_limit,
     rise_time_continue(*pio_hw, *sm);
 }
 
-float get_avg_cycles(PIO pio_hw, uint sm) {
+float rise_time_get_avg_cycles(PIO pio_hw, uint sm) {
     uint32_t x = rise_time_program_recv(pio_hw, sm);
     int pio_number = pio_hw_number(pio_hw);
     uint rise_count_limit = rise_count_limits[pio_number];

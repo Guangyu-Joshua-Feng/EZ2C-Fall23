@@ -8,7 +8,7 @@
 
 static state;
 static PIO pio;
-static uint sm;
+static uint scl_sm;
 static uint offset;
 static int8_t pio_irq;
 
@@ -20,17 +20,17 @@ static void pio_irq_func();
 void intr_test_start() {
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-    if (!init_pio(&intr_program, &pio, &sm, &offset)) {
+    if (!init_pio(&intr_program, &pio, &scl_sm, &offset)) {
         panic("failed to setup pio");
     }
-    intr_program_init(pio, sm, offset, 15);
+    intr_program_init(pio, scl_sm, offset, 15);
     link_available_irq();
 
     // Enable interrupt
     irq_set_exclusive_handler(pio_irq, pio_irq_func);
     irq_set_enabled(pio_irq, true);
     const uint irq_index = pio_irq - ((pio == pio0) ? PIO0_IRQ_0 : PIO1_IRQ_0);
-    pio_set_irqn_source_enabled(pio, irq_index, pis_interrupt0 + sm,
+    pio_set_irqn_source_enabled(pio, irq_index, pis_interrupt0 + scl_sm,
                                 true);
 }
 

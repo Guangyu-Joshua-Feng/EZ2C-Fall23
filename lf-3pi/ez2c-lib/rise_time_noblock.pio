@@ -1,0 +1,104 @@
+.program rise_time_noblock
+
+; THROUGHOUT THIS PROGRAM:
+;   . Both Autopull and Autopush should be disabled.
+;   . Scratch register X is used as the clock cycle counter.
+;   . Scratch register Y is used as temp space.
+;   . ISR is used as a temp space for bit shifting.
+;   . OSR is currently unused.
+;   . The jmp pin is set to the high-threshold input pin because it's used in
+;     the performance-critical section of the code.
+;   . The ONLY input pin enabled is the low-threshold input pin.
+
+.wrap_target       ; The program should restart from here.
+init:
+    set x, 0       ; Set X (clock cycle counter) to 0.
+
+reset:
+    in pins, 1     ; Read low-threshold pin state to ISR.
+    mov y, isr     ; Copy ISR to Y. Y is 0 if low-threshold is low, or 
+                   ; 1 otherwise.
+    jmp y-- reset  ; Keep looping in "reset" mode until low-threshold is low.
+                   ; Note that the decrement is unavoidable by op code design.
+                   ; Fall through to "low" mode and start monitoring.
+    jmp x-- low    ; Start counting backwards from 0xFFFFFFFF so that future
+                   ; "jmp x--" branches are always taken. Note that this jmp
+                   ; command is required by op code design of "x--".
+                   ; Always fall through to low.
+
+low:
+    in pins, 1                  ; Read low-threshold pin state to ISR.
+    mov y, isr                  ; Copy ISR to Y. Y is 0 if low-threshold is low,
+                                ; or 1 otherwise.
+    jmp !y low                  ; If the low-threshold input pin is low, keep
+                                ; looping in low.
+    jmp pin resolution_warning  ; If high-threshold value is already high, then
+                                ; it means that the rise time was too short to
+                                ; be measured with this method.
+    jmp rise                    ; Go to "rise" mode and to start counting.
+
+rise_continue:
+    jmp pin high                 ; If high-threshold is high, go to "high" mode
+                                 ; and stop counting.
+                                 ; Otherwise, fall through to "rise" and keep
+                                 ; counting.
+
+rise:
+    in pins, 1                   ; Read low-threshold pin state to ISR.
+    mov y, isr                   ; Copy ISR to Y. Y is 0 if low-threshold is low,
+                                 ; or 1 otherwise.
+    jmp !y capacitance_warning   ; If low-threshold becomes low before we
+                                 ; reaches "high", the current rise failed.
+    jmp x-- rise_continue        ; Decrement x every 5 cycles and continue.
+                                 ; Note that the jmp here is always taken and
+                                 ; is unavoidable by op code design.
+
+resolution_warning:
+    irq nowait 1 rel  ; Asserts pio interrupt 1 to the main system, notifying it
+                      ; that a resolution warning is triggered by the pio. Zero
+                      ; cycles were counted but a rise was complete.
+                      ; Fall through to "high".
+
+high:
+    mov isr, !x       ; Copy the total number of clock cycles spent in "rise" mode
+                      ; to ISR.
+    push noblock      ; Pushes the cycle count into the RX FIFO. If RX FIFO is
+                      ; full, this new data is lost.
+    irq nowait 0 rel  ; Asserts pio interrupt 0 to the main system, notifying it
+                      ; that a new counter result is ready in RX FIFO.
+.wrap                 ; Restart the program.
+
+capacitance_warning:
+    irq nowait 2 rel  ; Asserts pio interrupt 2 to the main system, notifying it
+                      ; that a capacitance warning is triggered by the pio.
+                      ; No clock cycle is counted and the program restarts from
+                      ; the "init" mode.
+
+% c-sdk {
+static inline void rise_time_noblock_program_init(PIO pio, uint sm, uint offset,
+                                                  uint lo_pin, uint hi_pin) {
+    // According to the SDK function documentation, these two lines are not
+    // necessary if they are only used as input pins. But only one of the
+    // examples provided did not include a call to pio_gpio_init on these
+    // pins. Consider toggling these two lines for debugging.
+    pio_gpio_init(pio, lo_pin);
+    pio_gpio_init(pio, hi_pin);
+
+    pio_sm_set_consecutive_pindirs(pio, sm, lo_pin, 1, false);
+    pio_sm_set_consecutive_pindirs(pio, sm, hi_pin, 1, false);
+
+    // State machine configuration.
+    pio_sm_config c = rise_time_noblock_program_get_default_config(offset);
+    sm_config_set_jmp_pin(&c, hi_pin);
+    sm_config_set_in_pins(&c, lo_pin);
+
+    // Initialize.
+    pio_sm_init(pio, sm, offset, &c);
+    pio_sm_set_enabled(pio, sm, true);
+}
+
+static inline uint32_t rise_time_noblock_program_recv(PIO pio, uint sm) {
+    return *(io_rw_32 *)&pio->rxf[sm];
+}
+
+%}

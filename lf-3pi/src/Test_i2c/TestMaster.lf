@@ -67,7 +67,7 @@ main reactor {
     ez2c_master_init(i2c0, BAUDRATE, I2C_SDA_PIN, I2C_SCL_PIN, 
                      PIO_LO_THRESHOLD_PIN, PIO_HI_THRESHOLD_PIN, 
                      pull_up_demux_pins, pull_up_level_bits,
-                     INTERNAL_PULL_UP);
+                     INTERNAL_PULL_UP, true);
 
     // Perform initial address allocation after a 10 second delay.
     lf_schedule(initial_daa_scan, MSEC(10000));

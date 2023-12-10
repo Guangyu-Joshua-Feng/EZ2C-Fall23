@@ -9,6 +9,7 @@
 #include "circular_buffer.h"
 #include "ez2c_common.h"
 #include "rise_time.h"
+#include "rise_time_noblock.h"
 
 // ---------------------------- Defined Constants ------------------------------
 
@@ -59,7 +60,7 @@ static i2c_inst_t *i2c_hw;
 static PIO scl_pio_hw;
 
 // PIO state machine number for I2C SCL (clock) rise time cycle counter.
-static uint sm;
+static uint scl_sm;
 
 // Pull-up resistance controller demux output pins. Provided by the user and
 // only set once by the master initialization function.
@@ -113,7 +114,8 @@ static bool device_change;
 static void init_global_variables();
 static void init_pull_up_demux(const uint *_pull_up_demux_pins,
                                uint _pull_up_level_bits);
-static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin);
+static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin,
+                                             bool noblock);
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
                      bool internal_pullup);
 
@@ -124,6 +126,9 @@ static inline uint pull_up_level_max();
 
 static void pio_scl_counter_irq_handler();
 static void scl_irq_handler_helper(int irq);
+
+static void pio_scl_noblock_counter_irq_handler();
+static void scl_irq_noblock_handler_helper(int irq);
 
 static bool adjust_pullup_conditional(float cycles);
 static uint adjust_pullup_level(int offset);
@@ -153,7 +158,7 @@ static uint8_t step_pullup_level();
 uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
                       uint scl_pin, uint pio_lo_pin, uint pio_hi_pin,
                       const uint *_pull_up_demux_pins, uint _pull_up_level_bits,
-                      bool internal_pullup) {
+                      bool internal_pullup, bool pio_noblock) {
     static bool once = false;
     if (!once) {
         once = true;
@@ -166,8 +171,7 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
 
     init_global_variables();
     init_pull_up_demux(_pull_up_demux_pins, _pull_up_level_bits);
-    init_pio_rise_time_cycle_counter(pio_lo_pin, pio_hi_pin);
-
+    init_pio_rise_time_cycle_counter(pio_lo_pin, pio_hi_pin, pio_noblock);
     return init_i2c(i2c, baudrate, sda_pin, scl_pin, internal_pullup);
 }
 
@@ -277,9 +281,16 @@ static void init_pull_up_demux(const uint *_pull_up_demux_pins,
     pullup_adjusted = false;
 }
 
-static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin) {
-    rise_time_init(lo_pin, hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
-                   &pio_scl_counter_irq_handler, &scl_pio_hw, &sm);
+static void init_pio_rise_time_cycle_counter(uint lo_pin, uint hi_pin,
+                                             bool noblock) {
+    if (noblock) {
+        rise_time_init(lo_pin, hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
+                       &pio_scl_counter_irq_handler, &scl_pio_hw, &scl_sm);
+    } else {
+        rise_time_noblock_init(lo_pin, hi_pin,
+                               &pio_scl_noblock_counter_irq_handler,
+                               &scl_pio_hw, &scl_sm);
+    }
 }
 
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
@@ -325,11 +336,11 @@ static void scl_irq_handler_helper(int irq) {
     switch (irq) {
         case 0: {
             // Normal average rise time output received.
-            float avg_cycles = get_avg_cycles(scl_pio_hw, sm);
+            float avg_cycles = rise_time_get_avg_cycles(scl_pio_hw, scl_sm);
             printf("scl_irq_handler_helper: %f cycles\n", avg_cycles);
             bool adjusted = adjust_pullup_conditional(avg_cycles);
             detect_device_change(avg_cycles, adjusted);
-            rise_time_continue(scl_pio_hw, sm);
+            rise_time_continue(scl_pio_hw, scl_sm);
             break;
         }
 
@@ -355,6 +366,14 @@ static void scl_irq_handler_helper(int irq) {
 
     // Clear PIO interrupt to restart PIO program.
     pio_interrupt_clear(scl_pio_hw, irq);
+}
+
+static void pio_scl_noblock_counter_irq_handler() {
+
+}
+
+static void scl_irq_noblock_handler_helper(int irq) {
+
 }
 
 static bool adjust_pullup_conditional(float cycles) {
@@ -529,7 +548,7 @@ static void stall_handler(uint8_t slave_addr) {
     while (!read_success) {
         // Reset PIO cycle counter limit to a small value and restart state
         // machine.
-        rise_time_reset_rise_count_limit(scl_pio_hw, sm,
+        rise_time_reset_rise_count_limit(scl_pio_hw, scl_sm,
                                          PIO_RECOVERY_RISE_COUNT_LIMIT);
 
         // Reset pull-up adjusted flag and monitor pull-up changes.
@@ -537,8 +556,10 @@ static void stall_handler(uint8_t slave_addr) {
         bytes_read =
             i2c_read_timeout_us(i2c_hw, slave_addr, buf, sizeof(buf), false,
                                 I2C_DEFAULT_TIMEOUT_MS * US_PER_MS);
-        printf("stall_handler: slave_addr: %x, bytes_read == %d, pullup_adjusted == %d\n",
-               slave_addr, bytes_read, pullup_adjusted);
+        printf(
+            "stall_handler: slave_addr: %x, bytes_read == %d, pullup_adjusted "
+            "== %d\n",
+            slave_addr, bytes_read, pullup_adjusted);
         read_success = (bytes_read == sizeof(buf));
         if (read_success) break;
 
@@ -551,7 +572,7 @@ static void stall_handler(uint8_t slave_addr) {
     }
 
     // Read was successful. We can now return to normal operation.
-    rise_time_reset_rise_count_limit(scl_pio_hw, sm,
+    rise_time_reset_rise_count_limit(scl_pio_hw, scl_sm,
                                      PIO_NORMAL_RISE_COUNT_LIMIT);
 
     // Once we successfully recovered from the first I2C stall, we are ready
