@@ -310,7 +310,7 @@ static void pio_init_error_handler(int error) {
 static void init_pio_rise_time_cycle_counter(uint scl_lo_pin, uint scl_hi_pin,
                                              uint sda_lo_pin, uint sda_hi_pin,
                                              bool noblock) {
-    if (noblock) {
+    if (!noblock) {
         rise_time_init(scl_lo_pin, scl_hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
                        &pio_scl_counter_irq_handler, &scl_pio_hw, &scl_sm);
     } else {
@@ -437,6 +437,8 @@ static void scl_noblock_irq_handler_helper(int irq) {
 
                 printf("\n\nGoing inside infinite loop...\n");
                 while (1) {
+                    printf("scl_noblock_irq_handler_helper: inf loop\n");
+                    sleep_ms(1000);
                 }
             }
             break;
@@ -492,6 +494,8 @@ static void sda_noblock_irq_handler_helper(int irq) {
 
                 printf("\n\nGoing inside infinite loop...\n");
                 while (1) {
+                    printf("sda_noblock_irq_handler_helper: inf loop\n");
+                    sleep_ms(1000);
                 }
             }
             break;
