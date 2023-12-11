@@ -12,9 +12,14 @@
  * @param baudrate Baudrate.
  * @param sda_pin SDA (data) pin number.
  * @param scl_pin SCL (clock) pin number.
- * @param pio_lo_pin PIO rise time cycle counter low threshold input pin number.
- * @param pio_hi_pin PIO rise time cycle counter high threshold input pin
- * number.
+ * @param pio_scl_lo_pin PIO rise time cycle counter scl line low threshold
+ * input pin number.
+ * @param pio_scl_hi_pin PIO rise time cycle counter scl line high threshold
+ * input pin number.
+ * @param pio_sda_lo_pin PIO rise time cycle counter sda line low threshold
+ * input pin number.
+ * @param pio_sda_hi_pin PIO rise time cycle counter sda line high threshold
+ * input pin number.
  * @param pull_up_demux_pins An array of pull-up demux input pin numbers of size
  * PULL_UP_LEVEL_BITS.
  * @param pull_up_level_bits Number of bits used to represent one pull-up level.
@@ -25,7 +30,8 @@
  * @return Actual set baudrate.
  */
 uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
-                      uint scl_pin, uint pio_lo_pin, uint pio_hi_pin,
+                      uint scl_pin, uint pio_scl_lo_pin, uint pio_scl_hi_pin,
+                      uint pio_sda_lo_pin, uint pio_sda_hi_pin,
                       const uint *pull_up_demux_pins, uint pull_up_level_bits,
                       bool internal_pullup, bool pio_noblock);
 
