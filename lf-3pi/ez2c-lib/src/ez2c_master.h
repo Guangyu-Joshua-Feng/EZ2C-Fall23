@@ -43,6 +43,14 @@ int ez2c_master_discover();
 
 bool ez2c_master_slave_addr_exists(uint8_t addr);
 
+bool ez2c_master_get_post_processing();
+
+void ez2c_master_process_buffer();
+
+bool ez2c_master_get_slave_interrupt();
+
+void ez2c_master_clear_slave_interrupt();
+
 bool ez2c_get_device_change();
 
 void ez2c_clear_device_change();

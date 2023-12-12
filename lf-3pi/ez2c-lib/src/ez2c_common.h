@@ -3,7 +3,12 @@
 #include <pico/stdlib.h>
 
 extern const uint US_PER_MS;
-extern const uint8_t COMMAND_DISCOVER;
-extern const uint8_t COMMAND_ASSIGN;
-extern const uint8_t COMMAND_ECHO;
+
+enum Ez2cCommands {
+    COMMAND_DISCOVER,
+    COMMAND_ASSIGN,
+    COMMAND_ECHO,
+    COMMAND_GET_INTERRUPT,
+    COMMAND_CLEAR_INTERRUPT,
+};
 extern const uint8_t I2C_DEFAULT_SLAVE_ADDR;

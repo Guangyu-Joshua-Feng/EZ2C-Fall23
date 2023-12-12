@@ -2,8 +2,8 @@
 
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
-#include <hardware/irq.h>
 #include <hardware/pio.h>
+#include <pico/multicore.h>
 #include <pico/stdlib.h>
 #include <pico/unique_id.h>
 
@@ -12,6 +12,8 @@
 #include "rise_time.h"
 #include "rise_time_noblock.h"
 #include "uint32_array.h"
+
+#define BUFFER_POST_PROCESSING_DEBUG 1
 
 // ---------------------------- Defined Constants ------------------------------
 
@@ -37,7 +39,9 @@ static const uint PIO_NORMAL_RISE_COUNT_LIMIT = UINT32_ARRAY_SIZE;
 
 // The PIO cycle counter will assert an interrupt and report the average rise
 // time every this number of rises when attempting a stall recovery.
-static const uint PIO_RECOVERY_RISE_COUNT_LIMIT = 16u;
+static const uint PIO_RECOVERY_RISE_COUNT_LIMIT = 8u;
+
+static const float SLAVE_INTERRUPT_RISE_TIME_DIFF_THRESHOLD = 200.0f;
 
 // An absolute rise time difference no greater than this value is considered
 // noise under stable connection.
@@ -69,9 +73,6 @@ static uint scl_sm;
 
 // PIO state machine number for I2C SDA (data) rise time cycle counter.
 static uint sda_sm;
-
-static bool post_processing;
-static uint pio_post_processing_irq_num;
 
 // Pull-up resistance controller demux output pins. Provided by the user and
 // only set once by the master initialization function.
@@ -110,8 +111,15 @@ static bool pullup_adjusted;
 // rise time program.
 static circular_buffer_t recent_rise_cycles;
 
+static uint curr_rise_count_limit;
+
 static uint32_array_t scl_buffer;
 static uint32_array_t sda_buffer;
+static uint32_array_t propagated_sda_buffer;
+
+static bool buffer_post_processing;
+
+static bool slave_interrupt_pending;
 
 // Flag indicating if there's a pending device change. A pending change will
 // become a formal change once the recent rise time measurement becomes stable.
@@ -138,15 +146,14 @@ static inline uint pull_up_level_max();
 
 // PIO IRQ Handler and related helper functions
 
-static void pio_post_processing_irq_handler();
-
 static void pio_scl_counter_irq_handler();
 static void scl_irq_handler_helper(int irq);
 
 static void pio_sda_counter_irq_handler();
 static void sda_irq_handler_helper(int irq);
 
-static uint32_t *propagate_sda_buffer();
+static float propagate_sda_buffer();
+static void debug_process_buffer(int *diff, int diff_sum, int diff_size);
 
 static bool adjust_pullup_conditional(float cycles);
 static uint adjust_pullup_level(int offset);
@@ -166,9 +173,14 @@ static bool assign_slave_addr(pico_unique_board_id_t id);
 static uint8_t reserve_next_addr();
 static inline uint8_t addr_at_index(int i);
 
+// ez2c_master_clear_slave_interrupt
+
+static bool poll_slave_interrupt(uint8_t addr);
+
 // ez2c_master_write_timeout_ms, ez2c_master_read_timeout_ms
 
 static void stall_handler(uint8_t slave_addr);
+static void wait_and_clear_rise_time_buffers();
 static uint8_t step_pullup_level();
 
 // -----------------------------------------------------------------------------
@@ -228,6 +240,55 @@ bool ez2c_master_slave_addr_exists(uint8_t addr) {
     return addr_reserved[addr - I2C_DEFAULT_SLAVE_ADDR - 1];
 }
 
+bool ez2c_master_get_post_processing() { return buffer_post_processing; }
+
+void ez2c_master_process_buffer() {
+    static int diff[UINT32_ARRAY_SIZE];
+    int diff_size = 0;
+    uint32_t diff_sum = 0;
+    float sda_avg_cycles = propagate_sda_buffer();
+
+    for (int i = 0; i < scl_buffer.size; ++i) {
+        if (scl_buffer.buf[i]) {
+            diff[diff_size] =
+                (int)scl_buffer.buf[i] - (int)propagated_sda_buffer.buf[i];
+            diff_sum += diff[diff_size];
+            diff_size++;
+        }
+    }
+
+    if (BUFFER_POST_PROCESSING_DEBUG) {
+        debug_process_buffer(diff, diff_sum, diff_size);
+    }
+    uint32_array_clear(&scl_buffer);
+    uint32_array_clear(&sda_buffer);
+
+    // Detect slave interrupt.
+    float diff_avg = (float)diff_sum / (float)diff_size;
+    if (diff_avg > SLAVE_INTERRUPT_RISE_TIME_DIFF_THRESHOLD) {
+        slave_interrupt_pending = true;
+    }
+
+    // Detect device change.
+    bool adjusted = adjust_pullup_conditional(sda_avg_cycles);
+    detect_device_change(sda_avg_cycles, adjusted);
+
+    // Turn flag off to signal a finish.
+    buffer_post_processing = false;
+}
+
+bool ez2c_master_get_slave_interrupt() { return slave_interrupt_pending; }
+
+void ez2c_master_clear_slave_interrupt() {
+    for (int i = 0; i < EZ2C_SLAVES_MAX; ++i) {
+        if (addr_reserved[i]) {
+            uint8_t slave_addr = addr_at_index(i);
+            poll_slave_interrupt(slave_addr);
+        }
+    }
+    slave_interrupt_pending = false;
+}
+
 bool ez2c_get_device_change() { return device_change; }
 
 void ez2c_clear_device_change() { device_change = false; }
@@ -267,12 +328,14 @@ int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
 // ----------------------- Helper Function Definitions ------------------------
 
 static void init_global_variables() {
-    post_processing = false;
     first_stall_recovered = false;
     ref_safe_rise_cycles_set = false;
     ref_safe_rise_cycles = 0.0f;
+    buffer_post_processing = false;
+    slave_interrupt_pending = false;
     device_change_pending = false;
     device_change = false;
+    curr_rise_count_limit = PIO_NORMAL_RISE_COUNT_LIMIT;
 
     // Set up recent PIO rise time buffer.
     circular_buffer_clear(&recent_rise_cycles);
@@ -313,13 +376,6 @@ static void init_pio_rise_time_cycle_counter(uint scl_lo_pin, uint scl_hi_pin,
                                         &pio_sda_counter_irq_handler,
                                         &sda_pio_hw, &sda_sm);
     hard_assert(!error1 && !error2);
-
-    pio_post_processing_irq_num = user_irq_claim_unused(true);
-    irq_set_exclusive_handler(pio_post_processing_irq_num,
-                              &pio_post_processing_irq_handler);
-    irq_set_priority(pio_post_processing_irq_num,
-                     PICO_DEFAULT_IRQ_PRIORITY + 1);
-    irq_set_enabled(pio_post_processing_irq_num, true);
 }
 
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
@@ -352,50 +408,6 @@ static inline uint pull_up_levels() { return 1u << pull_up_level_bits; }
 
 static inline uint pull_up_level_max() { return pull_up_levels() - 1; }
 
-static void pio_post_processing_irq_handler() {
-    static int diff[UINT32_ARRAY_SIZE];
-    int diff_size = 0;
-    uint32_t diff_sum = 0;
-    uint32_t *propagated_sda = propagate_sda_buffer();
-
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        if (scl_buffer.buf[i]) {
-            diff[diff_size] = (int)scl_buffer.buf[i] - (int)propagated_sda[i];
-            diff_sum += diff[diff_size];
-            diff_size++;
-        }
-    }
-
-    printf("scl buffer content:\n");
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        printf("%u ", scl_buffer.buf[i]);
-    }
-    printf("\n\n");
-
-    printf("sda buffer content:\n");
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        printf("%u ", sda_buffer.buf[i]);
-    }
-    printf("\n\n");
-
-    printf("propagated sda buffer content:\n");
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        printf("%u ", propagated_sda[i]);
-    }
-    printf("\n\n");
-
-    printf("diff (length %d, avg %f):\n", diff_size,
-           (double)diff_sum / diff_size);
-    for (int i = 0; i < diff_size; ++i) {
-        printf("%d ", diff[i]);
-    }
-    printf("\n\n");
-
-    uint32_array_clear(&scl_buffer);
-    uint32_array_clear(&sda_buffer);
-    post_processing = false;
-}
-
 static void pio_scl_counter_irq_handler() {
     static const int PIO_IRQ_MAX = 4;
     for (int irq = 0; irq < PIO_IRQ_MAX; ++irq) {
@@ -410,12 +422,12 @@ static void scl_irq_handler_helper(int irq) {
         case 0: {
             // Normal rise time output received.
             uint32_t cycles = rise_time_noblock_get_cycles(scl_pio_hw, scl_sm);
-            if (scl_buffer.size < UINT32_ARRAY_SIZE) {
+            if (scl_buffer.size < curr_rise_count_limit) {
                 uint32_array_push_back(&scl_buffer, cycles);
                 uint32_array_push_back(&sda_buffer, 0);
-            } else if (!post_processing) {
-                post_processing = true;
-                irq_set_pending(pio_post_processing_irq_num);
+            } else if (!buffer_post_processing) {
+                buffer_post_processing = true;
+                multicore_launch_core1(&ez2c_master_process_buffer);
             }
             break;
         }
@@ -430,9 +442,7 @@ static void scl_irq_handler_helper(int irq) {
 
         default:
             // NOT REACHED.
-            printf(
-                "pio_post_processing_irq_handler_helper: unknown irq flag "
-                "warning\n");
+            panic("scl_irq_handler_helper: unknown irq flag");
             break;
     }
 
@@ -454,12 +464,12 @@ static void sda_irq_handler_helper(int irq) {
         case 0: {
             // Normal rise time output received.
             uint32_t cycles = rise_time_noblock_get_cycles(sda_pio_hw, sda_sm);
-            if (scl_buffer.size < UINT32_ARRAY_SIZE) {
+            if (scl_buffer.size < curr_rise_count_limit) {
                 uint32_array_push_back(&sda_buffer, cycles);
                 uint32_array_push_back(&scl_buffer, 0);
-            } else if (!post_processing) {
-                post_processing = true;
-                irq_set_pending(pio_post_processing_irq_num);
+            } else if (!buffer_post_processing) {
+                buffer_post_processing = true;
+                multicore_launch_core1(&ez2c_master_process_buffer);
             }
             break;
         }
@@ -474,7 +484,7 @@ static void sda_irq_handler_helper(int irq) {
 
         default:
             // NOT REACHED.
-            printf("sda_irq_handler_helper: unknown irq flag warning\n");
+            panic("sda_irq_handler_helper: unknown irq flag");
             break;
     }
 
@@ -482,17 +492,46 @@ static void sda_irq_handler_helper(int irq) {
     pio_interrupt_clear(sda_pio_hw, irq);
 }
 
-static uint32_t *propagate_sda_buffer() {
-    static uint32_t tmp[UINT32_ARRAY_SIZE];
+static float propagate_sda_buffer() {
+    uint32_t sum = 0, nonzero_size = 0;
     uint32_t prev = 0;
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        if (sda_buffer.buf[i] == 0) {
-            tmp[i] = prev;
-        } else {
-            prev = tmp[i] = sda_buffer.buf[i];
+    for (int i = 0; i < sda_buffer.size; ++i) {
+        if (sda_buffer.buf[i] != 0) {
+            prev = sda_buffer.buf[i];
+            sum += prev;
+            ++nonzero_size;
         }
+        uint32_array_push_back(&propagated_sda_buffer, prev);
     }
-    return tmp;
+    if (nonzero_size == 0) return 0.0f;
+    return (float)sum / (float)nonzero_size;
+}
+
+static void debug_process_buffer(int *diff, int diff_sum, int diff_size) {
+    printf("scl buffer content:\n");
+    for (int i = 0; i < scl_buffer.size; ++i) {
+        printf("%u ", scl_buffer.buf[i]);
+    }
+    printf("\n\n");
+
+    printf("sda buffer content:\n");
+    for (int i = 0; i < sda_buffer.size; ++i) {
+        printf("%u ", sda_buffer.buf[i]);
+    }
+    printf("\n\n");
+
+    printf("propagated sda buffer content:\n");
+    for (int i = 0; i < propagated_sda_buffer.size; ++i) {
+        printf("%u ", propagated_sda_buffer.buf[i]);
+    }
+    printf("\n\n");
+
+    printf("diff (length %d, avg %f):\n", diff_size,
+           (double)diff_sum / diff_size);
+    for (int i = 0; i < diff_size; ++i) {
+        printf("%d ", diff[i]);
+    }
+    printf("\n\n");
 }
 
 static bool adjust_pullup_conditional(float cycles) {
@@ -659,12 +698,36 @@ static inline uint8_t addr_at_index(int i) {
     return i + I2C_DEFAULT_SLAVE_ADDR + 1;
 }
 
+static bool poll_slave_interrupt(uint8_t addr) {
+    uint8_t command = COMMAND_GET_INTERRUPT;
+    uint8_t asserted = false;
+    printf("poll_slave_interrupt: scanning slave address 0x%x for interrupt\n",
+           addr);
+    ez2c_master_write_timeout_ms(addr, &command, 1, false,
+                                 I2C_DEFAULT_TIMEOUT_MS);
+    ez2c_master_read_timeout_ms(addr, &asserted, 1, false,
+                                I2C_DEFAULT_TIMEOUT_MS);
+    if (!asserted) return false;
+
+    command = COMMAND_CLEAR_INTERRUPT;
+    printf("poll_slave_interrupt: interrupt detected at 0x%x, clearing...\n",
+           addr);
+    ez2c_master_write_timeout_ms(addr, &command, 1, false,
+                                 I2C_DEFAULT_TIMEOUT_MS);
+    return true;
+}
+
 static void stall_handler(uint8_t slave_addr) {
     uint8_t buf[STALL_RECOVERY_NUM_TEST_BYTES];
     int bytes_read = 0;
     bool read_success = false;
 
     while (!read_success) {
+        // Set PIO cycle counter limit to a small value to monitor short I2C
+        // messages.
+        curr_rise_count_limit = PIO_RECOVERY_RISE_COUNT_LIMIT;
+        wait_and_clear_rise_time_buffers();
+
         // Reset pull-up adjusted flag and monitor pull-up changes.
         pullup_adjusted = false;
         bytes_read =
@@ -684,11 +747,23 @@ static void stall_handler(uint8_t slave_addr) {
             (bytes_read >= 0 && bytes_read < sizeof(buf)) || pullup_adjusted;
         if (!partial_success) step_pullup_level();
     }
-    // Read was successful. We can now return to normal operation.
+    // Read was successful. We can now return to normal operation. Revert PIO
+    // cycle counter limit to its normal value.
+    curr_rise_count_limit = PIO_NORMAL_RISE_COUNT_LIMIT;
+    wait_and_clear_rise_time_buffers();
+
     // Once we successfully recovered from the first I2C stall, we are ready
     // to set the maximum safe rise time. Note that this assumes the subsequent
     // rise time measurement corresponds to successful I2C communications.
     first_stall_recovered = true;
+}
+
+static void wait_and_clear_rise_time_buffers() {
+    while (buffer_post_processing) {
+        tight_loop_contents();
+    }
+    uint32_array_clear(&scl_buffer);
+    uint32_array_clear(&sda_buffer);
 }
 
 static uint8_t step_pullup_level() {

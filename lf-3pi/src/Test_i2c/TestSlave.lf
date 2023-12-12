@@ -16,12 +16,21 @@ preamble {=
   #define INTERNAL_PULL_UP 0
   #define I2C_SDA_PIN 4
   #define I2C_SCL_PIN 5
+  #define INTERRUPT_PIN 15
   #define LED_PIN 16
 =}
 
 main reactor {
+  timer interrupt_timer(0 s, 10 ms)
+
   reaction(startup) {=
-    ez2c_slave_init(i2c0, BAUDRATE, I2C_SDA_PIN, I2C_SCL_PIN,
+    ez2c_slave_init(i2c0, BAUDRATE, I2C_SDA_PIN, I2C_SCL_PIN, INTERRUPT_PIN,
                     LED_PIN, INTERNAL_PULL_UP);
+  =}
+
+  reaction(interrupt_timer) {=
+    if (ez2c_slave_get_interrupt()) {
+      ez2c_slave_set_interrupt();
+    }
   =}
 }

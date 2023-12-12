@@ -8,7 +8,10 @@
 
 #include "ez2c_common.h"
 
+static uint intr_pin;
 static uint led_pin;
+
+static bool intr_asserted;
 
 static struct {
     uint8_t mem[256];
@@ -19,13 +22,18 @@ static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
 static void process_command();
 
 uint ez2c_slave_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
-                     uint _led_pin, bool internal_pullup) {
+                     uint _intr_pin, uint _led_pin, bool internal_pullup) {
+    intr_pin = _intr_pin;
     led_pin = _led_pin;
+    intr_asserted = false;
+
     gpio_init(sda_pin);
     gpio_init(scl_pin);
+    gpio_init(intr_pin);
     gpio_init(led_pin);
     gpio_set_function(sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(scl_pin, GPIO_FUNC_I2C);
+    gpio_set_dir(intr_pin, GPIO_IN);
     gpio_set_dir(led_pin, GPIO_OUT);
 
     if (internal_pullup) {
@@ -40,6 +48,12 @@ uint ez2c_slave_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
     i2c_slave_init(i2c, I2C_DEFAULT_SLAVE_ADDR, &i2c_slave_handler);
 
     return actual_baudrate;
+}
+
+bool ez2c_slave_get_interrupt() { return gpio_get(intr_pin); }
+
+void ez2c_slave_set_interrupt() {
+    intr_asserted = true;
 }
 
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
@@ -76,7 +90,7 @@ static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
 
 static void process_command() {
     if (context.mem[0] == COMMAND_DISCOVER) {
-        // get id ready for master to read
+        // get id ready for master to read.
         pico_get_unique_board_id(context.mem);
     } else if (context.mem[0] == COMMAND_ASSIGN) {
         pico_unique_board_id_t my_id;
@@ -88,7 +102,13 @@ static void process_command() {
         uint8_t addr = context.mem[1 + sizeof(my_id)];
         i2c_slave_init(i2c0, addr, &i2c_slave_handler);
     } else if (context.mem[0] == COMMAND_ECHO) {
-        // move data to the beginning of mem for master to read
+        // move data to the beginning of mem for master to read.
         memmove(context.mem, context.mem + 1, strlen(context.mem + 1));
+    } else if (context.mem[0] == COMMAND_GET_INTERRUPT) {
+        // set the beginning of mem to current interrupt status.
+        context.mem[0] = intr_asserted;
+    } else if (context.mem[0] == COMMAND_CLEAR_INTERRUPT) {
+        // master is clearing our interrupt status.
+        intr_asserted = false;
     }
 }
