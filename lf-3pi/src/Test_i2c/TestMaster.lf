@@ -55,6 +55,7 @@ main reactor {
   =}
 
   timer echo_timer(3 s, 2 s)
+  timer test(20 s, 5 s)
   logical action initial_daa_scan
 
   reaction(startup) -> initial_daa_scan {=
@@ -78,6 +79,10 @@ main reactor {
 
   reaction(initial_daa_scan) {=
     ez2c_master_discover();
+  =}
+
+  reaction(test) {=
+    ez2c_master_print_buffers();
   =}
 
   reaction(echo_timer) {=

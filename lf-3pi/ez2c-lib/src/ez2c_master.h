@@ -53,3 +53,5 @@ int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
 
 int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms);
+
+void ez2c_master_print_buffers(void);

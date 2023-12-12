@@ -260,6 +260,60 @@ int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
     return ret;
 }
 
+// TODO: this should eventually go away.
+static uint32_t *propagate_sda_buffer(void) {
+    static uint32_t tmp[EXTENDED_CIRCULAR_BUFFER_SIZE];
+    uint32_t prev = 0;
+    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
+        if (sda_buffer.buf[i] == 0) {
+            tmp[i] = prev;
+        } else {
+            prev = tmp[i] = sda_buffer.buf[i];
+        }
+    }
+    return tmp;
+}
+
+// TODO: this should eventually go away.
+void ez2c_master_print_buffers(void) {
+    static int diff[EXTENDED_CIRCULAR_BUFFER_SIZE];
+    int diff_size = 0;
+    uint32_t diff_sum = 0;
+    uint32_t *propagated_sda = propagate_sda_buffer();
+
+    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
+        if (scl_buffer.buf[i]) {
+            diff[diff_size] = (int)scl_buffer.buf[i] - (int)propagated_sda[i];
+            diff_sum += diff[diff_size];
+            diff_size++;
+        }
+    }
+    
+    printf("scl buffer content:\n");
+    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
+        printf("%u ", scl_buffer.buf[i]);
+    }
+    printf("\n\n");
+
+    printf("sda buffer content:\n");
+    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
+        printf("%u ", sda_buffer.buf[i]);
+    }
+    printf("\n\n");
+    
+    printf("propagated sda buffer content:\n");
+    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
+        printf("%u ", propagated_sda[i]);
+    }
+    printf("\n\n");
+    
+    printf("diff (length %d, avg %f):\n", diff_size, (double)diff_sum / diff_size);
+    for (int i = 0; i < diff_size; ++i) {
+        printf("%d ", diff[i]);
+    }
+    printf("\n\n");
+}
+
 // ----------------------- Helper Function Definitions ------------------------
 
 static void init_global_variables() {
@@ -322,13 +376,6 @@ static void init_pio_rise_time_cycle_counter(uint scl_lo_pin, uint scl_hi_pin,
             sda_lo_pin, sda_hi_pin, &pio_sda_noblock_counter_irq_handler,
             &sda_pio_hw, &sda_sm);
         if (error2) pio_init_error_handler(error2);
-
-        if (error1 || error2) {
-            while (1) {
-                printf("error1 == %d, error2 == %d\n", error1, error2);
-                sleep_ms(1000);
-            }
-        }
     }
 }
 
@@ -421,25 +468,9 @@ static void scl_noblock_irq_handler_helper(int irq) {
         case 0: {
             // Normal rise time output received.
             uint32_t cycles = rise_time_noblock_get_cycles(scl_pio_hw, scl_sm);
-            extended_circular_buffer_push(&scl_buffer, cycles);
-            extended_circular_buffer_push(&sda_buffer, 0);
-            if (scl_buffer.size >= EXTENDED_CIRCULAR_BUFFER_SIZE) {
-                printf("scl buffer content:\n");
-                for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-                    printf("%u ", scl_buffer.buf[i]);
-                }
-                printf("\n\n");
-
-                printf("sda buffer content:\n");
-                for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-                    printf("%u ", sda_buffer.buf[i]);
-                }
-
-                printf("\n\nGoing inside infinite loop...\n");
-                while (1) {
-                    printf("scl_noblock_irq_handler_helper: inf loop\n");
-                    sleep_ms(1000);
-                }
+            if (scl_buffer.size < EXTENDED_CIRCULAR_BUFFER_SIZE) {
+                extended_circular_buffer_push(&scl_buffer, cycles);
+                extended_circular_buffer_push(&sda_buffer, 0);
             }
             break;
         }
@@ -450,8 +481,6 @@ static void scl_noblock_irq_handler_helper(int irq) {
 
         case 2:
             printf("scl_noblock_irq_handler_helper: capacitance warning\n");
-            // adjust_pullup_level(-1);
-            // detect_device_change(0, true);  // Force detect.
             break;
 
         default:
@@ -478,25 +507,9 @@ static void sda_noblock_irq_handler_helper(int irq) {
         case 0: {
             // Normal rise time output received.
             uint32_t cycles = rise_time_noblock_get_cycles(sda_pio_hw, sda_sm);
-            extended_circular_buffer_push(&sda_buffer, cycles);
-            extended_circular_buffer_push(&scl_buffer, 0);
-            if (scl_buffer.size >= EXTENDED_CIRCULAR_BUFFER_SIZE) {
-                printf("scl buffer content:\n");
-                for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-                    printf("%u ", scl_buffer.buf[i]);
-                }
-                printf("\n\n");
-
-                printf("sda buffer content:\n");
-                for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-                    printf("%u ", sda_buffer.buf[i]);
-                }
-
-                printf("\n\nGoing inside infinite loop...\n");
-                while (1) {
-                    printf("sda_noblock_irq_handler_helper: inf loop\n");
-                    sleep_ms(1000);
-                }
+            if (scl_buffer.size < EXTENDED_CIRCULAR_BUFFER_SIZE) {
+                extended_circular_buffer_push(&sda_buffer, cycles);
+                extended_circular_buffer_push(&scl_buffer, 0);
             }
             break;
         }
@@ -507,8 +520,6 @@ static void sda_noblock_irq_handler_helper(int irq) {
 
         case 2:
             printf("sda_noblock_irq_handler_helper: capacitance warning\n");
-            // adjust_pullup_level(-1);
-            // detect_device_change(0, true);  // Force detect.
             break;
 
         default:
@@ -692,11 +703,6 @@ static void stall_handler(uint8_t slave_addr) {
     bool read_success = false;
 
     while (!read_success) {
-        // Reset PIO cycle counter limit to a small value and restart state
-        // machine.
-        rise_time_reset_rise_count_limit(scl_pio_hw, scl_sm,
-                                         PIO_RECOVERY_RISE_COUNT_LIMIT);
-
         // Reset pull-up adjusted flag and monitor pull-up changes.
         pullup_adjusted = false;
         bytes_read =
@@ -716,11 +722,7 @@ static void stall_handler(uint8_t slave_addr) {
             (bytes_read >= 0 && bytes_read < sizeof(buf)) || pullup_adjusted;
         if (!partial_success) step_pullup_level();
     }
-
     // Read was successful. We can now return to normal operation.
-    rise_time_reset_rise_count_limit(scl_pio_hw, scl_sm,
-                                     PIO_NORMAL_RISE_COUNT_LIMIT);
-
     // Once we successfully recovered from the first I2C stall, we are ready
     // to set the maximum safe rise time. Note that this assumes the subsequent
     // rise time measurement corresponds to successful I2C communications.
