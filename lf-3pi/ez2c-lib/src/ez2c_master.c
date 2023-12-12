@@ -2,6 +2,7 @@
 
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
+#include <hardware/irq.h>
 #include <hardware/pio.h>
 #include <pico/stdlib.h>
 #include <pico/unique_id.h>
@@ -10,6 +11,7 @@
 #include "ez2c_common.h"
 #include "rise_time.h"
 #include "rise_time_noblock.h"
+#include "uint32_array.h"
 
 // ---------------------------- Defined Constants ------------------------------
 
@@ -31,7 +33,7 @@ static const uint I2C_DEFAULT_TIMEOUT_MS = 1000u;
 
 // The PIO cycle counter will assert an interrupt and report the average rise
 // time every this number of rises under normal operation.
-static const uint PIO_NORMAL_RISE_COUNT_LIMIT = 1000u;
+static const uint PIO_NORMAL_RISE_COUNT_LIMIT = UINT32_ARRAY_SIZE;
 
 // The PIO cycle counter will assert an interrupt and report the average rise
 // time every this number of rises when attempting a stall recovery.
@@ -67,6 +69,9 @@ static uint scl_sm;
 
 // PIO state machine number for I2C SDA (data) rise time cycle counter.
 static uint sda_sm;
+
+static bool post_processing;
+static uint pio_post_processing_irq_num;
 
 // Pull-up resistance controller demux output pins. Provided by the user and
 // only set once by the master initialization function.
@@ -105,8 +110,8 @@ static bool pullup_adjusted;
 // rise time program.
 static circular_buffer_t recent_rise_cycles;
 
-static extended_circular_buffer_t scl_buffer;
-static extended_circular_buffer_t sda_buffer;
+static uint32_array_t scl_buffer;
+static uint32_array_t sda_buffer;
 
 // Flag indicating if there's a pending device change. A pending change will
 // become a formal change once the recent rise time measurement becomes stable.
@@ -124,8 +129,7 @@ static void init_global_variables();
 static void init_pull_up_demux(const uint *_pull_up_demux_pins,
                                uint _pull_up_level_bits);
 static void init_pio_rise_time_cycle_counter(uint scl_lo_pin, uint scl_hi_pin,
-                                             uint sda_lo_pin, uint sda_hi_pin,
-                                             bool noblock);
+                                             uint sda_lo_pin, uint sda_hi_pin);
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
                      bool internal_pullup);
 
@@ -134,14 +138,15 @@ static inline uint pull_up_level_max();
 
 // PIO IRQ Handler and related helper functions
 
+static void pio_post_processing_irq_handler();
+
 static void pio_scl_counter_irq_handler();
 static void scl_irq_handler_helper(int irq);
 
-static void pio_scl_noblock_counter_irq_handler();
-static void scl_noblock_irq_handler_helper(int irq);
+static void pio_sda_counter_irq_handler();
+static void sda_irq_handler_helper(int irq);
 
-static void pio_sda_noblock_counter_irq_handler();
-static void sda_noblock_irq_handler_helper(int irq);
+static uint32_t *propagate_sda_buffer();
 
 static bool adjust_pullup_conditional(float cycles);
 static uint adjust_pullup_level(int offset);
@@ -172,7 +177,7 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
                       uint scl_pin, uint pio_scl_lo_pin, uint pio_scl_hi_pin,
                       uint pio_sda_lo_pin, uint pio_sda_hi_pin,
                       const uint *_pull_up_demux_pins, uint _pull_up_level_bits,
-                      bool internal_pullup, bool pio_noblock) {
+                      bool internal_pullup) {
     static bool once = false;
     if (!once) {
         once = true;
@@ -186,8 +191,7 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
     init_global_variables();
     init_pull_up_demux(_pull_up_demux_pins, _pull_up_level_bits);
     init_pio_rise_time_cycle_counter(pio_scl_lo_pin, pio_scl_hi_pin,
-                                     pio_sda_lo_pin, pio_sda_hi_pin,
-                                     pio_noblock);
+                                     pio_sda_lo_pin, pio_sda_hi_pin);
     return init_i2c(i2c, baudrate, sda_pin, scl_pin, internal_pullup);
 }
 
@@ -260,63 +264,10 @@ int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
     return ret;
 }
 
-// TODO: this should eventually go away.
-static uint32_t *propagate_sda_buffer(void) {
-    static uint32_t tmp[EXTENDED_CIRCULAR_BUFFER_SIZE];
-    uint32_t prev = 0;
-    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-        if (sda_buffer.buf[i] == 0) {
-            tmp[i] = prev;
-        } else {
-            prev = tmp[i] = sda_buffer.buf[i];
-        }
-    }
-    return tmp;
-}
-
-// TODO: this should eventually go away.
-void ez2c_master_print_buffers(void) {
-    static int diff[EXTENDED_CIRCULAR_BUFFER_SIZE];
-    int diff_size = 0;
-    uint32_t diff_sum = 0;
-    uint32_t *propagated_sda = propagate_sda_buffer();
-
-    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-        if (scl_buffer.buf[i]) {
-            diff[diff_size] = (int)scl_buffer.buf[i] - (int)propagated_sda[i];
-            diff_sum += diff[diff_size];
-            diff_size++;
-        }
-    }
-    
-    printf("scl buffer content:\n");
-    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-        printf("%u ", scl_buffer.buf[i]);
-    }
-    printf("\n\n");
-
-    printf("sda buffer content:\n");
-    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-        printf("%u ", sda_buffer.buf[i]);
-    }
-    printf("\n\n");
-    
-    printf("propagated sda buffer content:\n");
-    for (int i = 0; i < EXTENDED_CIRCULAR_BUFFER_SIZE; ++i) {
-        printf("%u ", propagated_sda[i]);
-    }
-    printf("\n\n");
-    
-    printf("diff (length %d, avg %f):\n", diff_size, (double)diff_sum / diff_size);
-    for (int i = 0; i < diff_size; ++i) {
-        printf("%d ", diff[i]);
-    }
-    printf("\n\n");
-}
-
 // ----------------------- Helper Function Definitions ------------------------
 
 static void init_global_variables() {
+    post_processing = false;
     first_stall_recovered = false;
     ref_safe_rise_cycles_set = false;
     ref_safe_rise_cycles = 0.0f;
@@ -325,8 +276,8 @@ static void init_global_variables() {
 
     // Set up recent PIO rise time buffer.
     circular_buffer_clear(&recent_rise_cycles);
-    extended_circular_buffer_clear(&scl_buffer);
-    extended_circular_buffer_clear(&sda_buffer);
+    uint32_array_clear(&scl_buffer);
+    uint32_array_clear(&sda_buffer);
 }
 
 static void init_pull_up_demux(const uint *_pull_up_demux_pins,
@@ -353,30 +304,22 @@ static void init_pull_up_demux(const uint *_pull_up_demux_pins,
     pullup_adjusted = false;
 }
 
-static void pio_init_error_handler(int error) {
-    if (error == 1) {
-        printf("failed to setup pio");
-    } else if (error == 2) {
-        printf("failed to find available nvic irq for pio\n");
-    }
-}
-
 static void init_pio_rise_time_cycle_counter(uint scl_lo_pin, uint scl_hi_pin,
-                                             uint sda_lo_pin, uint sda_hi_pin,
-                                             bool noblock) {
-    if (!noblock) {
-        rise_time_init(scl_lo_pin, scl_hi_pin, PIO_NORMAL_RISE_COUNT_LIMIT,
-                       &pio_scl_counter_irq_handler, &scl_pio_hw, &scl_sm);
-    } else {
-        int error1 = rise_time_noblock_init(
-            scl_lo_pin, scl_hi_pin, &pio_scl_noblock_counter_irq_handler,
-            &scl_pio_hw, &scl_sm);
-        if (error1) pio_init_error_handler(error1);
-        int error2 = rise_time_noblock_init(
-            sda_lo_pin, sda_hi_pin, &pio_sda_noblock_counter_irq_handler,
-            &sda_pio_hw, &sda_sm);
-        if (error2) pio_init_error_handler(error2);
-    }
+                                             uint sda_lo_pin, uint sda_hi_pin) {
+    int error1 = rise_time_noblock_init(scl_lo_pin, scl_hi_pin,
+                                        &pio_scl_counter_irq_handler,
+                                        &scl_pio_hw, &scl_sm);
+    int error2 = rise_time_noblock_init(sda_lo_pin, sda_hi_pin,
+                                        &pio_sda_counter_irq_handler,
+                                        &sda_pio_hw, &sda_sm);
+    hard_assert(!error1 && !error2);
+
+    pio_post_processing_irq_num = user_irq_claim_unused(true);
+    irq_set_exclusive_handler(pio_post_processing_irq_num,
+                              &pio_post_processing_irq_handler);
+    irq_set_priority(pio_post_processing_irq_num,
+                     PICO_DEFAULT_IRQ_PRIORITY + 1);
+    irq_set_enabled(pio_post_processing_irq_num, true);
 }
 
 static uint init_i2c(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
@@ -409,6 +352,50 @@ static inline uint pull_up_levels() { return 1u << pull_up_level_bits; }
 
 static inline uint pull_up_level_max() { return pull_up_levels() - 1; }
 
+static void pio_post_processing_irq_handler() {
+    static int diff[UINT32_ARRAY_SIZE];
+    int diff_size = 0;
+    uint32_t diff_sum = 0;
+    uint32_t *propagated_sda = propagate_sda_buffer();
+
+    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+        if (scl_buffer.buf[i]) {
+            diff[diff_size] = (int)scl_buffer.buf[i] - (int)propagated_sda[i];
+            diff_sum += diff[diff_size];
+            diff_size++;
+        }
+    }
+
+    printf("scl buffer content:\n");
+    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+        printf("%u ", scl_buffer.buf[i]);
+    }
+    printf("\n\n");
+
+    printf("sda buffer content:\n");
+    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+        printf("%u ", sda_buffer.buf[i]);
+    }
+    printf("\n\n");
+
+    printf("propagated sda buffer content:\n");
+    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+        printf("%u ", propagated_sda[i]);
+    }
+    printf("\n\n");
+
+    printf("diff (length %d, avg %f):\n", diff_size,
+           (double)diff_sum / diff_size);
+    for (int i = 0; i < diff_size; ++i) {
+        printf("%d ", diff[i]);
+    }
+    printf("\n\n");
+
+    uint32_array_clear(&scl_buffer);
+    uint32_array_clear(&sda_buffer);
+    post_processing = false;
+}
+
 static void pio_scl_counter_irq_handler() {
     static const int PIO_IRQ_MAX = 4;
     for (int irq = 0; irq < PIO_IRQ_MAX; ++irq) {
@@ -421,116 +408,91 @@ static void pio_scl_counter_irq_handler() {
 static void scl_irq_handler_helper(int irq) {
     switch (irq) {
         case 0: {
-            // Normal average rise time output received.
-            float avg_cycles = rise_time_get_avg_cycles(scl_pio_hw, scl_sm);
-            printf("scl_irq_handler_helper: %f cycles\n", avg_cycles);
-            bool adjusted = adjust_pullup_conditional(avg_cycles);
-            detect_device_change(avg_cycles, adjusted);
-            rise_time_continue(scl_pio_hw, scl_sm);
+            // Normal rise time output received.
+            uint32_t cycles = rise_time_noblock_get_cycles(scl_pio_hw, scl_sm);
+            if (scl_buffer.size < UINT32_ARRAY_SIZE) {
+                uint32_array_push_back(&scl_buffer, cycles);
+                uint32_array_push_back(&sda_buffer, 0);
+            } else if (!post_processing) {
+                post_processing = true;
+                irq_set_pending(pio_post_processing_irq_num);
+            }
             break;
         }
 
         case 1:
-            // Resolution warning: (0, 0) -> (1, 1)
-            // rise time too short to measure.
             printf("scl_irq_handler_helper: resolution warning\n");
             break;
 
         case 2:
-            // Capacitance warning: (0, 0) -> (1, 0) -> (0, 0)
-            // failed to rise to desired voltage level.
             printf("scl_irq_handler_helper: capacitance warning\n");
-            adjust_pullup_level(-1);
-            detect_device_change(0, true);  // Force detect.
-            break;
-
-        default:
-            // NOT REACHED.
-            printf("scl_irq_handler_helper: unknown irq flag warning\n");
-            break;
-    }
-
-    // Clear PIO interrupt to restart PIO program.
-    pio_interrupt_clear(scl_pio_hw, irq);
-}
-
-static void pio_scl_noblock_counter_irq_handler() {
-    static const int PIO_IRQ_MAX = 4;
-    for (int irq = 0; irq < PIO_IRQ_MAX; ++irq) {
-        if (pio_interrupt_get(scl_pio_hw, irq)) {
-            scl_noblock_irq_handler_helper(irq);
-        }
-    }
-}
-
-static void scl_noblock_irq_handler_helper(int irq) {
-    switch (irq) {
-        case 0: {
-            // Normal rise time output received.
-            uint32_t cycles = rise_time_noblock_get_cycles(scl_pio_hw, scl_sm);
-            if (scl_buffer.size < EXTENDED_CIRCULAR_BUFFER_SIZE) {
-                extended_circular_buffer_push(&scl_buffer, cycles);
-                extended_circular_buffer_push(&sda_buffer, 0);
-            }
-            break;
-        }
-
-        case 1:
-            printf("scl_noblock_irq_handler_helper: resolution warning\n");
-            break;
-
-        case 2:
-            printf("scl_noblock_irq_handler_helper: capacitance warning\n");
-            break;
-
-        default:
-            // NOT REACHED.
-            printf("scl_irq_handler_helper: unknown irq flag warning\n");
-            break;
-    }
-
-    // Clear PIO interrupt.
-    pio_interrupt_clear(scl_pio_hw, irq);
-}
-
-static void pio_sda_noblock_counter_irq_handler() {
-    static const int PIO_IRQ_MAX = 4;
-    for (int irq = 0; irq < PIO_IRQ_MAX; ++irq) {
-        if (pio_interrupt_get(sda_pio_hw, irq)) {
-            sda_noblock_irq_handler_helper(irq);
-        }
-    }
-}
-
-static void sda_noblock_irq_handler_helper(int irq) {
-    switch (irq) {
-        case 0: {
-            // Normal rise time output received.
-            uint32_t cycles = rise_time_noblock_get_cycles(sda_pio_hw, sda_sm);
-            if (scl_buffer.size < EXTENDED_CIRCULAR_BUFFER_SIZE) {
-                extended_circular_buffer_push(&sda_buffer, cycles);
-                extended_circular_buffer_push(&scl_buffer, 0);
-            }
-            break;
-        }
-
-        case 1:
-            printf("sda_noblock_irq_handler_helper: resolution warning\n");
-            break;
-
-        case 2:
-            printf("sda_noblock_irq_handler_helper: capacitance warning\n");
             break;
 
         default:
             // NOT REACHED.
             printf(
-                "sda_noblock_irq_handler_helper: unknown irq flag warning\n");
+                "pio_post_processing_irq_handler_helper: unknown irq flag "
+                "warning\n");
+            break;
+    }
+
+    // Clear PIO interrupt.
+    pio_interrupt_clear(scl_pio_hw, irq);
+}
+
+static void pio_sda_counter_irq_handler() {
+    static const int PIO_IRQ_MAX = 4;
+    for (int irq = 0; irq < PIO_IRQ_MAX; ++irq) {
+        if (pio_interrupt_get(sda_pio_hw, irq)) {
+            sda_irq_handler_helper(irq);
+        }
+    }
+}
+
+static void sda_irq_handler_helper(int irq) {
+    switch (irq) {
+        case 0: {
+            // Normal rise time output received.
+            uint32_t cycles = rise_time_noblock_get_cycles(sda_pio_hw, sda_sm);
+            if (scl_buffer.size < UINT32_ARRAY_SIZE) {
+                uint32_array_push_back(&sda_buffer, cycles);
+                uint32_array_push_back(&scl_buffer, 0);
+            } else if (!post_processing) {
+                post_processing = true;
+                irq_set_pending(pio_post_processing_irq_num);
+            }
+            break;
+        }
+
+        case 1:
+            printf("sda_irq_handler_helper: resolution warning\n");
+            break;
+
+        case 2:
+            printf("sda_irq_handler_helper: capacitance warning\n");
+            break;
+
+        default:
+            // NOT REACHED.
+            printf("sda_irq_handler_helper: unknown irq flag warning\n");
             break;
     }
 
     // Clear PIO interrupt.
     pio_interrupt_clear(sda_pio_hw, irq);
+}
+
+static uint32_t *propagate_sda_buffer() {
+    static uint32_t tmp[UINT32_ARRAY_SIZE];
+    uint32_t prev = 0;
+    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+        if (sda_buffer.buf[i] == 0) {
+            tmp[i] = prev;
+        } else {
+            prev = tmp[i] = sda_buffer.buf[i];
+        }
+    }
+    return tmp;
 }
 
 static bool adjust_pullup_conditional(float cycles) {

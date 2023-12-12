@@ -7,6 +7,7 @@ add_library(ez2c
   src/pio_utils.c
   src/rise_time.c
   src/rise_time_noblock.c
+  src/uint32_array.c
 )
 
 pico_generate_pio_header(ez2c
@@ -22,6 +23,7 @@ target_include_directories(ez2c PUBLIC src)
 target_link_libraries(ez2c
   hardware_gpio
   hardware_i2c
+  hardware_irq
   hardware_pio
   pico_i2c_slave
   pico_stdlib

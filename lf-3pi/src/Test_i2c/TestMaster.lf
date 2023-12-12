@@ -55,7 +55,6 @@ main reactor {
   =}
 
   timer echo_timer(3 s, 2 s)
-  timer test(20 s, 5 s)
   logical action initial_daa_scan
 
   reaction(startup) -> initial_daa_scan {=
@@ -71,7 +70,7 @@ main reactor {
                      PIO_SCL_LO_THRESHOLD_PIN, PIO_SCL_HI_THRESHOLD_PIN, 
                      PIO_SDA_LO_THRESHOLD_PIN, PIO_SDA_HI_THRESHOLD_PIN,
                      pull_up_demux_pins, pull_up_level_bits,
-                     INTERNAL_PULL_UP, true);
+                     INTERNAL_PULL_UP);
 
     // Perform initial address allocation after a 10 second delay.
     lf_schedule(initial_daa_scan, MSEC(10000));
@@ -79,10 +78,6 @@ main reactor {
 
   reaction(initial_daa_scan) {=
     ez2c_master_discover();
-  =}
-
-  reaction(test) {=
-    ez2c_master_print_buffers();
   =}
 
   reaction(echo_timer) {=
