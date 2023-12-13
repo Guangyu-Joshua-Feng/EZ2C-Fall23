@@ -12,16 +12,27 @@ target C {
 preamble {=
   #include <ez2c.h>
 
-  #define BAUDRATE (100 * 1000)
+  #define BAUDRATE (100)
   #define INTERNAL_PULL_UP 0
   #define I2C_SDA_PIN 4
   #define I2C_SCL_PIN 5
+  #define INTERRUPT_BUTTON_PIN 14
+  #define TG_CONTROL_PIN 15
   #define LED_PIN 16
 =}
 
 main reactor {
+  timer interrupt_timer(0 s, 10 ms)
+
   reaction(startup) {=
-    ez2c_slave_init(i2c0, BAUDRATE, I2C_SDA_PIN, I2C_SCL_PIN,
-                    LED_PIN, INTERNAL_PULL_UP);
+    ez2c_slave_init(i2c0, BAUDRATE, I2C_SDA_PIN, I2C_SCL_PIN, 
+                    INTERRUPT_BUTTON_PIN, TG_CONTROL_PIN, LED_PIN,
+                    INTERNAL_PULL_UP);
+  =}
+
+  reaction(interrupt_timer) {=
+    if (ez2c_slave_get_interrupt()) {
+      ez2c_slave_set_interrupt();
+    }
   =}
 }

@@ -16,7 +16,7 @@ preamble {=
   #include <pico/stdlib.h>
   #include <stdio.h>
 
-  #define BAUDRATE (100 * 1000)        // I2C baudrate (Hz).
+  #define BAUDRATE (100)        // I2C baudrate (Hz).
   #define I2C_DEFAULT_TIMEOUT_MS 1000  // Default I2C R/W timeout in milliseconds.
   #define INTERNAL_PULL_UP 0           // Disables (0) or enables (1) Pico's internal pull-up
 
@@ -55,7 +55,7 @@ main reactor {
   =}
 
   timer echo_timer(3 s, 2 s)
-  timer test(20 s, 5 s)
+  timer test(10 s, 10 s)
   logical action initial_daa_scan
 
   reaction(startup) -> initial_daa_scan {=
@@ -71,7 +71,7 @@ main reactor {
                      PIO_SCL_LO_THRESHOLD_PIN, PIO_SCL_HI_THRESHOLD_PIN, 
                      PIO_SDA_LO_THRESHOLD_PIN, PIO_SDA_HI_THRESHOLD_PIN,
                      pull_up_demux_pins, pull_up_level_bits,
-                     INTERNAL_PULL_UP, true);
+                     INTERNAL_PULL_UP);
 
     // Perform initial address allocation after a 10 second delay.
     lf_schedule(initial_daa_scan, MSEC(10000));
@@ -82,7 +82,7 @@ main reactor {
   =}
 
   reaction(test) {=
-    ez2c_master_print_buffers();
+    ez2c_master_process_buffers();
   =}
 
   reaction(echo_timer) {=
@@ -95,7 +95,7 @@ main reactor {
 
     static int echo_index = 0;
     int alive_count = 0;
-    for (int i = 0; i < 0x55 + EZ2C_SLAVES_MAX; ++i) {
+    for (int i = I2C_DEFAULT_SLAVE_ADDR + 1; i <= I2C_DEFAULT_SLAVE_ADDR + EZ2C_SLAVES_MAX; ++i) {
       if (ez2c_master_slave_addr_exists(i)) {
         alive_count += echo(i, false);
       }

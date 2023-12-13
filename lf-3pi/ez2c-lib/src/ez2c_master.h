@@ -25,7 +25,6 @@
  * @param pull_up_level_bits Number of bits used to represent one pull-up level.
  * @param internal_pullup Whether or not to use Pico's internal pull-up
  * resistors.
- * @param pio_noblock Whether or not to use non-blocking PIO cycle counters.
  *
  * @return Actual set baudrate.
  */
@@ -33,7 +32,7 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
                       uint scl_pin, uint pio_scl_lo_pin, uint pio_scl_hi_pin,
                       uint pio_sda_lo_pin, uint pio_sda_hi_pin,
                       const uint *pull_up_demux_pins, uint pull_up_level_bits,
-                      bool internal_pullup, bool pio_noblock);
+                      bool internal_pullup);
 
 /**
  * @brief Discovers new slave devices.
@@ -43,6 +42,10 @@ uint ez2c_master_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin,
 int ez2c_master_discover();
 
 bool ez2c_master_slave_addr_exists(uint8_t addr);
+
+bool ez2c_master_get_slave_interrupt();
+
+void ez2c_master_clear_slave_interrupt();
 
 bool ez2c_get_device_change();
 
@@ -54,4 +57,4 @@ int ez2c_master_write_timeout_ms(uint8_t addr, const uint8_t *src, size_t len,
 int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
                                 bool nostop, uint timeout_ms);
 
-void ez2c_master_print_buffers(void);
+void ez2c_master_process_buffers(void);
