@@ -427,6 +427,7 @@ static void scl_irq_handler_helper(int irq) {
                 uint32_array_push_back(&sda_buffer, 0);
             } else if (!buffer_post_processing) {
                 buffer_post_processing = true;
+                multicore_reset_core1();
                 multicore_launch_core1(&ez2c_master_process_buffer);
             }
             break;
@@ -469,6 +470,7 @@ static void sda_irq_handler_helper(int irq) {
                 uint32_array_push_back(&scl_buffer, 0);
             } else if (!buffer_post_processing) {
                 buffer_post_processing = true;
+                multicore_reset_core1();
                 multicore_launch_core1(&ez2c_master_process_buffer);
             }
             break;

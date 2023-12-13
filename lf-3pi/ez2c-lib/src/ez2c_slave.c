@@ -9,6 +9,7 @@
 #include "ez2c_common.h"
 
 static uint intr_pin;
+static uint TG_control_pin;
 static uint led_pin;
 
 static bool intr_asserted;
@@ -21,20 +22,26 @@ static struct {
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event);
 static void process_command();
 
+static void set_interrupt(bool on);
+
 uint ez2c_slave_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
-                     uint _intr_pin, uint _led_pin, bool internal_pullup) {
+                     uint _intr_pin, uint _TG_control_pin, uint _led_pin, bool internal_pullup) {
     intr_pin = _intr_pin;
+    TG_control_pin = _TG_control_pin;
     led_pin = _led_pin;
-    intr_asserted = false;
 
     gpio_init(sda_pin);
     gpio_init(scl_pin);
     gpio_init(intr_pin);
+    gpio_init(TG_control_pin);
     gpio_init(led_pin);
     gpio_set_function(sda_pin, GPIO_FUNC_I2C);
     gpio_set_function(scl_pin, GPIO_FUNC_I2C);
     gpio_set_dir(intr_pin, GPIO_IN);
+    gpio_set_dir(TG_control_pin, GPIO_OUT);
     gpio_set_dir(led_pin, GPIO_OUT);
+
+    set_interrupt(false);
 
     if (internal_pullup) {
         gpio_pull_up(sda_pin);
@@ -53,7 +60,7 @@ uint ez2c_slave_init(i2c_inst_t *i2c, uint baudrate, uint sda_pin, uint scl_pin,
 bool ez2c_slave_get_interrupt() { return gpio_get(intr_pin); }
 
 void ez2c_slave_set_interrupt() {
-    intr_asserted = true;
+    set_interrupt(true);
 }
 
 static void i2c_slave_handler(i2c_inst_t *i2c, i2c_slave_event_t event) {
@@ -109,6 +116,11 @@ static void process_command() {
         context.mem[0] = intr_asserted;
     } else if (context.mem[0] == COMMAND_CLEAR_INTERRUPT) {
         // master is clearing our interrupt status.
-        intr_asserted = false;
+        set_interrupt(false);
     }
+}
+
+static void set_interrupt(bool on) {
+    intr_asserted = on;
+    gpio_put(TG_control_pin, on);
 }
