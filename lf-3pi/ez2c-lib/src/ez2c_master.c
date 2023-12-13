@@ -228,7 +228,14 @@ bool ez2c_master_slave_addr_exists(uint8_t addr) {
     return addr_reserved[addr - I2C_DEFAULT_SLAVE_ADDR - 1];
 }
 
-bool ez2c_get_device_change() { return device_change; }
+bool ez2c_get_device_change() {
+    printf("post processing index: %u", pio_post_processing_irq_num);
+    for (int i = 0; i < 32; ++i) {
+        int prio = irq_get_priority(i);
+        printf("irq priority of index %d: %d\n", i, prio);
+    }
+    return device_change;
+}
 
 void ez2c_clear_device_change() { device_change = false; }
 
@@ -317,8 +324,7 @@ static void init_pio_rise_time_cycle_counter(uint scl_lo_pin, uint scl_hi_pin,
     pio_post_processing_irq_num = user_irq_claim_unused(true);
     irq_set_exclusive_handler(pio_post_processing_irq_num,
                               &pio_post_processing_irq_handler);
-    irq_set_priority(pio_post_processing_irq_num,
-                     PICO_DEFAULT_IRQ_PRIORITY + 1);
+    irq_set_priority(pio_post_processing_irq_num, 0);
     irq_set_enabled(pio_post_processing_irq_num, true);
 }
 

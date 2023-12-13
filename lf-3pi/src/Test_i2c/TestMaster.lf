@@ -95,6 +95,6 @@ main reactor {
         alive_count += echo(i, false);
       }
     }
-    printf("echo set %d: %d alive\n", echo_index++, alive_count);
+    // printf("echo set %d: %d alive\n", echo_index++, alive_count);
   =}
 }
