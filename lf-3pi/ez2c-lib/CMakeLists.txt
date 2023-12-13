@@ -23,6 +23,7 @@ target_include_directories(ez2c PUBLIC src)
 target_link_libraries(ez2c
   hardware_gpio
   hardware_i2c
+  hardware_irq
   hardware_pio
   pico_i2c_slave
   pico_multicore

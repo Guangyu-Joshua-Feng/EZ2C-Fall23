@@ -2,6 +2,7 @@
 
 #include <hardware/gpio.h>
 #include <hardware/i2c.h>
+#include <hardware/irq.h>
 #include <hardware/pio.h>
 #include <pico/multicore.h>
 #include <pico/stdlib.h>
@@ -422,13 +423,14 @@ static void scl_irq_handler_helper(int irq) {
         case 0: {
             // Normal rise time output received.
             uint32_t cycles = rise_time_noblock_get_cycles(scl_pio_hw, scl_sm);
-            if (scl_buffer.size < curr_rise_count_limit) {
+            if (!buffer_post_processing) {
                 uint32_array_push_back(&scl_buffer, cycles);
                 uint32_array_push_back(&sda_buffer, 0);
-            } else if (!buffer_post_processing) {
-                buffer_post_processing = true;
-                multicore_reset_core1();
-                multicore_launch_core1(&ez2c_master_process_buffer);
+                if (scl_buffer.size >= curr_rise_count_limit) {
+                    buffer_post_processing = true;
+                    multicore_reset_core1();
+                    multicore_launch_core1(&ez2c_master_process_buffer);
+                }
             }
             break;
         }
@@ -465,13 +467,14 @@ static void sda_irq_handler_helper(int irq) {
         case 0: {
             // Normal rise time output received.
             uint32_t cycles = rise_time_noblock_get_cycles(sda_pio_hw, sda_sm);
-            if (scl_buffer.size < curr_rise_count_limit) {
+            if (!buffer_post_processing) {
                 uint32_array_push_back(&sda_buffer, cycles);
                 uint32_array_push_back(&scl_buffer, 0);
-            } else if (!buffer_post_processing) {
-                buffer_post_processing = true;
-                multicore_reset_core1();
-                multicore_launch_core1(&ez2c_master_process_buffer);
+                if (scl_buffer.size >= curr_rise_count_limit) {
+                    buffer_post_processing = true;
+                    multicore_reset_core1();
+                    multicore_launch_core1(&ez2c_master_process_buffer);
+                }
             }
             break;
         }
@@ -497,6 +500,7 @@ static void sda_irq_handler_helper(int irq) {
 static float propagate_sda_buffer() {
     uint32_t sum = 0, nonzero_size = 0;
     uint32_t prev = 0;
+    uint32_array_clear(&propagated_sda_buffer);
     for (int i = 0; i < sda_buffer.size; ++i) {
         if (sda_buffer.buf[i] != 0) {
             prev = sda_buffer.buf[i];
