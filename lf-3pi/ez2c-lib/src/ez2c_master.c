@@ -117,6 +117,8 @@ static uint32_array_t propagated_sda_buffer;
 // become a formal change once the recent rise time measurement becomes stable.
 static bool device_change_pending;
 
+static bool slave_interrupt_pending;
+
 // Flag indicating if there's a device change since the last time this flag was
 // cleared.
 static bool device_change;
@@ -297,6 +299,7 @@ void ez2c_master_process_buffers(void) {
     printf("avg: %f", diff_avg);
     if (diff_avg > SLAVE_INTERRUPT_RISE_TIME_DIFF_THRESHOLD) {
         printf("\n\n\n!!!!! intr detected !!!!!\n");
+        slave_interrupt_pending = true;
     }
     
     // printf("scl buffer content:\n");
@@ -325,6 +328,17 @@ void ez2c_master_process_buffers(void) {
     
     uint32_array_clear(&scl_buffer);
     uint32_array_clear(&sda_buffer);
+}
+
+bool ez2c_master_get_slave_interrupt() {
+    return slave_interrupt_pending;
+}
+
+void ez2c_master_clear_slave_interrupt() {
+    for (int i = 0; i < EZ2C_SLAVES_MAX; ++i) {
+        poll_slave_interrupt(addr_at_index(i));
+    }
+    slave_interrupt_pending = false;
 }
 
 // ----------------------- Helper Function Definitions ------------------------
@@ -662,17 +676,23 @@ static inline uint8_t addr_at_index(int i) {
 
 static bool poll_slave_interrupt(uint8_t addr) {
     uint8_t command = COMMAND_GET_INTERRUPT;
-    uint8_t asserted = false;
+    int bytes_sent = ez2c_master_write_timeout_ms(addr, &command, 1, false,
+                                 I2C_DEFAULT_TIMEOUT_MS);
+    if (bytes_sent != 1) return false;
+    
     printf("poll_slave_interrupt: scanning slave address 0x%x for interrupt\n",
            addr);
-    ez2c_master_write_timeout_ms(addr, &command, 1, false,
-                                 I2C_DEFAULT_TIMEOUT_MS);
-    ez2c_master_read_timeout_ms(addr, &asserted, 1, false,
+
+    uint8_t buf[1 + sizeof(pico_unique_board_id_t)];
+    ez2c_master_read_timeout_ms(addr, &buf, sizeof(buf), false,
                                 I2C_DEFAULT_TIMEOUT_MS);
-    if (!asserted) return false;
+    if (!(bool)(buf[0])) return false;
+
+    // Grab slave's id and print it.
+    printf("poll_slave_interrupt: recieved id from slave %llx\n", *(uint64_t *)(buf + 1));
 
     command = COMMAND_CLEAR_INTERRUPT;
-    printf("poll_slave_interrupt: interrupt detected at 0x%x, clearing...\n",
+    printf("poll_slave_interrupt: clearing interrupt at 0x%x...\n",
            addr);
     ez2c_master_write_timeout_ms(addr, &command, 1, false,
                                  I2C_DEFAULT_TIMEOUT_MS);

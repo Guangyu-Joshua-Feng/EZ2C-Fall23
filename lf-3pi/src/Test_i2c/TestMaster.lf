@@ -86,6 +86,10 @@ main reactor {
   =}
 
   reaction(echo_timer) {=
+    if (ez2c_master_get_slave_interrupt()) {
+      ez2c_master_clear_slave_interrupt();
+    }
+
     // Poll device change.
     if (ez2c_get_device_change()) {
       // Rescan for new slave devices.

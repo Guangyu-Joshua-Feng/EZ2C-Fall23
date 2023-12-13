@@ -5,6 +5,7 @@
 #include <pico/i2c_slave.h>
 #include <pico/stdlib.h>
 #include <pico/unique_id.h>
+#include <string.h>
 
 #include "ez2c_common.h"
 
@@ -114,6 +115,7 @@ static void process_command() {
     } else if (context.mem[0] == COMMAND_GET_INTERRUPT) {
         // set the beginning of mem to current interrupt status.
         context.mem[0] = intr_asserted;
+        pico_get_unique_board_id(&context.mem[1]);
     } else if (context.mem[0] == COMMAND_CLEAR_INTERRUPT) {
         // master is clearing our interrupt status.
         set_interrupt(false);
