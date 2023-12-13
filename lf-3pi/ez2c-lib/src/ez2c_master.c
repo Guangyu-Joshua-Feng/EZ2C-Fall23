@@ -112,6 +112,11 @@ static circular_buffer_t recent_rise_cycles;
 
 static uint32_array_t scl_buffer;
 static uint32_array_t sda_buffer;
+static uint32_t scl_dump[5000];
+static int scl_dump_size = 0;
+static uint32_t sda_dump[5000];
+static int sda_dump_size = 0;
+static uint32_t propagated_sda_dump[5000];
 
 // Flag indicating if there's a pending device change. A pending change will
 // become a formal change once the recent rise time measurement becomes stable.
@@ -146,7 +151,7 @@ static void scl_irq_handler_helper(int irq);
 static void pio_sda_counter_irq_handler();
 static void sda_irq_handler_helper(int irq);
 
-static uint32_t *propagate_sda_buffer();
+static uint32_t *propagate_sda_buffer(uint32_t *dest, uint32_t *src, int size);
 
 static bool adjust_pullup_conditional(float cycles);
 static uint adjust_pullup_level(int offset);
@@ -264,6 +269,34 @@ int ez2c_master_read_timeout_ms(uint8_t addr, uint8_t *dst, size_t len,
     return ret;
 }
 
+bool ez2c_master_dump_full() { return scl_dump_size == 5000; }
+
+void ez2c_master_print_dump(int begin, int end) {
+    propagate_sda_buffer(propagated_sda_dump, sda_dump, 5000);
+    printf("scl buffer content from %d to %d:\n", begin, end);
+    for (int i = begin; i < end; ++i) {
+        printf(" %u", scl_dump[i]);
+    }
+    printf("\n\n");
+
+    printf("sda buffer content from %d to %d:\n", begin, end);
+    for (int i = begin; i < end; ++i) {
+        printf(" %u", sda_dump[i]);
+    }
+    printf("\n\n");
+
+    printf("propagated sda buffer content:\n");
+    for (int i = begin; i < end; ++i) {
+        printf("%u ", propagated_sda_dump[i]);
+    }
+    printf("\n\n");
+
+    for (int i = begin; i < end; ++i) {
+        printf("%d ", scl_dump[i] - propagated_sda_dump[i]);
+    }
+    printf("\n\n");
+}
+
 // ----------------------- Helper Function Definitions ------------------------
 
 static void init_global_variables() {
@@ -356,7 +389,8 @@ static void pio_post_processing_irq_handler() {
     static int diff[UINT32_ARRAY_SIZE];
     int diff_size = 0;
     uint32_t diff_sum = 0;
-    uint32_t *propagated_sda = propagate_sda_buffer();
+    uint32_t *propagated_sda =
+        propagate_sda_buffer(propagated_sda, sda_buffer.buf, UINT32_ARRAY_SIZE);
 
     for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
         if (scl_buffer.buf[i]) {
@@ -366,30 +400,35 @@ static void pio_post_processing_irq_handler() {
         }
     }
 
-    printf("scl buffer content:\n");
     for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        printf("%u ", scl_buffer.buf[i]);
+        scl_dump[scl_dump_size++] = scl_buffer.buf[i];
+        sda_dump[sda_dump_size++] = sda_buffer.buf[i];
     }
-    printf("\n\n");
 
-    printf("sda buffer content:\n");
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        printf("%u ", sda_buffer.buf[i]);
-    }
-    printf("\n\n");
+    // printf("scl buffer content:\n");
+    // for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+    //     printf("%u ", scl_buffer.buf[i]);
+    // }
+    // printf("\n\n");
 
-    printf("propagated sda buffer content:\n");
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        printf("%u ", propagated_sda[i]);
-    }
-    printf("\n\n");
+    // printf("sda buffer content:\n");
+    // for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+    //     printf("%u ", sda_buffer.buf[i]);
+    // }
+    // printf("\n\n");
 
-    printf("diff (length %d, avg %f):\n", diff_size,
-           (double)diff_sum / diff_size);
-    for (int i = 0; i < diff_size; ++i) {
-        printf("%d ", diff[i]);
-    }
-    printf("\n\n");
+    // printf("propagated sda buffer content:\n");
+    // for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
+    //     printf("%u ", propagated_sda[i]);
+    // }
+    // printf("\n\n");
+
+    // printf("diff (length %d, avg %f):\n", diff_size,
+    //        (double)diff_sum / diff_size);
+    // for (int i = 0; i < diff_size; ++i) {
+    //     printf("%d ", diff[i]);
+    // }
+    // printf("\n\n");
 
     uint32_array_clear(&scl_buffer);
     uint32_array_clear(&sda_buffer);
@@ -482,17 +521,16 @@ static void sda_irq_handler_helper(int irq) {
     pio_interrupt_clear(sda_pio_hw, irq);
 }
 
-static uint32_t *propagate_sda_buffer() {
-    static uint32_t tmp[UINT32_ARRAY_SIZE];
+static uint32_t *propagate_sda_buffer(uint32_t *dest, uint32_t *src, int size) {
     uint32_t prev = 0;
-    for (int i = 0; i < UINT32_ARRAY_SIZE; ++i) {
-        if (sda_buffer.buf[i] == 0) {
-            tmp[i] = prev;
+    for (int i = 0; i < size; ++i) {
+        if (src[i] == 0) {
+            dest[i] = prev;
         } else {
-            prev = tmp[i] = sda_buffer.buf[i];
+            prev = dest[i] = src[i];
         }
     }
-    return tmp;
+    return dest;
 }
 
 static bool adjust_pullup_conditional(float cycles) {
